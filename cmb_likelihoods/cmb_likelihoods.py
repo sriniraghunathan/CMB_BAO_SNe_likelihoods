@@ -15,7 +15,7 @@ from cobaya.likelihoods.base_classes import InstallableLikelihood
 from cobaya.log import LoggedError
 from cobaya.theory import Theory
 
-from . import ilc
+from . import tools
 
 _do_plot = False ###True ##False ##True
 if _do_plot:
@@ -195,9 +195,9 @@ class CMBmocks(InstallableLikelihood):
                         assert len(curr_ilc_weights) == total_bands
                         map_cal_arr = get_cal_arr(curr_spec, self.freq_list, params_values)
                         ##from IPython import embed; embed()
-                        cl_dic_for_ilc = ilc.create_copies_of_cl_in_multiple_bands(curr_cl_or_dl, self.freq_list, keyname = curr_spec)
-                        cl_dic_for_ilc = ilc.apply_TPcal_to_cmb_spec_dic(cl_dic_for_ilc, curr_spec, self.freq_list, map_cal_arr = map_cal_arr)
-                        curr_cl_or_dl_mod = ilc.get_ilc_residual_using_weights(cl_dic_for_ilc, curr_ilc_weights, self.freq_list, el = ells)
+                        cl_dic_for_ilc = tools.create_copies_of_cl_in_multiple_bands(curr_cl_or_dl, self.freq_list, keyname = curr_spec)
+                        cl_dic_for_ilc = tools.apply_TPcal_to_cmb_spec_dic(cl_dic_for_ilc, curr_spec, self.freq_list, map_cal_arr = map_cal_arr)
+                        curr_cl_or_dl_mod = tools.get_ilc_residual_using_weights(cl_dic_for_ilc, curr_ilc_weights, self.freq_list, el = ells)
                     elif curr_spec == 'TE':                        
                         ##from IPython import embed; embed()
                         curr_ilc_weights_T = self.ilc_weights_dic['TT']
@@ -206,9 +206,9 @@ class CMBmocks(InstallableLikelihood):
                         assert len(curr_ilc_weights_P) == total_bands
                         map_cal_T_arr = get_cal_arr('TT', self.freq_list, params_values)
                         map_cal_P_arr = get_cal_arr('EE', self.freq_list, params_values)
-                        cl_dic_for_ilc = ilc.create_copies_of_cl_in_multiple_bands(curr_cl_or_dl, self.freq_list, keyname = curr_spec)
-                        cl_dic_for_ilc = ilc.apply_TPcal_to_cmb_spec_dic(cl_dic_for_ilc, curr_spec, self.freq_list, map_cal_arr = map_cal_T_arr, map_cal_arr2 = map_cal_P_arr)
-                        curr_cl_or_dl_mod = ilc.get_ilc_residual_using_weights(cl_dic_for_ilc, curr_ilc_weights, self.freq_list, el = ells)
+                        cl_dic_for_ilc = tools.create_copies_of_cl_in_multiple_bands(curr_cl_or_dl, self.freq_list, keyname = curr_spec)
+                        cl_dic_for_ilc = tools.apply_TPcal_to_cmb_spec_dic(cl_dic_for_ilc, curr_spec, self.freq_list, map_cal_arr = map_cal_T_arr, map_cal_arr2 = map_cal_P_arr)
+                        curr_cl_or_dl_mod = tools.get_ilc_residual_using_weights(cl_dic_for_ilc, curr_ilc_weights, self.freq_list, el = ells)
                     curr_cl_or_dl = np.copy( curr_cl_or_dl_mod )
                 else:
                     if curr_spec == "TT":

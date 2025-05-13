@@ -1,5 +1,5 @@
 likelihood:
-  cmb.so_baseline_TTEETE: null
+  cmb_likelihoods.so_baseline_TTEETE: null
 theory:
   camb:
     extra_args:

@@ -1,5 +1,5 @@
 likelihood:
-  cmb.so_baseline_with_lensing: null
+  cmb_likelihoods.so_baseline_with_lensing: null
 theory:
   camb:
     extra_args:
