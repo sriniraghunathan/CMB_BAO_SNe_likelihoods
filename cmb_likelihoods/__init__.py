@@ -1,4 +1,4 @@
-from .cmb_likelihoods import so_baseline, so_baseline_with_lensing, so_baseline_multiplebands
-from .cmb_likelihoods import so_goal
-from .cmb_likelihoods import spt3g_winter
-from .cmb_likelihoods import s4_wide
+from .cmb_likelihoods import so_baseline_TTEETE, so_baseline__TTEETEPP
+from .cmb_likelihoods import so_goal_TTEETE, so_goal_TTEETEPP
+from .cmb_likelihoods import spt3g_winter_TTEETE, spt3g_winter_TTEETEPP
+from .cmb_likelihoods import s4_wide_TTEETE, s4_wide_TTEETEPP
