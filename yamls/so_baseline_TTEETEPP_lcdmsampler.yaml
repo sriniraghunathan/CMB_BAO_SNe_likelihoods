@@ -93,9 +93,6 @@ params:
     latex: H_0
   omegam:
     latex: \Omega_\mathrm{m}
-  # omegamh2:
-  #   derived: 'lambda omegam, H0: omegam*(H0/100)**2'
-  #   latex: \Omega_\mathrm{m} h^2
   sigma8:
     latex: \sigma_8
   omegamh2:
