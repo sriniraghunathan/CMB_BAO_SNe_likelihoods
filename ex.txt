@@ -1,6 +1,8 @@
 #LCDM
 sbatch -J so_baseline_TTEETE_lcdm submit_chains.sh yamls/so_baseline_TTEETE_lcdm_sampler.yaml
 sbatch -J so_baseline_TTEETEPP_lcdm submit_chains.sh yamls/so_baseline_TTEETEPP_lcdm_sampler.yaml
+sbatch -J so_baseline_TTEETEPP_desidr2boa_lcdm submit_chains.sh yamls/so_baseline_TTEETEPP_desidr2bao_lcdmsampler.yaml
+sbatch -J so_baseline_TTEETEPP_desidr2boa_w0walcdm submit_chains.sh yamls/so_baseline_TTEETEPP_desidr2bao_wawalcdmsampler.yaml
 
 
 ###----
