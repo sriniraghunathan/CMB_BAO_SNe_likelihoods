@@ -2,6 +2,7 @@ likelihood:
   cmb_likelihoods.spt3g_winter_TTEETEPP: null
   cmb_likelihoods.spt3g_summer_TTEETEPP: null
   cmb_likelihoods.spt3g_wide_TTEETEPP: null
+  bao.desi_dr2.desi_bao_all: null
 theory:
   camb:
     extra_args:

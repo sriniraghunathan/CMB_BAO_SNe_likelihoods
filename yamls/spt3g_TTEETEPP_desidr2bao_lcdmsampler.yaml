@@ -2,6 +2,7 @@ likelihood:
   cmb_likelihoods.spt3g_winter_TTEETEPP: null
   cmb_likelihoods.spt3g_summer_TTEETEPP: null
   cmb_likelihoods.spt3g_wide_TTEETEPP: null
+  bao.desi_dr2.desi_bao_all: null
 theory:
   camb:
     extra_args:
@@ -25,28 +26,8 @@ sampler:
     #covmat_params: ['H0', 'mapTCal', 'mapPCal']
     covmat: auto #data/so_baseline/so_baseline_proposal_covariance_lcdm.txt
 timing: true
-output: chains/mcmc/spt3g_TTEETEPP_w0walcdm/spt3g_TTEETEPP_w0walcdm
+output: chains/mcmc/spt3g_TTEETEPP_desidr2bao_lcdm/spt3g_TTEETEPP_desidr2bao_lcdm
 params:
-  w:
-    prior:
-      max: 10. #1.
-      min: -10. ##-3.
-    ref:
-      dist: norm
-      loc: -1
-      scale: 0.02
-    proposal: 0.02
-    latex: w_0
-  wa:
-    prior:
-      max: 20. ##3.
-      min: -30. ##-3.
-    ref:
-      dist: norm
-      loc: 0.
-      scale: 0.05
-    proposal: 0.05
-    latex: w_a
   logA:
     prior:
       min: 1.61
