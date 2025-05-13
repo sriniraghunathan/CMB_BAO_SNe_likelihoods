@@ -10,4 +10,4 @@ export SHELL=bash
 
 #example
 #coabya-run yamls/so_baseline_sampler_plus_desidr2boa.yaml
-cobaya-run $1
+/home/ac.srinirag/mypython3/bin/cobaya-run $1
