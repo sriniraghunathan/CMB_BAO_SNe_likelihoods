@@ -1,10 +1,10 @@
 likelihood:
-  cmb_likelihoods.so_baseline_with_lensing: null
+  cmb_likelihoods.so_baseline_TTEETEPP: null
   bao.desi_dr2.desi_bao_all: null
 theory:
   camb:
     extra_args:
-      lens_potential_accuracy: 2
+      lens_potential_accuracy: 1
       num_massive_neutrinos: 1
       nnu: 3.044
       theta_H0_range:
@@ -24,7 +24,7 @@ sampler:
     #covmat_params: ['H0', 'mapTCal', 'mapPCal']
     covmat: auto #data/so_baseline/so_baseline_proposal_covariance_lcdm.txt
 timing: true
-output: chains/mcmc/so_baseline_TTEETE_desidr2bao_w0walcdm/so_baseline_TTEETE_desidr2bao_w0walcdm
+output: chains/mcmc/so_baseline_TTEETEPP_desidr2bao_w0walcdm/so_baseline_TTEETEPP_desidr2bao_w0walcdm
 params:
   w:
     prior:

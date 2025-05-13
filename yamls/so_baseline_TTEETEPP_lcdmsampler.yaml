@@ -1,9 +1,9 @@
 likelihood:
-  cmb_likelihoods.so_baseline_with_lensing: null
+  cmb_likelihoods.so_baseline_TTEETEPP: null
 theory:
   camb:
     extra_args:
-      lens_potential_accuracy: 2
+      lens_potential_accuracy: 1
       num_massive_neutrinos: 1
       nnu: 3.044
       theta_H0_range:
@@ -23,7 +23,7 @@ sampler:
     #covmat_params: ['H0', 'mapTCal', 'mapPCal']
     covmat: auto #data/so_baseline/so_baseline_proposal_covariance_lcdm.txt
 timing: true
-output: chains/mcmc/so_baseline_plus_lensing/so_baseline_plus_lensing
+output: chains/mcmc/so_baseline_TTEETEPP_lcdm/so_baseline_TTEETEPP_lcdm
 params:
   logA:
     prior:
@@ -110,115 +110,99 @@ params:
   age:
     latex: '{\rm{Age}}/\mathrm{Gyr}'
     derived: true
-  mapTCal:
+  mapTCal1:
     prior:
-     # min: 0.9
-     # max: 1.1
       dist: norm
       loc: 1.
       scale: 0.01
-    ref:
-      dist: norm
-      loc: 1.
-      scale: 0.02
+    ref: 1.0
     proposal: 0.001
-    latex: T_{\mathrm cal}
-  mapPCal:
+    latex: T_{\mathrm cal^\mathrm{30}}
+  mapTCal2:
     prior:
-     # min: 0.9
-     # max: 1.1
       dist: norm
       loc: 1.
       scale: 0.01
-    ref:
+    ref: 1.0
+    proposal: 0.001
+    latex: T_{\mathrm cal^\mathrm{40}}
+  mapTCal3:
+    prior:
       dist: norm
       loc: 1.
-      scale: 0.02
+      scale: 0.01
+    ref: 1.0
     proposal: 0.001
-    latex: P_{\mathrm cal}    
-  # # Calibration
-  # mapTCal:
-  #    prior:
-  #      min: 0.5
-  #      max: 2.0
-  #    ref: 1.0
-  #    proposal: 0.001
-  #    latex: cal^\mathrm{T}
-  # mapPCal:
-  #    prior:
-  #      min: 0.5
-  #      max: 2.0
-  #    ref: 1.0
-  #    proposal: 0.001
-  #    latex: cal^\mathrm{P}
-  # # Prior is in the code
-  # mapTCal1:
-  #   prior:
-  #     min: 0.5
-  #     max: 2.0
-  #   ref: 1.0
-  #   proposal: 0.001
-  #   latex: cal^\mathrm{95}
-  # mapTCal2:
-  #   prior:
-  #     min: 0.5
-  #     max: 2.0
-  #   ref: 1.0
-  #   proposal: 0.001
-  #   latex: cal^\mathrm{150}
-  # mapTCal3:
-  #   prior:
-  #     min: 0.5
-  #     max: 2.0
-  #   ref: 1.0
-  #   proposal: 0.001
-  #   latex: cal^\mathrm{220}
-  # mapTCal4:
-  #   prior:
-  #     min: 0.5
-  #     max: 2.0
-  #   ref: 1.0
-  #   proposal: 0.001
-  #   latex: cal^\mathrm{220}
-  # mapTCal5:
-  #   prior:
-  #     min: 0.5
-  #     max: 2.0
-  #   ref: 1.0
-  #   proposal: 0.001
-  #   latex: cal^\mathrm{220}
-  # mapPCal1:
-  #   prior:
-  #     min: 0.5
-  #     max: 2.0
-  #   ref: 1.0
-  #   proposal: 0.001
-  #   latex: cal^\mathrm{95}
-  # mapPCal2:
-  #   prior:
-  #     min: 0.5
-  #     max: 2.0
-  #   ref: 1.0
-  #   proposal: 0.001
-  #   latex: cal^\mathrm{150}
-  # mapPCal3:
-  #   prior:
-  #     min: 0.5
-  #     max: 2.0
-  #   ref: 1.0
-  #   proposal: 0.001
-  #   latex: cal^\mathrm{220}
-  # mapPCal4:
-  #   prior:
-  #     min: 0.5
-  #     max: 2.0
-  #   ref: 1.0
-  #   proposal: 0.001
-  #   latex: cal^\mathrm{220}
-  # mapPCal5:
-  #   prior:
-  #     min: 0.5
-  #     max: 2.0
-  #   ref: 1.0
-  #   proposal: 0.001
-  #   latex: cal^\mathrm{220}
+    latex: T_{\mathrm cal^\mathrm{90}}
+  mapTCal4:
+    prior:
+      dist: norm
+      loc: 1.
+      scale: 0.01
+    ref: 1.0
+    proposal: 0.001
+    latex: T_{\mathrm cal^\mathrm{150}}
+  mapTCal5:
+    prior:
+      dist: norm
+      loc: 1.
+      scale: 0.01
+    ref: 1.0
+    proposal: 0.001
+    latex: T_{\mathrm cal^\mathrm{220}}
+  mapTCal6:
+    prior:
+      dist: norm
+      loc: 1.
+      scale: 0.01
+    ref: 1.0
+    proposal: 0.001
+    latex: T_{\mathrm cal^\mathrm{280}}
+  mapPCal1:
+    prior:
+      dist: norm
+      loc: 1.
+      scale: 0.01
+    ref: 1.0
+    proposal: 0.001
+    latex: P_{\mathrm cal^\mathrm{30}}
+  mapPCal2:
+    prior:
+      dist: norm
+      loc: 1.
+      scale: 0.01
+    ref: 1.0
+    proposal: 0.001
+    latex: P_{\mathrm cal^\mathrm{40}}
+  mapPCal3:
+    prior:
+      dist: norm
+      loc: 1.
+      scale: 0.01
+    ref: 1.0
+    proposal: 0.001
+    latex: P_{\mathrm cal^\mathrm{90}}
+  mapPCal4:
+    prior:
+      dist: norm
+      loc: 1.
+      scale: 0.01
+    ref: 1.0
+    proposal: 0.001
+    latex: P_{\mathrm cal^\mathrm{150}}
+  mapPCal5:
+    prior:
+      dist: norm
+      loc: 1.
+      scale: 0.01
+    ref: 1.0
+    proposal: 0.001
+    latex: P_{\mathrm cal^\mathrm{220}}
+  mapPCal6:
+    prior:
+      dist: norm
+      loc: 1.
+      scale: 0.01
+    ref: 1.0
+    proposal: 0.001
+    latex: P_{\mathrm cal^\mathrm{280}}
