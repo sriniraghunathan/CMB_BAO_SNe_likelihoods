@@ -136,30 +136,6 @@ params:
     ref: 1.0
     proposal: 0.001
     latex: T_{\mathrm cal^\mathrm{90}}
-  mapTCal4:
-    prior:
-      dist: norm
-      loc: 1.
-      scale: 0.01
-    ref: 1.0
-    proposal: 0.001
-    latex: T_{\mathrm cal^\mathrm{150}}
-  mapTCal5:
-    prior:
-      dist: norm
-      loc: 1.
-      scale: 0.01
-    ref: 1.0
-    proposal: 0.001
-    latex: T_{\mathrm cal^\mathrm{220}}
-  mapTCal6:
-    prior:
-      dist: norm
-      loc: 1.
-      scale: 0.01
-    ref: 1.0
-    proposal: 0.001
-    latex: T_{\mathrm cal^\mathrm{280}}
   mapPCal1:
     prior:
       dist: norm
@@ -184,27 +160,3 @@ params:
     ref: 1.0
     proposal: 0.001
     latex: P_{\mathrm cal^\mathrm{90}}
-  mapPCal4:
-    prior:
-      dist: norm
-      loc: 1.
-      scale: 0.01
-    ref: 1.0
-    proposal: 0.001
-    latex: P_{\mathrm cal^\mathrm{150}}
-  mapPCal5:
-    prior:
-      dist: norm
-      loc: 1.
-      scale: 0.01
-    ref: 1.0
-    proposal: 0.001
-    latex: P_{\mathrm cal^\mathrm{220}}
-  mapPCal6:
-    prior:
-      dist: norm
-      loc: 1.
-      scale: 0.01
-    ref: 1.0
-    proposal: 0.001
-    latex: P_{\mathrm cal^\mathrm{280}}
