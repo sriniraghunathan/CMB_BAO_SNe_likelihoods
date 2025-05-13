@@ -1,9 +1,9 @@
 path: null
 
-cmb_experiment_name: 'spt3g_winter'
+cmb_experiment_name: 'spt3g_wide'
 parent_data_folder: 'data/'
 analytic_or_simbased_cov: 'analytic' #'simbased'
-spectra_to_use: ['TT', 'EE', 'TE'] ##['TT'] ##
+spectra_to_use: ['TT', 'EE', 'TE', 'PP']
 freq_list: [90, 150, 220]
 cl_or_dl: 'cl'
 use_cosmopower: false #true
@@ -11,6 +11,7 @@ cosmopowe_trained_dataset_fd: 'data/SPT3G_2018_TTTEEE_cosmopower_trained_model_v
 delta_l: 100 #\ell binning
 lmin_t: 300
 lmin_p: 300
+lmin_pp: 30
 
 params:
   mapTCal1:

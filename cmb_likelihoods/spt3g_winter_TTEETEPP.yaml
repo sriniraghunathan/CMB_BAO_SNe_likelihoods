@@ -4,7 +4,7 @@ cmb_experiment_name: 'spt3g_winter'
 parent_data_folder: 'data/'
 analytic_or_simbased_cov: 'analytic' #'simbased'
 spectra_to_use: ['TT', 'EE', 'TE', 'PP']
-freq_list: [30, 40, 90, 150, 220, 280]
+freq_list: [90, 150, 220]
 cl_or_dl: 'cl'
 use_cosmopower: false #true
 cosmopowe_trained_dataset_fd: 'data/SPT3G_2018_TTTEEE_cosmopower_trained_model_v1'
@@ -35,27 +35,6 @@ params:
     ref: 1.0
     proposal: 0.001
     latex: T_{\mathrm cal^\mathrm{90}}
-  mapTCal4:
-    prior:
-      min: 0.5
-      max: 2.0
-    ref: 1.0
-    proposal: 0.001
-    latex: T_{\mathrm cal^\mathrm{150}}
-  mapTCal5:
-    prior:
-      min: 0.5
-      max: 2.0
-    ref: 1.0
-    proposal: 0.001
-    latex: T_{\mathrm cal^\mathrm{220}}
-  mapTCal6:
-    prior:
-      min: 0.5
-      max: 2.0
-    ref: 1.0
-    proposal: 0.001
-    latex: T_{\mathrm cal^\mathrm{280}}
   mapPCal1:
     prior:
       min: 0.5
@@ -77,24 +56,3 @@ params:
     ref: 1.0
     proposal: 0.001
     latex: P_{\mathrm cal^\mathrm{90}}
-  mapPCal4:
-    prior:
-      min: 0.5
-      max: 2.0
-    ref: 1.0
-    proposal: 0.001
-    latex: P_{\mathrm cal^\mathrm{150}}
-  mapPCal5:
-    prior:
-      min: 0.5
-      max: 2.0
-    ref: 1.0
-    proposal: 0.001
-    latex: P_{\mathrm cal^\mathrm{220}}
-  mapPCal6:
-    prior:
-      min: 0.5
-      max: 2.0
-    ref: 1.0
-    proposal: 0.001
-    latex: P_{\mathrm cal^\mathrm{280}}
