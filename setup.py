@@ -12,6 +12,7 @@ setup(
     install_requires=[
         "astropy",
         "cobaya>=3.1",
+        "pyparsing>=2.0.2",
     ],
     package_data={
         f"{lkl}": ["*.yaml"]
