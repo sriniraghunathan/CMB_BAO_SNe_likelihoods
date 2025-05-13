@@ -2,7 +2,10 @@
 sbatch -J so_baseline_TTEETE_lcdm submit_chains.sh yamls/so_baseline_TTEETE_lcdmsampler.yaml
 sbatch -J so_baseline_TTEETEPP_lcdm submit_chains.sh yamls/so_baseline_TTEETEPP_lcdmsampler.yaml
 sbatch -J so_baseline_TTEETEPP_desidr2boa_lcdm submit_chains.sh yamls/so_baseline_TTEETEPP_desidr2bao_lcdmsampler.yaml
-sbatch -J so_baseline_TTEETEPP_desidr2boa_w0walcdm submit_chains.sh yamls/so_baseline_TTEETEPP_desidr2bao_wawalcdmsampler.yaml
+sbatch -J so_baseline_TTEETEPP_desidr2boa_w0walcdm submit_chains.sh yamls/so_baseline_TTEETEPP_desidr2bao_w0walcdmsampler.yaml
+
+sbatch -J spt3g_TTEETE_lcdm submit_chains.sh yamls/sp3g_TTEETE_lcdmsampler.yaml
+sbatch -J spt3g_TTEETEPP_lcdm submit_chains.sh yamls/sp3g_TTEETEPP_lcdmsampler.yaml
 
 
 ###----
