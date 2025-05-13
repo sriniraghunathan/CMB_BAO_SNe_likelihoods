@@ -11,7 +11,7 @@ setup(
     python_requires=">=3.6",
     install_requires=[
         "astropy",
-        "cobaya>=3.1",
+        "cobaya>=3.5",
         "pyparsing>=2.0.2",
         "camb>=1.5",
     ],
