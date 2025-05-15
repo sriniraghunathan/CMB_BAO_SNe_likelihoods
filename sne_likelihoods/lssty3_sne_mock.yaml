@@ -1,6 +1,7 @@
 # Settings for the LSSTY3 SN Ia analysis.
 # Path to the data: where the sn_data has been cloned
 path: null
+###data_file: data/sne_data/LSSTY3/sim1/LSSTY3_SN_sim1.csv
 # .dataset file with settings
 dataset_file: LSSTY3/sim1/config.dataset
 # Overriding of .dataset parameters
