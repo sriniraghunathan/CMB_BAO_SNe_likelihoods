@@ -1,9 +1,9 @@
 from setuptools import find_packages, setup
 
 setup(
-    name="cmb_likelihoods",
+    name="cmb_sne_likelihoods",
     version="1.0",
-    description="CMB likelihoods for cobaya",
+    description="CMB and LSST-SNe likelihoods for cobaya",
     author="Srini Raghunathan",
     author_email="sriniraghuna@gmail.com",
     zip_safe=True,
@@ -17,7 +17,7 @@ setup(
     ],
     package_data={
         f"{lkl}": ["*.yaml"]
-        for lkl in ["cmb_likelihoods"]
+        for lkl in ["cmb_likelihoods", "sne_likelihoods"]
     },
 )
 
