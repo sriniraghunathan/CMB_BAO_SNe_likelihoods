@@ -35,6 +35,7 @@ params:
       scale: 0.02
     proposal: 0.02
     latex: w_0
+    renames: ws
   wa:
     prior:
       max: 20. ##3.
