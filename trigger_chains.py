@@ -4,12 +4,12 @@ cmb_experiments = []
 likelihood_name_dic = {'lssty3_sne_mock': 'sne_likelihoods', 
                       'desidr2bao_mock': ''}
 
-if (1): #CMB, DESI-BAO, and LSST-SNe combinations
+if (0): #CMB, DESI-BAO, and LSST-SNe combinations
     experiment_arr = ['so_baseline']
     #experiment_arr = ['spt3g', 'so_baseline', 'so_goal', 's4_wide']
     dataset_arr = ['TTEETE', 'TTEETEPP', 'TTEETEPP+desidr2bao_mock', 'TTEETEPP+lssty3_sne_mock', 'TTEETEPP+desidr2bao_mock+lssty3_sne_mock']
 
-if (0): #BAO and SNe combinations.
+if (1): #BAO and SNe combinations.
     experiment_arr = ['dummy']
     dataset_arr = ['desidr2bao_mock', 'lssty3_sne_mock', 'desidr2bao_mock+lssty3_sne_mock']
 
