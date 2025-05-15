@@ -3,8 +3,8 @@ likelihood:
   cmb_likelihoods.so_baseline_TTEETEPP: null
   #bao.desi_dr2.desi_bao_all: null
   bao.generic: 
-    measurements_file: data/bao_data/desi_bao_dr2/desi_bao_dr2_mock/desi_gaussian_bao_ALL_GCcomb_mean_camb.txt
-    cov_file:  data/bao_data/desi_bao_dr2/desi_bao_dr2_mock/desi_gaussian_bao_ALL_GCcomb_cov.txt
+    measurements_file: desi_bao_dr2/desi_bao_dr2_mock/desi_gaussian_bao_ALL_GCcomb_mean_camb.txt
+    cov_file:  desi_bao_dr2/desi_bao_dr2_mock/desi_gaussian_bao_ALL_GCcomb_cov.txt
 theory:
   camb:
     extra_args:
