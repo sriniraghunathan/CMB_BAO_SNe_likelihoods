@@ -78,7 +78,7 @@ for experiment in experiment_arr:
                             likelihood_str = '%s\n%s%smeasurements_file: bao_data/desi_bao_dr2/desi_bao_dr2_mock/desi_gaussian_bao_ALL_GCcomb_mean_camb.txt' %(likelihood_str, spaceval, spaceval)
                             likelihood_str = '%s\n%s%scov_file: bao_data/desi_bao_dr2/desi_bao_dr2_mock/desi_gaussian_bao_ALL_GCcomb_cov.txt' %(likelihood_str, spaceval, spaceval)
                         else:
-                            likelihood_str = '%s\n%scmb_likelihoods.%s_%s: null' %(likelihood_str, spaceval, experiment, dataset)
+                            likelihood_str = '%s\n%scmb_likelihoods.%s_%s: null' %(likelihood_str, spaceval, experiment, ddd)
 
                     likelihood_str = likelihood_str.strip('\n')
                     opline = opline.replace('placeholder_for_likelihood', likelihood_str)
