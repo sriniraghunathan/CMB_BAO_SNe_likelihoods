@@ -23,7 +23,7 @@ sampler:
     #covmat_params: ['H0', 'mapTCal', 'mapPCal']
     covmat: auto #data/so_baseline/so_baseline_proposal_covariance_lcdm.txt
 timing: true
-output: placeholder_for_outputfolder
+output: placeholder_for_outputfolder_and_chainame
 params:
   w:
     prior:
