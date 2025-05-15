@@ -5,8 +5,8 @@ likelihood_name_dic = {'lssty3_sne_mock': 'sne_likelihoods',
                       'desidr2bao_mock': ''}
 
 if (1): #CMB, DESI-BAO, and LSST-SNe combinations
-    #experiment_arr = ['so_baseline']
-    experiment_arr = ['spt3g', 'so_baseline', 'so_goal', 's4_wide']
+    experiment_arr = ['so_baseline']
+    #experiment_arr = ['spt3g', 'so_baseline', 'so_goal', 's4_wide']
     dataset_arr = ['TTEETE', 'TTEETEPP', 'TTEETEPP+desidr2bao_mock', 'TTEETEPP+lssty3_sne_mock', 'TTEETEPP+desidr2bao_mock+lssty3_sne_mock']
 
 if (0): #BAO and SNe combinations.
@@ -25,6 +25,7 @@ cmb_experiments_bands_dic = {'spt3g': [90, 150, 220],
                  }
 spaceval = '  '
 
+num_nodes, num_cpus = 4, 20
 total = 0
 for experiment in experiment_arr:
     print('\nExperiment = %s' %(experiment))
@@ -121,7 +122,6 @@ for experiment in experiment_arr:
             #--------
             #submit chains now.
             jobname = exp_data_cosmo_str
-            num_nodes, num_cpus = 4, 20
             cmd = 'sbatch -J %s submit_chains.sh %s %s %s' %(jobname, yaml_fname, num_nodes, num_cpus)
             print(cmd, '\n')
             #os.system(cmd)
