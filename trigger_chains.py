@@ -23,8 +23,11 @@ cmb_experiments_bands_dic = {'spt3g': [90, 150, 220],
                  }
 spaceval = '  '
 for experiment in experiment_arr:
+    print('Experiment = %s' %(experiment))
     for dataset in dataset_arr:
+        print('\tDataset = %s' %(dataset))
         for cosmo in comso_arr:
+            print('\t\tCosmo = %s' %(cosmo))
 
             #----
             #gather yaml template for this cosmo
@@ -114,16 +117,7 @@ for experiment in experiment_arr:
             #--------
             #submit chains now.
             jobname = exp_data_cosmo_str
-            cmd = 'sbatch -J %s submit_chains.sh %s' %(jobname, yaml_fname)
+            num_nodes, num_cpus = 4, 20
+            cmd = 'sbatch -J %s submit_chains.sh %s %s %s' %(jobname, yaml_fname, num_nodes, num_cpus)
             print(cmd)
-            
-
-
-
-
-
-
-
-
-
 
