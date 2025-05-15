@@ -12,7 +12,8 @@ if (0): #BAO and SNe combinations.
     experiment_arr = ['dummy']
     dataset_arr = ['desidr2bao_mock', 'lssty3_sne_mock', 'desidr2bao_mock+lssty3_sne_mock']
 
-comso_arr = ['lcdm', 'w0walcdm']
+#comso_arr = ['lcdm', 'w0walcdm']
+comso_arr = ['w0walcdm']
 cmb_experiments_bands_dic = {'spt3g': [90, 150, 220], 
                  'spt3g_winter': [90, 150, 220], 
                  'spt3g_summer': [90, 150, 220], 
@@ -22,6 +23,8 @@ cmb_experiments_bands_dic = {'spt3g': [90, 150, 220],
                  's4_wide': [30, 40, 90, 150, 220, 280], 
                  }
 spaceval = '  '
+
+total = 0
 for experiment in experiment_arr:
     print('\nExperiment = %s' %(experiment))
     for dataset in dataset_arr:
@@ -120,5 +123,10 @@ for experiment in experiment_arr:
             num_nodes, num_cpus = 4, 20
             cmd = 'sbatch -J %s submit_chains.sh %s %s %s' %(jobname, yaml_fname, num_nodes, num_cpus)
             print(cmd, '\n')
+            #os.system(cmd)
+            total += 1
     print('\n')
+
+print('Total submitted jobs = %s.\n\n' %(total))
+
 
