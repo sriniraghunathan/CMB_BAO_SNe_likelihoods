@@ -119,6 +119,6 @@ for experiment in experiment_arr:
             jobname = exp_data_cosmo_str
             num_nodes, num_cpus = 4, 20
             cmd = 'sbatch -J %s submit_chains.sh %s %s %s' %(jobname, yaml_fname, num_nodes, num_cpus)
-            print(cmd)
+            print(cmd, '\n')
     print('\n')
 
