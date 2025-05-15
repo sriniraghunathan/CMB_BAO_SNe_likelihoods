@@ -23,7 +23,7 @@ cmb_experiments_bands_dic = {'spt3g': [90, 150, 220],
                  }
 spaceval = '  '
 for experiment in experiment_arr:
-    print('Experiment = %s' %(experiment))
+    print('\nExperiment = %s' %(experiment))
     for dataset in dataset_arr:
         print('\tDataset = %s' %(dataset))
         for cosmo in comso_arr:
@@ -120,4 +120,5 @@ for experiment in experiment_arr:
             num_nodes, num_cpus = 4, 20
             cmd = 'sbatch -J %s submit_chains.sh %s %s %s' %(jobname, yaml_fname, num_nodes, num_cpus)
             print(cmd)
+    print('\n')
 
