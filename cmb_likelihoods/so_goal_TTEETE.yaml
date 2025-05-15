@@ -1,7 +1,7 @@
 path: null
 
 cmb_experiment_name: 'so_goal'
-parent_data_folder: 'data/'
+parent_data_folder: 'data/cmb_data/'
 analytic_or_simbased_cov: 'analytic' #'simbased'
 spectra_to_use: ['TT', 'EE', 'TE'] ##['TT'] ##
 freq_list: [30, 40, 90, 150, 220, 280]
