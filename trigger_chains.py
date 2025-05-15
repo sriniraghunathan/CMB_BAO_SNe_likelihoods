@@ -84,6 +84,7 @@ for experiment in experiment_arr:
                     opline = opline.replace('placeholder_for_likelihood', likelihood_str)
 
                 if opline.find('placeholder_for_outputfolder')>-1: #chain output folder
+                    chainname = exp_data_cosmo_str.replace('+', '_')
                     opline = opline.replace('placeholder_for_outputfolder_and_chainame', '%s/%s' %(outputfolder, exp_data_cosmo_str))
 
                 yaml_f.writelines('%s' %(opline))
