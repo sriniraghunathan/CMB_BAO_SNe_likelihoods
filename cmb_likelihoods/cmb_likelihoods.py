@@ -1,7 +1,7 @@
 """General CMB likelihoods for forecasting
 Author: Srini Raghunathan
 email: sriniraghuna@gmail.com
-#Inspired from codes by Jesus Torrado, Antony Lewis, Matthieu Tristram and Lennart Balkenhol
+Inspired from codes by Jesus Torrado, Antony Lewis, Matthieu Tristram and Lennart Balkenhol
 """
 
 import itertools
