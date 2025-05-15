@@ -15,7 +15,6 @@ class LSSTY3_mock(PantheonPlus):#, InstallableLikelihood):
     def initialize(self):
         pass
     """    
-
     def configure(self):
         self.pre_vars = self.mag_err ** 2
     
