@@ -16,7 +16,7 @@
 * ### BAO data:
   * Path: [data/bao_data/desi_bao_dr2/desi_bao_dr2_mock](https://github.com/sriniraghunathan/CMB_cobaya_likelihoods_and_sampling/data/bao_data/desi_bao_dr2/desi_bao_dr2_mock))
   * Same as the ones released by DESI DR2 [link](https://github.com/CobayaSampler/bao_data/desi_bao_dr2)
-  * But also including $w_{0} w_{a} \Lambda {\rm CDM}$ expectation. This can be found [here](https://github.com/sriniraghunathan/CMB_cobaya_likelihoods_and_sampling/data/bao_data/desi_bao_dr2/desi_bao_dr2_mock/desi_gaussian_bao_ALL_GCcomb_mean_camb.txt)
+  * But also including $\sum_{m_{\nu}} + w_{0} + w_{a} + \Lambda {\rm CDM}$ expectation. This can be found [here](https://github.com/sriniraghunathan/CMB_cobaya_likelihoods_and_sampling/data/bao_data/desi_bao_dr2/desi_bao_dr2_mock/desi_gaussian_bao_ALL_GCcomb_mean_camb.txt)
     * Input cosmology is {\it Planck}-2018 $TT,TE,EE+lowE+lensing$ from Table-2 of [1807.06209](https://arxiv.org/pdf/1807.06209) but with $w_{0}=-1$ and $w_{a}=0$.
     * This could be useful in generating combined mock-likelihoods for BAO, and also for other datasets.
 ---
