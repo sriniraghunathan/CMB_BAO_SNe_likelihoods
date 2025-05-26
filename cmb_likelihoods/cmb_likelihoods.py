@@ -429,7 +429,7 @@ class spt3g_winter_TTEETE(CMBmocks):
 
 class spt3g_winter_TTEETEPP(CMBmocks):
     """
-    Likelihood for SPT-3G Winter field ILC.
+    Likelihood for SPT-3G Winter field ILC with lensing.
     """
 
 class spt3g_summer_TTEETE(CMBmocks):
@@ -439,7 +439,7 @@ class spt3g_summer_TTEETE(CMBmocks):
 
 class spt3g_summer_TTEETEPP(CMBmocks):
     """
-    Likelihood for SPT-3G summer field ILC.
+    Likelihood for SPT-3G summer field ILC with lensing.
     """
 
 class spt3g_wide_TTEETE(CMBmocks):
@@ -449,7 +449,7 @@ class spt3g_wide_TTEETE(CMBmocks):
 
 class spt3g_wide_TTEETEPP(CMBmocks):
     """
-    Likelihood for SPT-3G wide field ILC.
+    Likelihood for SPT-3G wide field ILC with lensing.
     """
 
 class so_baseline_TTEETE(CMBmocks):
@@ -459,7 +459,7 @@ class so_baseline_TTEETE(CMBmocks):
 
 class so_baseline_TTEETEPP(CMBmocks):
     """
-    Likelihood for SO-Baseline ILC.
+    Likelihood for SO-Baseline ILC with lensing.
     """
 
 class so_goal_TTEETE(CMBmocks):
@@ -469,7 +469,7 @@ class so_goal_TTEETE(CMBmocks):
 
 class so_goal_TTEETEPP(CMBmocks):
     """
-    Likelihood for SO-Goal ILC.
+    Likelihood for SO-Goal ILC with lensing.
     """
 
 class s4_wide_TTEETE(CMBmocks):
@@ -479,7 +479,27 @@ class s4_wide_TTEETE(CMBmocks):
 
 class s4_wide_TTEETEPP(CMBmocks):
     """
-    Likelihood for S4-Wide ILC.
+    Likelihood for S4-Wide ILC with lensing.
+    """
+
+class advanced_so_baseline_TTEETE(CMBmocks):
+    """
+    Likelihood for Advanced-SO-Baseline ILC.
+    """
+
+class advanced_so_baseline_TTEETEPP(CMBmocks):
+    """
+    Likelihood for Advanced-SO-Baseline ILC with lensing.
+    """
+
+class advanced_so_goal_TTEETE(CMBmocks):
+    """
+    Likelihood for Advanced-SO-Goal ILC.
+    """
+
+class advanced_so_goal_TTEETEPP(CMBmocks):
+    """
+    Likelihood for Advanced-SO-Goal ILC with lensing.
     """
 
 ''' #in the works
