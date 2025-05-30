@@ -79,7 +79,8 @@ class CMBmocks(InstallableLikelihood):
 
         ###print(self.data_folder); quit()
 
-        self.ilc_weights_fname = '%s/binned_with_delta_l_%s/%s/%s_ilc_weights.npy' %(self.parent_data_folder, self.delta_l, self.cmb_experiment_name, self.cmb_experiment_name)
+        #self.ilc_weights_fname = '%s/binned_with_delta_l_%s/%s/%s_ilc_weights.npy' %(self.parent_data_folder, self.delta_l, self.cmb_experiment_name, self.cmb_experiment_name)
+        self.ilc_weights_fname = '%s/binned_%s_deltal%s/%s/%s_ilc_weights.npy' %(self.parent_data_folder, lmin_lmax_str, self.delta_l, self.cmb_experiment_name, self.cmb_experiment_name)
         self.bp_file = '%s/%s_bandpowers_%s.txt' %(self.data_folder, self.cmb_experiment_name, self.spectra_to_use_str)
         assert self.analytic_or_simbased_cov in ['simbased', 'analytic']
         if self.analytic_or_simbased_cov == 'simbased':
