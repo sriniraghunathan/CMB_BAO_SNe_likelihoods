@@ -32,12 +32,15 @@ class CMBmocks(InstallableLikelihood):
     spectra_to_use: Optional[list] = ['TT', 'EE', 'TE']
     analytic_or_simbased_cov: Optional[str] = 'analytic'
     lmin: Optional[int] = 2
-    lmax: Optional[int] = 3000
+    lmax: Optional[int] = 5000
     cl_or_dl: Optional[str] = 'cl'
     delta_l: Optional[int]# = 100
     lmin_t: Optional[int] = 300
     lmin_p: Optional[int] = 300
     lmin_pp: Optional[int] = 30
+    lmax_t: Optional[int] = 3500
+    lmax_p: Optional[int] = 4000
+    lmax_pp: Optional[int] = 4000
     """
     use_cosmopower: Optional[bool] = True
     cosmopowe_trained_dataset_fd: Optional[str] = 'data/SPT3G_2018_TTTEEE_cosmopower_trained_model_v1'
@@ -58,10 +61,24 @@ class CMBmocks(InstallableLikelihood):
         else:
             self.unbinned = False
 
+        '''
         if self.unbinned:
             self.data_folder = '%s/unbinned/%s/' %(self.parent_data_folder, self.cmb_experiment_name)
         else:
             self.data_folder = '%s/binned_with_delta_l_%s/%s/' %(self.parent_data_folder, self.delta_l, self.cmb_experiment_name)
+        '''
+        lmin_lmax_str = 'lmint%s_lmaxt%s_lminp%s_lmaxp%s' %(self.lmin_t, self.lmax_t, self.lmin_p, self.lmax_p)
+        if 'PP' in self.spectra_to_use:
+            lmin_lmax_str = '%s_lminphi%s_lmaxphi%s' %(lmin_lmax_str, self.lmin_pp, self.lmax_pp)
+
+        if self.unbinned:
+            self.data_folder = '%s/unbinned_%s/%s/' %(self.parent_data_folder, lmin_lmax_str, self.cmb_experiment_name)
+        else:
+            #self.data_folder = '%s/binned_with_delta_l_%s/%s/' %(self.parent_data_folder, self.delta_l, self.cmb_experiment_name)
+            self.data_folder = '%s/binned_%s_deltal%s/%s/' %(self.parent_data_folder, lmin_lmax_str, self.delta_l, self.cmb_experiment_name)
+
+        ###print(self.data_folder); quit()
+
         self.ilc_weights_fname = '%s/binned_with_delta_l_%s/%s/%s_ilc_weights.npy' %(self.parent_data_folder, self.delta_l, self.cmb_experiment_name, self.cmb_experiment_name)
         self.bp_file = '%s/%s_bandpowers_%s.txt' %(self.data_folder, self.cmb_experiment_name, self.spectra_to_use_str)
         assert self.analytic_or_simbased_cov in ['simbased', 'analytic']
@@ -71,7 +88,7 @@ class CMBmocks(InstallableLikelihood):
         elif self.analytic_or_simbased_cov == 'analytic':
             self.cov_file = '%s/%s_covariance_%s.txt' %(self.data_folder, self.cmb_experiment_name, self.spectra_to_use_str)
             self.cov_inv_file = '%s/%s_covariance_inv_%s.txt' %(self.data_folder, self.cmb_experiment_name, self.spectra_to_use_str)
-        self.window_file = '%s/%s_bpwf.npy' %(self.data_folder, self.cmb_experiment_name)
+        self.window_file = '%s/%s_bpwf_%s.npy' %(self.data_folder, self.cmb_experiment_name, self.spectra_to_use_str)
 
         # Read in bandpowers (remove index column)
         self.leff = np.loadtxt(self.bp_file, unpack=True)[0] #\ell_eff
@@ -236,14 +253,20 @@ class CMBmocks(InstallableLikelihood):
             #apply cuts
             if curr_spec == 'TT':
                 lmin_cut = self.lmin_t
+                lmax_cut = self.lmax_t
             elif curr_spec == 'TT':
                 lmin_cut = self.lmin_p
+                lmax_cut = self.lmax_p
             elif curr_spec == 'TE':
                 lmin_cut = min(self.lmin_t, self.lmin_p)
+                lmax_cut = self.lmax_p
             elif curr_spec == 'PP':
                 lmin_cut = self.lmin_pp
+                lmax_cut = self.lmax_pp
             ###print(curr_spec, lmin_cut)
             curr_cl_or_dl[ells<lmin_cut] = 0.
+            curr_cl_or_dl[ells>lmax_cut] = 0.
+            ##print( lmin_cut, lmax_cut, curr_cl_or_dl ); quit()
 
             #----
 
