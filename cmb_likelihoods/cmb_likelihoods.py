@@ -18,7 +18,7 @@ from cobaya.theory import Theory
 from . import tools
 
 _do_plot = False #True #False ###True ##False ##True
-if _do_plot:
+if (1):##_do_plot:
     from pylab import *
 
 class CMBmocks(InstallableLikelihood):
@@ -291,10 +291,12 @@ class CMBmocks(InstallableLikelihood):
         # Take the difference to the measured bandpower
         cbs_or_dbs = np.asarray( cbs_or_dbs )
 
-        if _do_plot:
+        if (1):#_do_plot:
             total_bins = len( self.leff )
             cl_err = np.diag( self.cov )**0.5
             cl_tt_err, cl_ee_err, cl_te_err = cl_err[:total_bins], cl_err[total_bins: 2*total_bins], cl_err[2*total_bins: 3*total_bins]
+            if 'PP' in self.spectra_to_use:
+                cl_pp_err = cl_err[3*total_bins:]
             clf()
             ax = subplot(111, yscale = 'log')
             dl_fac = self.leff * (self.leff+1)/2/np.pi
@@ -308,6 +310,9 @@ class CMBmocks(InstallableLikelihood):
 
             #theory now
             cl_tt_theory, cl_ee_theory, cl_te_theory = cbs_or_dbs[:total_bins], cbs_or_dbs[total_bins: 2*total_bins], cbs_or_dbs[2*total_bins: 3*total_bins]
+            if 'PP' in self.spectra_to_use:
+                cl_pp_theory = cbs_or_dbs[3*total_bins:]
+
             plot( self.leff, dl_fac * cl_tt_theory, color = 'black')
             if 'EE' in self.spectra_to_use:
                 plot( self.leff, dl_fac * cl_ee_theory, color = 'orangered')
@@ -315,8 +320,18 @@ class CMBmocks(InstallableLikelihood):
                 plot( self.leff, dl_fac * abs(cl_te_theory), color = 'darkgreen')
 
             xlim(0, 5010); ylim(0.1, 1e4)
-            show()
-            close()
+            show(); close()
+
+            print(self.spectra_to_use)
+
+            if 'PP' in self.spectra_to_use:
+                clf()
+                ax = subplot(111, yscale = 'log')
+                dl_fac = (self.leff * (self.leff+1))**2./2/np.pi
+                errorbar( self.leff, dl_fac * abs(self.bandpowers_mat[3]),  yerr = dl_fac * cl_pp_err, marker = '.', ls = 'None', capsize = 1., color = 'darkgreen')
+                plot( self.leff, dl_fac * abs(cl_pp_theory), color = 'darkgreen')
+                xlim(0, 5010); ylim(1e-10, 5e-7)
+                show()
             quit()        
         
         delta_cb = cbs_or_dbs - self.bandpowers
