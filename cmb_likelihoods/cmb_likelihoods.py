@@ -18,7 +18,7 @@ from cobaya.theory import Theory
 from . import tools
 
 _do_plot = False #True #False ###True ##False ##True
-if (1):##_do_plot:
+if _do_plot:
     from pylab import *
 
 class CMBmocks(InstallableLikelihood):
@@ -267,7 +267,7 @@ class CMBmocks(InstallableLikelihood):
             ###print(curr_spec, lmin_cut)
             curr_cl_or_dl[ells<lmin_cut] = 0.
             curr_cl_or_dl[ells>lmax_cut] = 0.
-            print( curr_spec, lmin_cut, lmax_cut, curr_cl_or_dl ); ##quit()
+            ###print( curr_spec, lmin_cut, lmax_cut, curr_cl_or_dl ); ##quit()
 
             #----
 
@@ -291,7 +291,7 @@ class CMBmocks(InstallableLikelihood):
         # Take the difference to the measured bandpower
         cbs_or_dbs = np.asarray( cbs_or_dbs )
 
-        if (1):#_do_plot:
+        if _do_plot:
             total_bins = len( self.leff )
             cl_err = np.diag( self.cov )**0.5
             cl_tt_err, cl_ee_err, cl_te_err = cl_err[:total_bins], cl_err[total_bins: 2*total_bins], cl_err[2*total_bins: 3*total_bins]
