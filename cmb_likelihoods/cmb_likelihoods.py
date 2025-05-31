@@ -39,8 +39,8 @@ class CMBmocks(InstallableLikelihood):
     lmin_p: Optional[int] = 300
     lmin_pp: Optional[int] = 30
     lmax_t: Optional[int] = 3500
-    lmax_p: Optional[int] = 4000
-    lmax_pp: Optional[int] = 4000
+    lmax_p: Optional[int] = 3500 #4000
+    lmax_pp: Optional[int] = 3500 #4000
     """
     use_cosmopower: Optional[bool] = True
     cosmopowe_trained_dataset_fd: Optional[str] = 'data/SPT3G_2018_TTTEEE_cosmopower_trained_model_v1'
