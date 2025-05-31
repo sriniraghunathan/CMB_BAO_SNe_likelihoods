@@ -17,7 +17,7 @@ from cobaya.theory import Theory
 
 from . import tools
 
-_do_plot = False ###True ##False ##True
+_do_plot = False #True #False ###True ##False ##True
 if _do_plot:
     from pylab import *
 
@@ -140,7 +140,7 @@ class CMBmocks(InstallableLikelihood):
         else:
             self.ilc_weights_dic = None
 
-        if _do_plot:
+        if (0):#_do_plot:
             total_bins = len( self.leff )
             cl_err = np.diag( self.cov )**0.5
             cl_tt_err, cl_ee_err, cl_te_err = cl_err[:total_bins], cl_err[total_bins: 2*total_bins], cl_err[2*total_bins: 3*total_bins]
@@ -168,7 +168,7 @@ class CMBmocks(InstallableLikelihood):
         #ells = np.arange(lmin, lmax + 2)
         ells = np.arange(lmin, lmax + 1)
 
-        ###from IPython import embed; embed()
+        ##from IPython import embed; embed(); quit
 
         cbs_or_dbs = [] ##np.empty_like(self.bandpowers)
         for i, curr_spec in enumerate(self.spectra_to_use):
@@ -255,7 +255,7 @@ class CMBmocks(InstallableLikelihood):
             if curr_spec == 'TT':
                 lmin_cut = self.lmin_t
                 lmax_cut = self.lmax_t
-            elif curr_spec == 'TT':
+            elif curr_spec == 'EE':
                 lmin_cut = self.lmin_p
                 lmax_cut = self.lmax_p
             elif curr_spec == 'TE':
@@ -267,7 +267,7 @@ class CMBmocks(InstallableLikelihood):
             ###print(curr_spec, lmin_cut)
             curr_cl_or_dl[ells<lmin_cut] = 0.
             curr_cl_or_dl[ells>lmax_cut] = 0.
-            ##print( lmin_cut, lmax_cut, curr_cl_or_dl ); quit()
+            print( curr_spec, lmin_cut, lmax_cut, curr_cl_or_dl ); ##quit()
 
             #----
 
@@ -281,6 +281,8 @@ class CMBmocks(InstallableLikelihood):
                 curr_dbs = self.windows[curr_spec] @ curr_cl_or_dl
             else:
                 curr_dbs = curr_cl_or_dl
+
+            ##print(curr_dbs); quit()
 
             cbs_or_dbs.extend( curr_dbs )
             #----
@@ -312,7 +314,7 @@ class CMBmocks(InstallableLikelihood):
             if 'TE' in self.spectra_to_use:
                 plot( self.leff, dl_fac * abs(cl_te_theory), color = 'darkgreen')
 
-            xlim(0, 5010); ylim(0., 1e4)
+            xlim(0, 5010); ylim(0.1, 1e4)
             show()
             close()
             quit()        
