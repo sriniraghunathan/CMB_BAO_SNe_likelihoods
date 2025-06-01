@@ -243,7 +243,7 @@ def make_getdist_plot(which_plot,
                     fig = plt.gcf()
                     xloc, yloc = 0.65, 0.85
                     cax = fig.add_axes([xloc, yloc, 0.25, 0.03], frame_on = True, alpha = 1.)
-                    for (s, c, l) in zip( curr_samples_to_plot, curr_colors, curr_labels, curr_filled):
+                    for (s, c, l) in zip( curr_samples_to_plot, curr_colors, curr_labels):
                         ##print(axcntr, c, l)
                         if curr_filled:
                             barh(1e10, 1e-10, height = 1e-10, color = c, edgecolor = 'None', label = l)
