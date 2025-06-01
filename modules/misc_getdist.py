@@ -15,7 +15,7 @@ default_param_limits_dic = {'omegam': [0.28, 0.35],
                     'ns': [0.94, 0.99], 
                     'ombh2': [0.022, 0.0227], 
                     'omch2': [0.116, 0.128], 
-                    'tau': [0.04, 0.072], 
+                    'tau': [0.035, 0.08], 
                     'H0': [65., 69.], 
                    }  
 '''
@@ -243,9 +243,12 @@ def make_getdist_plot(which_plot,
                     fig = plt.gcf()
                     xloc, yloc = 0.65, 0.85
                     cax = fig.add_axes([xloc, yloc, 0.25, 0.03], frame_on = True, alpha = 1.)
-                    for (s, c, l) in zip( curr_samples_to_plot, curr_colors, curr_labels):
+                    for (s, c, l, fill) in zip( curr_samples_to_plot, curr_colors, curr_labels, curr_filled):
                         ##print(axcntr, c, l)
-                        barh(1e10, 1e-10, height = 1e-10, color = c, edgecolor = 'None', label = l)
+                        if fill:
+                            barh(1e10, 1e-10, height = 1e-10, color = c, edgecolor = 'None', label = l)
+                        else:
+                            barh(1e10, 1e-10, height = 1e-10, color = 'None', edgecolor = c, label = l)
                         ##show(); sys.exit()
                     cax.legend(fontsize = legfsval, framealpha = 1., handlelength = 1.4, handletextpad = 0.4, loc = curr_legloc, )
                     axis('off')
