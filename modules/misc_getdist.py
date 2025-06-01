@@ -248,7 +248,7 @@ def make_getdist_plot(which_plot,
                         if curr_filled:
                             barh(1e10, 1e-10, height = 1e-10, color = c, edgecolor = 'None', label = l)
                         else:
-                            barh(1e10, 1e-10, height = 1e-10, color = None, edgecolor = c, label = l)
+                            plot([], [], color = c, label = l)
                         ##show(); sys.exit()
                     cax.legend(fontsize = legfsval, framealpha = 1., handlelength = 1.4, handletextpad = 0.4, loc = curr_legloc, )
                     axis('off')
