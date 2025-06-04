@@ -518,6 +518,16 @@ class s4_wide_TTEETE(CMBmocks):
     Likelihood for S4-Wide ILC.
     """
 
+class s4_wide_TTEETE_deltael50(CMBmocks):
+    """
+    Likelihood for S4-Wide ILC.
+    """
+
+class s4_wide_TTEETE_deltael200(CMBmocks):
+    """
+    Likelihood for S4-Wide ILC.
+    """
+
 class s4_wide_TTEETEPP(CMBmocks):
     """
     Likelihood for S4-Wide ILC with lensing.
