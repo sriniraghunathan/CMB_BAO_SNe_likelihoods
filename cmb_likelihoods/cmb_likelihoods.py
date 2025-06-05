@@ -90,6 +90,7 @@ class CMBmocks(InstallableLikelihood):
             self.cov_file = '%s/%s_covariance_%s.txt' %(self.data_folder, self.cmb_experiment_name, self.spectra_to_use_str)
             self.cov_inv_file = '%s/%s_covariance_inv_%s.txt' %(self.data_folder, self.cmb_experiment_name, self.spectra_to_use_str)
         self.window_file = '%s/%s_bpwf_%s.npy' %(self.data_folder, self.cmb_experiment_name, self.spectra_to_use_str)
+        ###print(self.window_file); quit()
 
         # Read in bandpowers (remove index column)
         self.leff = np.loadtxt(self.bp_file, unpack=True)[0] #\ell_eff
@@ -140,7 +141,7 @@ class CMBmocks(InstallableLikelihood):
         else:
             self.ilc_weights_dic = None
 
-        if (0):#_do_plot:
+        if _do_plot:
             total_bins = len( self.leff )
             cl_err = np.diag( self.cov )**0.5
             cl_tt_err, cl_ee_err, cl_te_err = cl_err[:total_bins], cl_err[total_bins: 2*total_bins], cl_err[2*total_bins: 3*total_bins]
