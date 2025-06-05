@@ -493,6 +493,17 @@ class spt3g_wide_TTEETEPP(CMBmocks):
     Likelihood for SPT-3G wide field ILC with lensing.
     """
 
+class spt3gpluswide_plus_spt3gwide_TTEETE(CMBmocks):
+    """
+    Likelihood for SPT-3G+ + SPT-3G wide field ILC.
+    """
+
+class spt3gpluswide_plus_spt3gwide_TTEETEPP(CMBmocks):
+    """
+    Likelihood for SPT-3G+ + SPT-3G wide field ILC with lensing.
+    """
+
+
 class so_baseline_TTEETE(CMBmocks):
     """
     Likelihood for SO-Baseline ILC.
