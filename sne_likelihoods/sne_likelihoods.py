@@ -34,3 +34,4 @@ class lssty3_sne_mock(LSSTY3_mock):
     """
     Likelihood for LSSTY3 type Ia supernovae sample mock.
     """
+

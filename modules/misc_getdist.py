@@ -36,8 +36,6 @@ def param_mapping(p):
 def mark_axlines(g, params_to_plot, param_dict = None, lwval = 0.5, lsval = '-', alphaval = 0.5, zorderval = 10):
     total_subplots = len( g.subplots )
 
-    row_arr = np.arange( tr )
-    col_arr = np.arange( tc )
     for r in range( total_subplots ):
         for c in range( total_subplots ):
             if c>r:continue
@@ -263,6 +261,20 @@ def make_getdist_plot(which_plot,
                         )
         g = mark_axlines(g, params_or_pairs_to_plot, param_dict = param_dict)
 
+        '''
+        print(g.subplots)
+        leg_ax = g.subplots[1,1]
+        print(leg_ax)
+        leg = g.add_legend(labels, colored_text=False, fontsize = legfsval, 
+                              legend_loc = legloc, 
+                              handlelength = 1.4, 
+                              handletextpad = 0.4,
+                              #labelspacing = 0.8,
+                              ax = leg_ax,
+                              framealpha = 1.,
+                             );
+        '''
+
     elif which_plot == 'multiple_2d_col': #single row
 
         #define subplots and plot
@@ -465,9 +477,11 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
     dataset_split = tmpchainname.split('+')
     chain_lab = ''
     for ddd in dataset_split:
-        ###print(ddd)
+        ###print(ddd); 
         if ddd == 'lssty3_sne_mock':
             curr_lab = 'LSST-Y3-SNe'
+        elif ddd == 'lssty3snesim1_w0walcdm':
+            curr_lab = 'LSST-Y3-SNe (Sim 1)'
         elif ddd == 'desidr2bao_mock':
             curr_lab = 'DESI-DR2-BAO'
         elif ddd == 'desy5sne_w0walcdm':
@@ -484,3 +498,70 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
     chain_lab = chain_lab.strip(' + ')
     
     return chain_lab
+
+def get_gauss_mix_from_fisher(param_dict, f_mat, params, labels, fix_params = ['ws', 'wa', 'mnu', 'neff', 'nrun'], prior_dic = None): 
+    '''
+    if cov_mat is None:
+        if whichcosmo == 'lcdm':
+            fisher_params_latex_label_arr = ['\\log(10^{10} A_\\mathrm{s})', 'H_0' , 'n_\\mathrm{s}', '\\Omega_\\mathrm{c} h^2', '\\Omega_\\mathrm{b} h^2', '\\tau_\\mathrm{reio}']
+        #fisher_params_cov_fname = 'data/cmb_data/binned_with_delta_l_100/%s/%s_proposal_covariance_lcdm.txt' %(exp, exp)
+        fisher_params_cov_fname = 'data/cmb_data/binned_with_delta_l_100/%s/%s_proposal_covariance_lcdm.txt' %(exp, exp)
+        fisher_params_cov = np.loadtxt(fisher_params_cov_fname)
+        fisher_params = open( fisher_params_cov_fname, 'r').readlines(1)[0].strip().strip('#').split()
+        f_mat = np.linalg.inv( fisher_params_cov )
+        f_mat, fisher_params = misc.fix_params(f_mat, fisher_params, fix_params)
+        f_mat = misc.add_prior(f_mat, fisher_params, prior_dic)
+
+        cov_mat = np.linalg.inv( f_mat ) 
+    '''
+    if fix_params is not None:
+        if len(fix_params) > 1:
+            f_mat, fisher_params = misc.fix_params(f_mat, fisher_params, fix_params)
+    if prior_dic is not None:
+        f_mat = misc.add_prior(f_mat, fisher_params, prior_dic)
+
+    cov_mat = np.linalg.inv( f_mat ) 
+    #print( cov_mat ); sys.exit()
+    
+    #print( params, np.diag(cov_mat)**0.5 )
+    params_mean = []
+    for ppp in params:
+        if ppp in param_dict:
+            params_mean.append( param_dict[ppp] )
+        else:
+            params_mean.append( 0. )
+
+    ##print(params_mean); sys.exit()
+
+    #print(params_mean)
+    return GaussianND(params_mean, cov_mat, names=params, labels = labels)
+
+def get_gauss_mix_ori(exp, cov_mat = None, params = None, labels = None, whichcosmo = 'lcdm', fix_params = ['ws', 'wa', 'mnu', 'neff', 'nrun'], prior_dic = None): 
+    if cov_mat is None:
+        if whichcosmo == 'lcdm':
+            fisher_params_latex_label_arr = ['\\log(10^{10} A_\\mathrm{s})', 'H_0' , 'n_\\mathrm{s}', '\\Omega_\\mathrm{c} h^2', '\\Omega_\\mathrm{b} h^2', '\\tau_\\mathrm{reio}']
+        #fisher_params_cov_fname = 'data/cmb_data/binned_with_delta_l_100/%s/%s_proposal_covariance_lcdm.txt' %(exp, exp)
+        fisher_params_cov_fname = 'data/cmb_data/binned_with_delta_l_100/%s/%s_proposal_covariance_lcdm.txt' %(exp, exp)
+        fisher_params_cov = np.loadtxt(fisher_params_cov_fname)
+        fisher_params = open( fisher_params_cov_fname, 'r').readlines(1)[0].strip().strip('#').split()
+        f_mat = np.linalg.inv( fisher_params_cov )
+        f_mat, fisher_params = misc.fix_params(f_mat, fisher_params, fix_params)
+        f_mat = misc.add_prior(f_mat, fisher_params, prior_dic)
+
+        cov_mat = np.linalg.inv( f_mat ) 
+
+    if params is None:
+        params = fisher_params
+        labels = fisher_params_latex_label_arr
+    
+    print( params, np.diag(cov_mat)**0.5 )
+    params_mean = []
+    for ppp in params:
+        if ppp in param_dict:
+            params_mean.append( param_dict[ppp] )
+        else:
+            params_mean.append( 0. )
+
+    #print(params_mean)
+    return GaussianND(params_mean, cov_mat, names=params, labels = labels)
+
