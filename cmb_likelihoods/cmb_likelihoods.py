@@ -95,6 +95,28 @@ class CMBmocks(InstallableLikelihood):
         # Read in bandpowers (remove index column)
         self.leff = np.loadtxt(self.bp_file, unpack=True)[0] #\ell_eff
         self.bandpowers_mat = np.loadtxt(self.bp_file, unpack=True)[1:] #TT, EE, TE
+
+        #20250609 - set bandpower outside of the range to zero.
+        bandpowers_mat_mod = []
+        for speccntr, curr_bandpowers in enumerate( self.bandpowers_mat ):
+            if speccntr == 0: #TT
+                lmin_cut = self.lmin_t
+                lmax_cut = self.lmax_t
+            elif speccntr == 1: #EE
+                lmin_cut = self.lmin_p
+                lmax_cut = self.lmax_p
+            elif speccntr == 3: #TE
+                lmin_cut = min(self.lmin_t, self.lmin_p)
+                lmax_cut = self.lmax_p
+            elif speccntr == 3: #PP
+                lmin_cut = self.lmin_pp
+                lmax_cut = self.lmax_pp
+            curr_bandpowers[self.leff<lmin_cut] = 0.
+            curr_bandpowers[self.leff>lmax_cut] = 0.
+            bandpowers_mat_mod.append( curr_bandpowers )
+        self.bandpowers_mat = bandpowers_mat_mod
+
+
         if len(self.spectra_to_use) == 1:
             self.bandpowers = self.bandpowers_mat
         elif len(self.spectra_to_use) == 2:
@@ -265,11 +287,10 @@ class CMBmocks(InstallableLikelihood):
             elif curr_spec == 'PP':
                 lmin_cut = self.lmin_pp
                 lmax_cut = self.lmax_pp
-            ###print(curr_spec, lmin_cut)
+            ##print(curr_spec, lmin_cut, lmax_cut); ###quit()
             curr_cl_or_dl[ells<lmin_cut] = 0.
             curr_cl_or_dl[ells>lmax_cut] = 0.
-            ###print( curr_spec, lmin_cut, lmax_cut, curr_cl_or_dl ); ##quit()
-
+            
             #----
 
             #----
@@ -283,15 +304,18 @@ class CMBmocks(InstallableLikelihood):
             else:
                 curr_dbs = curr_cl_or_dl
 
-            ##print(curr_dbs); quit()
+            #20250609
+            curr_dbs[self.leff<lmin_cut] = 0.
+            curr_dbs[self.leff>lmax_cut] = 0.
+            ###print(curr_dbs); quit()
 
             cbs_or_dbs.extend( curr_dbs )
             #----
-        ###quit()
-
+        
         # Take the difference to the measured bandpower
         cbs_or_dbs = np.asarray( cbs_or_dbs )
-
+        ###print(cbs_or_dbs); quit()
+        
         if _do_plot:
             total_bins = len( self.leff )
             cl_err = np.diag( self.cov )**0.5
@@ -300,7 +324,7 @@ class CMBmocks(InstallableLikelihood):
                 cl_pp_err = cl_err[3*total_bins:]
             clf()
             ax = subplot(111, yscale = 'log')
-            dl_fac = self.leff * (self.leff+1)/2/np.pi
+            dl_fac = 1. ##self.leff * (self.leff+1)/2/np.pi
             if self.cl_or_dl == 'dl':
                 dl_fac = 1.
             errorbar( self.leff, dl_fac * self.bandpowers_mat[0],  yerr = dl_fac * cl_tt_err, marker = '.', ls = 'None', capsize = 1., color = 'black')
@@ -320,7 +344,7 @@ class CMBmocks(InstallableLikelihood):
             if 'TE' in self.spectra_to_use:
                 plot( self.leff, dl_fac * abs(cl_te_theory), color = 'darkgreen')
 
-            xlim(0, 5010); ylim(0.1, 1e4)
+            xlim(0, 5010); #ylim(0.1, 1e4)
             show(); close()
 
             print(self.spectra_to_use)
@@ -336,6 +360,7 @@ class CMBmocks(InstallableLikelihood):
             quit()        
         
         delta_cb = cbs_or_dbs - self.bandpowers
+        ###print(self.provider.get_param('ombh2')); print(delta_cb/self.bandpowers); quit()
         chi2 = (delta_cb @ self.cov_inv @ delta_cb.T)
         if np.ndim(chi2) == 1:
             chi2 = chi2[0]
@@ -390,6 +415,17 @@ class CMBmocks(InstallableLikelihood):
         return spectra[0]        
 
     def logp(self, **data_params):
+        ###print(self.provider.get_param('ombh2'))
+        if (0): #debug
+            fix_cosmo_param_dic_debug = {'ombh2': 0.02237,
+                                         'omch2': 0.1200, 
+                                         'H0': 67.36, 
+                                         'logA' :3.044, 
+                                         'tau': 0.0544, 
+                                         'ns': 0.9649, }
+            self.provider.set_current_input_params(fix_cosmo_param_dic_debug)
+            #from IPython import embed; embed();
+            #quit()
         cl_cmb_specs = self.provider.get_Cl(ell_factor=False)
         cl_cmb_dic = {'TT': cl_cmb_specs.get("tt"), 'EE': cl_cmb_specs.get("ee"), 'TE': cl_cmb_specs.get("te")}
         if 'PP' in self.spectra_to_use:

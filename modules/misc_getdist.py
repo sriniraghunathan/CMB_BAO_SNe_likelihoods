@@ -470,6 +470,7 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
                    'advanced_so_baseline': 'ASO-Baseline', 
                    'advanced_so_goal': 'ASO-Goal', 
                    'spt3g': 'SPT-3G', 
+                   'spt3gplus': 'SPT-3Gplus',
                    's4_wide': 'CMB-S4',
                   }
     tmpchainname = chainname.replace('-lcdm', '').replace('-w0walcdm', '').replace('-mnulcdm', '').replace('-w0wamnulcdm', '')
