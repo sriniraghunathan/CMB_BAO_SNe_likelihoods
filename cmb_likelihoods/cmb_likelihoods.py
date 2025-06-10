@@ -360,10 +360,7 @@ class CMBmocks(InstallableLikelihood):
             quit()        
         
         delta_cb = cbs_or_dbs - self.bandpowers
-        
-        #20250610 - null the difference outside of the desired \ell range. 
-        delta_cb[self.leff<lmin_cut] = 0.
-        delta_cb[self.leff>lmax_cut] = 0.
+        ###print(delta_cb); quit()
 
         ###print(self.provider.get_param('ombh2')); print(delta_cb/self.bandpowers); quit()
         chi2 = (delta_cb @ self.cov_inv @ delta_cb.T)
