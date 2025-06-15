@@ -105,7 +105,7 @@ class CMBmocks(InstallableLikelihood):
             elif speccntr == 1: #EE
                 lmin_cut = self.lmin_p
                 lmax_cut = self.lmax_p
-            elif speccntr == 3: #TE
+            elif speccntr == 2: #TE
                 lmin_cut = min(self.lmin_t, self.lmin_p)
                 lmax_cut = self.lmax_p
             elif speccntr == 3: #PP
@@ -308,6 +308,7 @@ class CMBmocks(InstallableLikelihood):
             curr_dbs[self.leff<lmin_cut] = 0.
             curr_dbs[self.leff>lmax_cut] = 0.
             ###print(curr_dbs); quit()
+            ###print(curr_spec, lmin_cut, lmax_cut, self.leff, curr_dbs)
 
             cbs_or_dbs.extend( curr_dbs )
             #----
