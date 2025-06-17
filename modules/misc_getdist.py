@@ -3,6 +3,9 @@ import getdist
 from getdist import plots, MCSamples
 from getdist.gaussian_mixtures import Gaussian1D, Gaussian2D, GaussianND
 
+sys.path.append('/Users/sraghunathan/Research/SPTpol/analysis/git/CMB_SNIa_3x2pt_Fisher/modules/')
+import sne_cmb_fisher_tools, misc
+
 ##import matplotlib
 from pylab import *
 
@@ -92,6 +95,30 @@ def add_subplot_axes(ax,rect,axisbg='w'):
     #subax.yaxis.set_tick_params(labelsize=y_labelsize)
     return subax
 
+def get_table(params_to_plot, sample_arr_to_plot, label_arr, color_arr):                    
+    #get the constraints
+    nx, ny = len(sample_arr_to_plot), len( params_to_plot )
+    constraints_table = np.empty( (nx, ny), dtype = '<U30' )
+    colors_table = np.empty( (nx, ny), dtype = '<U30' )
+    col_labels = []
+    for pind, ppp in enumerate( params_to_plot ):
+        for sind, (s, c) in enumerate( zip( sample_arr_to_plot, color_arr) ):
+            ###print( ppp, s.getLatex(ppp) )
+            tmp = s.getLatex(ppp)
+            if tmp.find('=')>-1:
+                param_label, curr_val = tmp.split('=')
+            elif tmp.find('<')>-1:
+                param_label, curr_val = tmp.split('<')
+                curr_val = '<%s' %(curr_val)
+            elif tmp.find('>')>-1:
+                param_label, curr_val = tmp.split('>')
+                curr_val = '>%s' %(curr_val)
+            #print(param_label, curr_val)
+            constraints_table[sind, pind] = r'$%s$' %(curr_val.strip())
+            colors_table[sind, pind] = c
+        col_labels.append( r'$%s$' %(param_label) )
+    return constraints_table, colors_table, col_labels
+
 def make_getdist_plot(which_plot, 
                      samples_to_plot, 
                      params_or_pairs_to_plot, 
@@ -111,13 +138,16 @@ def make_getdist_plot(which_plot,
                      array_of_leglocs = None, 
                      array_of_legfsval = None,
                      array_of_zoom = None, array_of_sampleinds_for_zoom = None, array_of_param_limits_dic_for_zoom = None,
+                     array_of_table_locs = None, array_of_table_width = None, array_of_table_col_width = None,
+                     array_to_table_fontsize = None, 
                      array_of_color_arr = None, 
                      array_of_filled_arr = None,
                      array_of_num_plot_contours = None, 
                      array_of_param_limits_dic = None,
                      subplot_size_ratio = 0.95, 
                      scaling = True,
-                     cosmo_label = None, 
+                     cosmo_label = None,
+                     show_table = True, 
                      **kwargs,
                      ):
 
@@ -251,11 +281,13 @@ def make_getdist_plot(which_plot,
             g.fig.set_figheight(figsize * 4/10.)
             g.fig.subplots_adjust(wspace = -1.)
 
+            
     elif which_plot == 'triangle':
         g.triangle_plot(samples_to_plot, params=params_or_pairs_to_plot, filled=True, \
                         legend_labels = labels, 
                         param_limits = param_limits_dic, \
                         contour_colors=color_arr, 
+                        framealpha = 1., 
                         #analysis_settings={'ignore_rows': 0.5},
                         #contour_ls = ls_arr, contour_lw = lw_arr, legend_ncol = len(param_names), param_limits = param_limits_dic, 
                         )
@@ -309,6 +341,10 @@ def make_getdist_plot(which_plot,
             curr_legloc = array_of_leglocs[axcntr]
             curr_legfsval = array_of_legfsval[axcntr]
             curr_zoom_rect = array_of_zoom[axcntr]
+            curr_table_locs = array_of_table_locs[axcntr]
+            curr_table_width = array_of_table_width[axcntr]
+            curr_table_col_width = array_of_table_col_width[axcntr]
+            curr_table_fontsize = array_to_table_fontsize[axcntr]
             #curr_contours = array_of_num_plot_contours[axcntr]
             if array_of_titles is not None:
                 curr_title = array_of_titles[axcntr]
@@ -417,6 +453,35 @@ def make_getdist_plot(which_plot,
                 matplotlib.legend();        
                 '''
 
+            if show_table:
+
+                constraints_table, colors_table, col_labels = get_table(curr_param_pairs_to_plot, curr_samples_to_plot, curr_labels, curr_colors)
+
+                tx, ty = curr_table_locs
+                tab_width, tab_height = curr_table_width
+                table = curr_ax.table(cellText=constraints_table, 
+                                colLabels=col_labels, cellLoc = 'center', 
+                                bbox = (tx, ty, tab_width, tab_height), 
+                                #cellColours = colors_table, 
+                                colWidths = curr_table_col_width, 
+                                alpha = 1., 
+                                zorder = 100.,
+                                #edges = 'BT',
+                                )
+                # Disable auto font size
+                table.auto_set_font_size(False)
+                table.set_zorder(100)
+
+                # Set the font size
+                table.set_fontsize(curr_table_fontsize)
+
+                for cellkey in table.get_celld():
+                    table[cellkey].set_linewidth(0.1)
+                    if cellkey[0] == 0: continue #header
+                    colorval = colors_table[cellkey[0]-1, 0]
+                    #print(cellkey, colorval, table[cellkey].get_text())
+                    table[cellkey].get_text().set_color(colorval)
+
             if curr_zoom_rect is not None: #add inset if need be
                 curr_param_limits_dic_for_zoom = array_of_param_limits_dic_for_zoom[axcntr]
                 xmin, xmax = curr_param_limits_dic_for_zoom[p1]
@@ -450,9 +515,138 @@ def make_getdist_plot(which_plot,
                 curr_ax2.axvline(p1val, lw = lwval, ls = lsval, alpha = alphaval)#, zorder = zorderval); 
                 curr_ax2.axhline(p2val, lw = lwval, ls = lsval, alpha = alphaval)#, zorder = zorderval);                 
 
-
     return g 
 
+def make_whisker(samples_to_plot, params_to_plot, param_dict, baseline_sample_ind = 0, labels_arr = None, fsval = 14, barheightwidth = 1, show_table = True, **kwargs):
+    if 'color_arr' in kwargs:
+        color_arr = kwargs['color_arr']
+    else:
+        color_arr = [cm.Dark2(int(d)) for d in np.linspace(0, 10, len(samples_to_plot))]
+    if 'alphaval' in kwargs:
+        alphaval = kwargs['alphaval']
+    else:
+        alphaval = 1.
+
+    if 'sigma_param_mul_dic' in kwargs:
+        sigma_param_mul_dic = kwargs['sigma_param_mul_dic']
+    else:
+        sigma_param_mul_dic = None
+
+    total_samples = len( samples_to_plot )
+    sigma_dic = {}    
+    param_labels_dic = {}    
+    for cntr in range( total_samples ):
+        sigma_dic[cntr] = {}
+        curr_samples = samples_to_plot[cntr]
+        curr_cov_mat = curr_samples.cov(params_to_plot)
+
+        #constraints
+        curr_sigma_arr = np.sqrt( np.diag( curr_cov_mat ) )
+        for pind, ppp in enumerate( params_to_plot ):
+            sigma_dic[cntr][ppp] = curr_sigma_arr[pind]
+            param_label_tmp = curr_samples.getLatex(ppp)
+            param_label = r'$%s$' %( param_label_tmp.split('=')[0].strip() )
+            param_labels_dic[ppp] = param_label
+
+    print( param_labels_dic ) 
+
+
+    #make whisker plot now
+    close('all')
+    clf()
+    #figure(figsize = (6., 4.2))
+    #subplots_adjust(wspace = wspace)
+    rowval = 0
+    ax = subplot(111)
+    for pind, ppp in enumerate( params_to_plot ):
+        for cntr in sigma_dic:
+            if pind == 0:
+                labval = labels_arr[cntr]
+            else:
+                labval = None
+            sigma_val = sigma_dic[cntr][ppp]
+            baseline_sigma_val = sigma_dic[baseline_sample_ind][ppp]
+            if cntr != baseline_sample_ind:
+                bar(rowval, sigma_val / baseline_sigma_val, width = barheightwidth*0.95, color = color_arr[cntr], label = labval, alpha = alphaval)
+            if cntr == 2: ##total_samples/2:
+                #text(-0.12, rowval-1, param_labels_dic[ppp], fontsize = fsval, ha = 'left')
+                if len(param_labels_dic[ppp])>8:
+                    text(rowval-2, -0.08, r'%s' %(param_labels_dic[ppp]), fontsize = fsval+2, ha = 'left')
+                else:
+                    text(rowval, -0.08, r'%s' %(param_labels_dic[ppp]), fontsize = fsval+2, ha = 'left')
+            if cntr == baseline_sample_ind and not show_table: 
+                if sigma_param_mul_dic is not None:
+                    mul_fac = sigma_param_mul_dic[ppp]
+                else:
+                    mul_fac = 1.
+                
+                sigma_val_to_print = sigma_val * mul_fac
+                
+                if mul_fac != 1:
+                    textval = r'$\sigma$(%s) = %.2f [$10^{%g}$]' %(param_labels_dic[ppp], sigma_val_to_print, np.log10(mul_fac))
+                else:
+                    textval = r'$\sigma$(%s) = %.2f' %(param_labels_dic[ppp], sigma_val_to_print)
+                text(rowval-1.3, 0.6, textval, fontsize = fsval-4, ha = 'left', color = 'white', bbox = dict(facecolor='black', alpha=1., edgecolor='black', boxstyle='round,pad=0.1'))
+            rowval +=barheightwidth
+
+        #extra row after each parameter
+        rowval+=(0.2 * barheightwidth)
+
+    #ax.set_yticks(list(range(len(params_to_plot))))
+    #ax.set_yticklabels([param_labels_dic[ppp] for ppp in params_to_plot], fontsize=fsval)
+    ax.tick_params(axis='y', labelsize=fsval)
+    ax.set_xticks([])
+    #axvspan(0., 1., color = 'silver', alpha = 0.5, zorder = -10)
+
+    if show_table:
+        col_labels = [r'{\bf Parameter}', r'{\bf Errors $\sigma_{\rm Fisher}$}']
+        parameter_error_table_data = []
+        colors_arr = []
+        for pind, ppp in enumerate( params_to_plot ):
+            baseline_sigma_val = sigma_dic[baseline_sample_ind][ppp]
+
+            if sigma_param_mul_dic is not None:
+                mul_fac = sigma_param_mul_dic[ppp]
+            else:
+                mul_fac = 1.
+            
+            sigma_val_to_print = baseline_sigma_val * mul_fac
+            
+            if mul_fac != 1:
+                textval = r'%.2f $\times$ $10^{-%g}$' %(sigma_val_to_print, np.log10(mul_fac))
+            else:
+                textval = r'%.2f' %(sigma_val_to_print)
+
+            parameter_error_table_data.append( [param_labels_dic[ppp], textval] )
+            colors_arr.append(['white', 'white'])
+
+
+        tab_width, tab_height = 0.5, 0.6
+        table = ax.table(cellText=parameter_error_table_data, 
+                        colLabels=col_labels, cellLoc = 'center', 
+                        bbox = (0.02, 0.04, tab_width, tab_height), 
+                        cellColours = colors_arr, 
+                        colWidths = [0.3, 0.5], alpha = 1., 
+                        zorder = 100.,
+                        #edges = 'BT',
+                        )
+        # Disable auto font size
+        table.auto_set_font_size(False)
+
+        # Set the font size
+        table.set_fontsize(fsval-2)
+
+    ylim(0., 1.2)
+    axhline(1, lw = 1.)
+    ax.yaxis.set_major_locator(MaxNLocator(nbins=6))
+    ylabel(r'$\sigma / \sigma_{\rm Fisher}$', fontsize = fsval + 6)
+
+    #legend
+    legend(loc = 4, fontsize = fsval+1, framealpha = 1., handlelength = 1.4, handletextpad = 0.5)
+
+    grid(True, which = 'both', axis = 'both', lw = 0.2, alpha = 0.05)
+
+    return ax
 
 def get_cosmo_label(cosmo_name):
     cosmo_label_dic = {'lcdm': r'$\Lambda {\rm CDM}$',
@@ -473,7 +667,7 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
                    'spt3gplus': 'SPT-3Gplus',
                    's4_wide': 'CMB-S4',
                   }
-    tmpchainname = chainname.replace('-lcdm', '').replace('-w0walcdm', '').replace('-mnulcdm', '').replace('-w0wamnulcdm', '')
+    tmpchainname = chainname.replace('-lcdm', '').replace('-w0walcdm', '').replace('-mnulcdm', '').replace('-w0wamnulcdm', '').replace('-w0waomklcdm', '').replace('-omklcdm', '')
     tmpchainname = tmpchainname.replace('-nefflcdm', '').replace('-neffmnulcdm', '')
     dataset_split = tmpchainname.split('+')
     chain_lab = ''
@@ -488,17 +682,33 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
         elif ddd == 'desy5sne_w0walcdm':
             curr_lab = 'DES-Y5-SNe (Data)'
         elif ddd == 'desy5snesim_w0walcdm':
-            curr_lab = 'DES-Y5-SNe (Mock)'
+            curr_lab = 'DES-Y5-SNe (Sim)'
         else: #CMB
             cmb_exp_name, cmb_dataset = ddd.split('-')
             curr_lab = '%s-%s' %(cmb_exp_dic[cmb_exp_name], cmb_dataset)
         if remove_cmb_datachars:
             curr_lab = curr_lab.replace('-TTEETEPP', '')
+            curr_lab = curr_lab.replace('-TTEETE', '')
         chain_lab = '%s + %s' %(chain_lab, curr_lab)
 
     chain_lab = chain_lab.strip(' + ')
     
     return chain_lab
+
+def get_cobaya_latex(ppp):
+    cobaya_latex_dic = {'logA': '\\log(10^{10} A_\\mathrm{s})', 
+                           'As': 'A_\\mathrm{s})', 
+                           'ws': 'w_{0}', 'wa': 'w_{a}', 'neff': 'N_\mathrm{eff}', 
+                           'mnu': '\sum m_\nu', 
+                           'nrun': 'n_\mathrm{run}', 'nrunrun': 'n_\mathrm{run,run}',
+                           'theta_MC_100': '100\theta_\mathrm{MC}',
+                           'h': 'h', 
+                           'ns': 'n_\\mathrm{s}', 
+                           'ombh2': '\\Omega_\\mathrm{b} h^2',
+                           'omch2': '\\Omega_\\mathrm{c} h^2', 
+                           'tau': '\\tau_\\mathrm{reio}', 
+                        }
+    return cobaya_latex_dic[ppp]
 
 def get_gauss_mix_from_fisher(param_dict, f_mat, params, labels, fix_params = ['ws', 'wa', 'mnu', 'neff', 'nrun'], prior_dic = None): 
     '''
@@ -517,9 +727,9 @@ def get_gauss_mix_from_fisher(param_dict, f_mat, params, labels, fix_params = ['
     '''
     if fix_params is not None:
         if len(fix_params) > 1:
-            f_mat, fisher_params = misc.fix_params(f_mat, fisher_params, fix_params)
+            f_mat, params = misc.fix_params(f_mat, params, fix_params)
     if prior_dic is not None:
-        f_mat = misc.add_prior(f_mat, fisher_params, prior_dic)
+        f_mat = misc.add_prior(f_mat, params, prior_dic)
 
     cov_mat = np.linalg.inv( f_mat ) 
     #print( cov_mat ); sys.exit()
