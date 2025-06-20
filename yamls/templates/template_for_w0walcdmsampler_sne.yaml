@@ -1,0 +1,103 @@
+likelihood:
+placeholder_for_likelihood
+theory:
+  camb:
+    extra_args:
+      lens_potential_accuracy: 1
+      num_massive_neutrinos: 1
+      nnu: 3.044
+      theta_H0_range:
+      - 20
+      - 100
+      halofit_version: mead2020
+      bbn_predictor: PArthENoPE_880.2_standard.dat
+      dark_energy_model: ppf
+sampler:
+  mcmc:
+    #drag: true
+    #oversample_power: 0.8
+    #proposal_scale: 1.9
+    Rminus1_stop: 0.01
+    Rminus1_cl_stop: 0.2
+    #covmat: [[1., 0.1, 0.1], [0.1, 1., 0.1], [0.1, 0.1, 1.]]
+    #covmat_params: ['H0', 'mapTCal', 'mapPCal']
+    covmat: auto #data/so_baseline/so_baseline_proposal_covariance_lcdm.txt
+timing: true
+output: placeholder_for_outputfolder_and_chainame
+params:
+  w:
+    prior:
+      max: 10. #1.
+      min: -10. ##-3.
+    ref:
+      dist: norm
+      loc: -1
+      scale: 0.02
+    proposal: 0.02
+    latex: w_0
+  wa:
+    prior:
+      max: 20. ##3.
+      min: -30. ##-3.
+    ref:
+      dist: norm
+      loc: 0.
+      scale: 0.05
+    proposal: 0.05
+    latex: w_a
+  H0:
+    value: 67.36
+    latex: H_0
+  tau:
+    latex: \tau_\mathrm{reio}
+    value: 0.055
+  logA:
+    value: 3.044
+    latex: ln10^{10}A_s
+    drop: true
+  As:
+    value: 'lambda logA: 1e-10*np.exp(logA)'
+    latex: A_\mathrm{s}
+    derived: true
+  ns:
+    value: 0.9649
+    latex: n_\mathrm{s}
+  YHe:
+    latex: Y_\mathrm{P}
+    derived: true
+  age:
+    latex: '{\rm{Age}}/\mathrm{Gyr}'
+    derived: true
+  ombh2:
+    value: 0.02218
+    renames:
+    - omegabh2
+  omch2:
+    prior:
+      min: 0.001
+      max: 0.99
+    ref:
+      dist: norm
+      loc: 0.12
+      scale: 0.001
+    proposal: 0.0005
+    latex: \Omega_\mathrm{c} h^2
+  omegam:
+    latex: \Omega_\mathrm{m}
+  sigma8:
+    latex: \sigma_8
+  omegamh2:
+    derived: 'lambda omegam, H0: omegam*(H0/100)**2'
+    latex: \Omega_\mathrm{m} h^2
+  rdrag:
+    latex: r_\mathrm{drag}
+    derived: true
+  DHBBN:
+    derived: 'lambda DH: 10**5*DH'
+    latex: 10^5 \mathrm{D}/\mathrm{H}
+  YHe:
+    latex: Y_\mathrm{P}
+    derived: true
+  age:
+    latex: '{\rm{Age}}/\mathrm{Gyr}'
+    derived: true
