@@ -1,4 +1,4 @@
-import numpy as np, scipy as sc, os, sys, glob
+import numpy as np, scipy as sc, os, sys, glob, re
 import getdist
 from getdist import plots, MCSamples
 from getdist.gaussian_mixtures import Gaussian1D, Gaussian2D, GaussianND
@@ -95,29 +95,83 @@ def add_subplot_axes(ax,rect,axisbg='w'):
     #subax.yaxis.set_tick_params(labelsize=y_labelsize)
     return subax
 
-def get_table(params_to_plot, sample_arr_to_plot, label_arr, color_arr):                    
+def strip_getdist_latex_str(later_str, what_kind_of_constraint = 'full'):
+    if later_str.find('{')>-1:
+        delimiters_for_stripping = ['$', '^{+', '}_{', '}$' ]
+    else:
+        delimiters_for_stripping = ['$', '\\pm', '$']
+    regex_for_stripping = '|'.join(map(re.escape, delimiters_for_stripping))
+    curr_val_split = re.split(regex_for_stripping, later_str)
+    curr_val_split = [c for c in curr_val_split if c.strip()]
+    param_label = None
+    if what_kind_of_constraint == 'full':
+        if later_str.find('=')>-1:
+            param_label, curr_val = later_str.split('=')
+        elif later_str.find('<')>-1:
+            param_label, curr_val = later_str.split('<')
+            curr_val = '<%s' %(curr_val)
+        elif later_str.find('>')>-1:
+            param_label, curr_val = later_str.split('>')
+            curr_val = '>%s' %(curr_val)
+        #print(param_label, curr_val)
+        curr_val = curr_val.strip()
+    elif what_kind_of_constraint == 'upper_error':
+        curr_val = curr_val_split[1]
+    elif what_kind_of_constraint == 'lower_error':
+        if len(curr_val_split)==2:
+            curr_val = curr_val_split[1]
+        elif len(curr_val_split) == 3:
+            curr_val = curr_val_split[2]
+    elif what_kind_of_constraint == 'best_fit':
+        curr_val = curr_val_split[0]
+
+    if what_kind_of_constraint != 'full':
+        ##print(curr_val_split, curr_val)
+        if curr_val.find('-')>-1:
+            curr_val = float( curr_val.strip('-') ) * -1
+        else:
+            curr_val = float( curr_val )
+
+    return param_label, curr_val
+
+def get_constraints_table(params_to_plot, sample_arr_to_plot, color_arr = None):
+    if color_arr is None:
+        color_arr = np.tile(None, len( sample_arr_to_plot) )
     #get the constraints
     nx, ny = len(sample_arr_to_plot), len( params_to_plot )
+    constraints_dic = {}
     constraints_table = np.empty( (nx, ny), dtype = '<U30' )
     colors_table = np.empty( (nx, ny), dtype = '<U30' )
     col_labels = []
     for pind, ppp in enumerate( params_to_plot ):
+        constraints_dic[ppp] = {}
         for sind, (s, c) in enumerate( zip( sample_arr_to_plot, color_arr) ):
             ###print( ppp, s.getLatex(ppp) )
             tmp = s.getLatex(ppp)
-            if tmp.find('=')>-1:
-                param_label, curr_val = tmp.split('=')
-            elif tmp.find('<')>-1:
-                param_label, curr_val = tmp.split('<')
-                curr_val = '<%s' %(curr_val)
-            elif tmp.find('>')>-1:
-                param_label, curr_val = tmp.split('>')
-                curr_val = '>%s' %(curr_val)
-            #print(param_label, curr_val)
-            constraints_table[sind, pind] = r'$%s$' %(curr_val.strip())
+            param_label, curr_val = strip_getdist_latex_str(tmp)
+            constraints_table[sind, pind] = r'$%s$' %(curr_val)
             colors_table[sind, pind] = c
+            constraints_dic[ppp][sind] = r'$%s$' %(curr_val)
         col_labels.append( r'$%s$' %(param_label) )
-    return constraints_table, colors_table, col_labels
+    return constraints_dic, constraints_table, colors_table, col_labels
+
+def write_errors_in_diagonal_posteriors(g, params_to_plot, color_arr, constraints_dic, legfsval = 10, handlelength = 1, handletextpad = 0.5, ncol = 2, frameon = True):
+    total_subplots = len( g.subplots )
+
+    for r in range( total_subplots ):
+        for c in range( total_subplots ):
+            if c!=r: continue
+            ax = g.subplots[r,c]
+            ppp = params_to_plot[c]
+            for sampleind in constraints_dic[ppp]:
+                curr_val = constraints_dic[ppp][sampleind]
+                ax.plot([], [], color = color_arr[sampleind], label = curr_val)
+            
+            handles, labels = ax.get_legend_handles_labels()
+            leg=ax.legend(handles[sampleind+1:], labels[sampleind+1:], loc = 4, fontsize = legfsval, handlelength = handlelength, handletextpad = handletextpad, ncol = ncol, frameon=frameon)
+            leg.get_frame().set_linewidth(0.0)
+            #ax.legend(loc = 4, fontsize = legfsval)
+    return g   
 
 def make_getdist_plot(which_plot, 
                      samples_to_plot, 
@@ -291,6 +345,10 @@ def make_getdist_plot(which_plot,
                         #analysis_settings={'ignore_rows': 0.5},
                         #contour_ls = ls_arr, contour_lw = lw_arr, legend_ncol = len(param_names), param_limits = param_limits_dic, 
                         )
+
+        #get constraints
+        constraints_dic, constraints_table, colors_table, col_labels = get_constraints_table(params_or_pairs_to_plot, samples_to_plot, color_arr)        
+        g = write_errors_in_diagonal_posteriors(g, params_or_pairs_to_plot, color_arr, constraints_dic, legfsval = 5, ncol=1)
         g = mark_axlines(g, params_or_pairs_to_plot, param_dict = param_dict)
 
         '''
@@ -411,8 +469,9 @@ def make_getdist_plot(which_plot,
                 if len(cosmo_label)>50:
                     lab_fsval = fsval+2.5
                 else:
-                    lab_fsval = fsval+5
-                figtext(0.025, 0.5, cosmo_label, fontsize = lab_fsval, rotation = 90., va = 'center')
+                    lab_fsval = fsval+7
+                #figtext(0.04, 0.5, cosmo_label, fontsize = lab_fsval, rotation = 90., va = 'center')
+                figtext(0.03, 0.5, cosmo_label, fontsize = lab_fsval, rotation = 90., va = 'center')
 
             #g=mark_axlines(g, curr_param_pairs_to_plot, param_dict = param_dict)
 
@@ -455,7 +514,7 @@ def make_getdist_plot(which_plot,
 
             if show_table:
 
-                constraints_table, colors_table, col_labels = get_table(curr_param_pairs_to_plot, curr_samples_to_plot, curr_labels, curr_colors)
+                constraints_dic, constraints_table, colors_table, col_labels = get_constraints_table(curr_param_pairs_to_plot, curr_samples_to_plot, curr_colors)
 
                 tx, ty = curr_table_locs
                 tab_width, tab_height = curr_table_width
@@ -703,12 +762,79 @@ def get_cobaya_latex(ppp):
                            'nrun': 'n_\mathrm{run}', 'nrunrun': 'n_\mathrm{run,run}',
                            'theta_MC_100': '100\theta_\mathrm{MC}',
                            'h': 'h', 
+                           'H0': 'H_{0}', 
                            'ns': 'n_\\mathrm{s}', 
                            'ombh2': '\\Omega_\\mathrm{b} h^2',
                            'omch2': '\\Omega_\\mathrm{c} h^2', 
                            'tau': '\\tau_\\mathrm{reio}', 
                         }
-    return cobaya_latex_dic[ppp]
+    latex_val = cobaya_latex_dic[ppp]
+    return latex_val
+
+def convert_param_to_latex(param):
+    greek_words_small = ['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta', 'iota', 'kappa', 
+                        'lambda', 'mu', 'nu', 'omicron', 'pi', 'rho', 'sigma', 'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega']
+    greek_words_captial = [w.capitalize() for w in greek_words_small]
+    greek_words = greek_words_small + greek_words_captial
+    math_words = ['z']
+
+    tmp_param_split = param.split('_')
+    if len( tmp_param_split ) == 1:
+        latex_param = r'$%s$' %(param)
+    else:
+        tmpval = tmp_param_split[0]
+        if tmpval in greek_words:
+            tmpval = '\%s' %(tmpval)
+        latex_param = '%s' %(tmpval)
+        braces_arr = ''
+        for tmpval in tmp_param_split[1:]:
+            if tmpval in greek_words:
+                tmpval = '\%s' %(tmpval)
+            if tmpval in math_words:
+                latex_param = '%s_{%s' %(latex_param, tmpval)
+            else:
+                latex_param = '%s_{\\rm %s' %(latex_param, tmpval)
+            braces_arr = '%s}' %(braces_arr)
+        latex_param = '%s%s' %(latex_param, braces_arr)
+        latex_param  = r'$%s$' %(latex_param)
+
+    return latex_param
+
+def get_latex_param_str(param):
+    params_str_dic= {\
+    'norm_YszM': r'${\rm log}(Y_{\ast})$', 'alpha_YszM': r'$\alpha_{_{Y}}$',\
+    'beta_YszM': r'$\beta_{_{Y}}$', 'gamma_YszM': r'$\gamma_{_{Y}}$', \
+    'alpha': r'$\eta_{\rm v}$', 'sigma_8': r'$\sigma_{\rm 8}$', \
+    'one_minus_hse_bias': r'$1-b_{\rm SZ}$', 
+    'omega_m': r'$\Omega_{\rm m}$', 'omegam': r'$\Omega_{\rm m}$', \
+    'h0':r'$h$', 'm_nu':r'$\sum m_{\nu}$', \
+    'ombh2': r'$\Omega_{b}h^{2}$', 'omch2': r'$\Omega_{c}h^{2}$', 'omega_lambda': r'$\Omega_{\Lambda}$',
+    'omega_b_h2': r'$\Omega_{b}h^{2}$', 'omega_c_h2': r'$\Omega_{c}h^{2}$',
+    'omega_k': r'$\Omega_{k}$',
+    'w0': r'$w_{0}$', 'wa': r'$w_{a}$', \
+    'tau': r'$\tau_{\rm re}$', 
+    'As': r'$A_{\rm s}$', 
+    'logA': r'log(10$^{10}$ A$_{s}$)',
+    #'As': r'log$A_{\rm s}$', 
+    'ns': r'$n_{\rm s}$', 'neff': r'$N_{\rm eff}$', \
+    'mnu': r'$\sum m_{\nu}$', 'thetastar': r'$\theta_{\ast}$', \
+    'h': r'$h$', 'omk': r'$\Omega_{k}$', 'ws': r'$w_{0}$', \
+    'w_0': r'$w_{0}$', 'w_a': r'$w_{a}$', \
+    'yhe': r'$Y_{P}$','nnu': r'N$_{\rm eff}$','omegak': r'$\Omega_{k}$',\
+    'w': r'$w_{0}$', 'nrun': r'$n_{run}$', 'Aphiphi':r'$A^{\phi\phi}$', \
+    'nnu': r'$N_{\rm eff}$', 'H0': r'$H_0$', \
+    #adding more
+    'a_s': r'$A_{\rm s}$', 'h': r'$h$', 'n_s': r'$n_{\rm s}$', \
+    'omega_m': r'$\Omega_{m}$', 
+    'omega_b': r'$\Omega_{b}$', 'omegab': r'$\Omega_{b}$',\
+    #SNe
+    'M': r'$M$', 'alpha': r'$\alpha$', 'beta': r'$\beta$',\
+    }
+
+    if param not in params_str_dic:
+        return convert_param_to_latex(param)
+    else:
+        return params_str_dic[param]
 
 def get_gauss_mix_from_fisher(param_dict, f_mat, params, labels, fix_params = ['ws', 'wa', 'mnu', 'neff', 'nrun'], prior_dic = None): 
     '''
