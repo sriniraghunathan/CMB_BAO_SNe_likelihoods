@@ -75,9 +75,3 @@ params:
   DHBBN:
     derived: 'lambda DH: 10**5*DH'
     latex: 10^5 \mathrm{D}/\mathrm{H}
-  YHe:
-    latex: Y_\mathrm{P}
-    derived: true
-  age:
-    latex: '{\rm{Age}}/\mathrm{Gyr}'
-    derived: true
