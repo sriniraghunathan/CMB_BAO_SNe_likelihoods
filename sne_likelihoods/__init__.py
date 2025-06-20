@@ -1,1 +1,2 @@
 from .sne_likelihoods import lssty3_sne_mock
+from .sne_likelihoods import lssty3_sne_mock_binned
