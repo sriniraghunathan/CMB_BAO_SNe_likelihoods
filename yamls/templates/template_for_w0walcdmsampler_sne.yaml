@@ -17,7 +17,7 @@ sampler:
     #drag: true
     #oversample_power: 0.8
     #proposal_scale: 1.9
-    Rminus1_stop: 0.01
+    Rminus1_stop: 0.005 #0.01
     Rminus1_cl_stop: 0.2
     #covmat: [[1., 0.1, 0.1], [0.1, 1., 0.1], [0.1, 0.1, 1.]]
     #covmat_params: ['H0', 'mapTCal', 'mapPCal']
