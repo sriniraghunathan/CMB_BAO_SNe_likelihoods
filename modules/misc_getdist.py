@@ -147,7 +147,8 @@ def get_constraints_table(params_to_plot, sample_arr_to_plot, color_arr = None):
         constraints_dic[ppp] = {}
         for sind, (s, c) in enumerate( zip( sample_arr_to_plot, color_arr) ):
             ###print( ppp, s.getLatex(ppp) )
-            tmp = s.getLatex(ppp)
+            #tmp = s.getLatex(ppp)
+            tmp = s.getInlineLatex(ppp)#, limit = 1, err_sig_figs = 3)
             param_label, curr_val = strip_getdist_latex_str(tmp)
             constraints_table[sind, pind] = r'$%s$' %(curr_val)
             colors_table[sind, pind] = c
@@ -155,8 +156,13 @@ def get_constraints_table(params_to_plot, sample_arr_to_plot, color_arr = None):
         col_labels.append( r'$%s$' %(param_label) )
     return constraints_dic, constraints_table, colors_table, col_labels
 
-def write_errors_in_diagonal_posteriors(g, params_to_plot, color_arr, constraints_dic, legfsval = 10, handlelength = 1, handletextpad = 0.5, ncol = 2, frameon = True):
+def write_errors_in_diagonal_posteriors(g, params_to_plot, color_arr, constraints_dic, legfsval = 10, legloc = 4, handlelength = 1, handletextpad = 0.3, ncol = 2, frameon = True):
     total_subplots = len( g.subplots )
+
+    if isinstance(legloc, int):
+        legloc_arr = np.tile(legloc, total_subplots)
+    else:
+        legloc_arr = legloc
 
     for r in range( total_subplots ):
         for c in range( total_subplots ):
@@ -168,7 +174,7 @@ def write_errors_in_diagonal_posteriors(g, params_to_plot, color_arr, constraint
                 ax.plot([], [], color = color_arr[sampleind], label = curr_val)
             
             handles, labels = ax.get_legend_handles_labels()
-            leg=ax.legend(handles[sampleind+1:], labels[sampleind+1:], loc = 4, fontsize = legfsval, handlelength = handlelength, handletextpad = handletextpad, ncol = ncol, frameon=frameon)
+            leg=ax.legend(handles[sampleind+1:], labels[sampleind+1:], loc = legloc_arr[c], fontsize = legfsval, handlelength = handlelength, handletextpad = handletextpad, ncol = ncol, frameon=frameon)
             leg.get_frame().set_linewidth(0.0)
             #ax.legend(loc = 4, fontsize = legfsval)
     return g   
@@ -202,6 +208,9 @@ def make_getdist_plot(which_plot,
                      scaling = True,
                      cosmo_label = None,
                      show_table = True, 
+                     write_errors_on_diagonal = True,
+                     diagonal_errors_fsval = 5,
+                     diagonal_errors_legloc = 4,
                      **kwargs,
                      ):
 
@@ -346,9 +355,9 @@ def make_getdist_plot(which_plot,
                         #contour_ls = ls_arr, contour_lw = lw_arr, legend_ncol = len(param_names), param_limits = param_limits_dic, 
                         )
 
-        #get constraints
-        constraints_dic, constraints_table, colors_table, col_labels = get_constraints_table(params_or_pairs_to_plot, samples_to_plot, color_arr)        
-        g = write_errors_in_diagonal_posteriors(g, params_or_pairs_to_plot, color_arr, constraints_dic, legfsval = 5, ncol=1)
+        if write_errors_on_diagonal: #get constraints
+            constraints_dic, constraints_table, colors_table, col_labels = get_constraints_table(params_or_pairs_to_plot, samples_to_plot, color_arr)        
+            g = write_errors_in_diagonal_posteriors(g, params_or_pairs_to_plot, color_arr, constraints_dic, legfsval = diagonal_errors_fsval, ncol=1, legloc = diagonal_errors_legloc)
         g = mark_axlines(g, params_or_pairs_to_plot, param_dict = param_dict)
 
         '''
@@ -576,7 +585,11 @@ def make_getdist_plot(which_plot,
 
     return g 
 
-def make_whisker(samples_to_plot, params_to_plot, param_dict, baseline_sample_ind = 0, labels_arr = None, fsval = 14, barheightwidth = 1, show_table = True, **kwargs):
+def get_param_cov_mat_from_getdist(samples, params):
+    cov_mat = samples.cov(params)
+    return cov_mat
+
+def make_whisker(samples_to_plot, params_to_plot, param_dict, baseline_sample_ind = 0, labels_arr = None, fsval = 14, barheightwidth = 1, show_table = True, plot_kind = 'ratio', **kwargs):
     if 'color_arr' in kwargs:
         color_arr = kwargs['color_arr']
     else:
@@ -597,14 +610,16 @@ def make_whisker(samples_to_plot, params_to_plot, param_dict, baseline_sample_in
     for cntr in range( total_samples ):
         sigma_dic[cntr] = {}
         curr_samples = samples_to_plot[cntr]
-        curr_cov_mat = curr_samples.cov(params_to_plot)
-
+        curr_cov_mat = get_param_cov_mat_from_getdist(curr_samples, params_to_plot)
+        
         #constraints
         curr_sigma_arr = np.sqrt( np.diag( curr_cov_mat ) )
         for pind, ppp in enumerate( params_to_plot ):
             sigma_dic[cntr][ppp] = curr_sigma_arr[pind]
-            param_label_tmp = curr_samples.getLatex(ppp)
-            param_label = r'$%s$' %( param_label_tmp.split('=')[0].strip() )
+            #later_str = curr_samples.getLatex(ppp)
+            #param_label = r'$%s$' %( later_str.split('=')[0].strip() )
+            #param_label, curr_val = strip_getdist_latex_str(later_str, what_kind_of_constraint = 'full')
+            param_label = get_latex_param_str( ppp )
             param_labels_dic[ppp] = param_label
 
     print( param_labels_dic ) 
@@ -625,15 +640,28 @@ def make_whisker(samples_to_plot, params_to_plot, param_dict, baseline_sample_in
                 labval = None
             sigma_val = sigma_dic[cntr][ppp]
             baseline_sigma_val = sigma_dic[baseline_sample_ind][ppp]
+            if plot_kind == 'ratio':
+                ymin, ymax = 0.7, 1.2
+                curr_yval = sigma_val / baseline_sigma_val
+                textyloc = ymin-0.04
+            elif plot_kind == 'fractional':
+                ymin, ymax = 0., 0.22
+                curr_yval = (sigma_val - baseline_sigma_val)/baseline_sigma_val
+                ###print(ppp, curr_yval)
+                textyloc = -0.02
+
             if cntr != baseline_sample_ind:
-                bar(rowval, sigma_val / baseline_sigma_val, width = barheightwidth*0.95, color = color_arr[cntr], label = labval, alpha = alphaval)
+                bar(rowval, curr_yval, width = barheightwidth*0.95, color = color_arr[cntr], label = labval, alpha = alphaval)
             if cntr == 2: ##total_samples/2:
                 #text(-0.12, rowval-1, param_labels_dic[ppp], fontsize = fsval, ha = 'left')
-                if len(param_labels_dic[ppp])>8:
-                    text(rowval-2, -0.08, r'%s' %(param_labels_dic[ppp]), fontsize = fsval+2, ha = 'left')
+                if len(param_labels_dic[ppp])>20:
+                    text(rowval-2.5, textyloc, r'%s' %(param_labels_dic[ppp]), fontsize = fsval+2, ha = 'left')
+                elif len(param_labels_dic[ppp])>15:
+                    text(rowval-1., textyloc, r'%s' %(param_labels_dic[ppp]), fontsize = fsval+2, ha = 'left')
                 else:
-                    text(rowval, -0.08, r'%s' %(param_labels_dic[ppp]), fontsize = fsval+2, ha = 'left')
-            if cntr == baseline_sample_ind and not show_table: 
+                    text(rowval, textyloc, r'%s' %(param_labels_dic[ppp]), fontsize = fsval+2, ha = 'left')
+
+            if cntr == baseline_sample_ind and not show_table and plot_kind == 'ratio': 
                 if sigma_param_mul_dic is not None:
                     mul_fac = sigma_param_mul_dic[ppp]
                 else:
@@ -680,12 +708,12 @@ def make_whisker(samples_to_plot, params_to_plot, param_dict, baseline_sample_in
             colors_arr.append(['white', 'white'])
 
 
-        tab_width, tab_height = 0.5, 0.6
+        tab_width, tab_height = 0.45, 0.55
         table = ax.table(cellText=parameter_error_table_data, 
                         colLabels=col_labels, cellLoc = 'center', 
-                        bbox = (0.02, 0.04, tab_width, tab_height), 
+                        bbox = (0.03, 0.02, tab_width, tab_height), 
                         cellColours = colors_arr, 
-                        colWidths = [0.3, 0.5], alpha = 1., 
+                        colWidths = [0.35, 0.5], alpha = 1., 
                         zorder = 100.,
                         #edges = 'BT',
                         )
@@ -693,17 +721,34 @@ def make_whisker(samples_to_plot, params_to_plot, param_dict, baseline_sample_in
         table.auto_set_font_size(False)
 
         # Set the font size
-        table.set_fontsize(fsval-2)
+        table.set_fontsize(fsval-3)
 
-    ylim(0., 1.2)
+        for cellkey in table.get_celld():
+            table[cellkey].set_linewidth(0.1)
+            if cellkey[0] == 0: continue #header
+            '''
+            colorval = colors_table[cellkey[0]-1, 0]
+            #print(cellkey, colorval, table[cellkey].get_text())
+            table[cellkey].get_text().set_color(colorval)
+            '''
+
+    if plot_kind == 'ratio':
+        legloc = 4
+        legncol = 1
+        ylabval = r'$\sigma / \sigma_{\rm Fisher}$'
+    elif plot_kind == 'fractional':
+        legloc = 2
+        legncol = 3
+        ylabval = r'$(\sigma - \sigma_{\rm Fisher}) / \sigma_{\rm Fisher}$'
+    ylim(ymin, ymax)
     axhline(1, lw = 1.)
     ax.yaxis.set_major_locator(MaxNLocator(nbins=6))
-    ylabel(r'$\sigma / \sigma_{\rm Fisher}$', fontsize = fsval + 6)
+    ylabel(ylabval, fontsize = fsval + 6)
 
     #legend
-    legend(loc = 4, fontsize = fsval+1, framealpha = 1., handlelength = 1.4, handletextpad = 0.5)
+    legend(loc = legloc, ncol = legncol, fontsize = fsval+1, framealpha = 1., handlelength = 1.4, handletextpad = 0.5)
 
-    grid(True, which = 'both', axis = 'both', lw = 0.2, alpha = 0.05)
+    grid(True, which = 'both', axis = 'both', lw = 0.1, alpha = 0.05)
 
     return ax
 
@@ -734,13 +779,15 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
         ###print(ddd); 
         if ddd == 'lssty3_sne_mock':
             curr_lab = 'LSST-Y3-SNe'
-        elif ddd == 'lssty3snesim1_w0walcdm':
-            curr_lab = 'LSST-Y3-SNe (Sim 1)'
+        elif ddd == 'lssty3_sne_mock_binned':
+            curr_lab = 'LSST-Y3-SNe (Binned)'
+        elif ddd in ['lssty3snesim1_w0walcdm', 'lssty3snesim1_lcdm']:
+            curr_lab = 'LSST-Y3-SNe'# (Sim 1)'
         elif ddd == 'desidr2bao_mock':
             curr_lab = 'DESI-DR2-BAO'
-        elif ddd == 'desy5sne_w0walcdm':
+        elif ddd in ['desy5sne_lcdm', 'desy5sne_w0walcdm']:
             curr_lab = 'DES-Y5-SNe (Data)'
-        elif ddd == 'desy5snesim_w0walcdm':
+        elif ddd in ['desy5snesim_w0walcdm', 'desy5snesim_lcdm']:
             curr_lab = 'DES-Y5-SNe (Sim)'
         else: #CMB
             cmb_exp_name, cmb_dataset = ddd.split('-')
@@ -836,7 +883,7 @@ def get_latex_param_str(param):
     else:
         return params_str_dic[param]
 
-def get_gauss_mix_from_fisher(param_dict, f_mat, params, labels, fix_params = ['ws', 'wa', 'mnu', 'neff', 'nrun'], prior_dic = None): 
+def get_gauss_mix_from_fisher(param_dict, f_mat, params, labels, fix_params = ['ws', 'wa', 'mnu', 'neff', 'nrun'], prior_dic = None, get_samples = False): 
     '''
     if cov_mat is None:
         if whichcosmo == 'lcdm':
@@ -871,7 +918,18 @@ def get_gauss_mix_from_fisher(param_dict, f_mat, params, labels, fix_params = ['
     ##print(params_mean); sys.exit()
 
     #print(params_mean)
-    return GaussianND(params_mean, cov_mat, names=params, labels = labels)
+    gauss_mix = GaussianND(params_mean, cov_mat, names=params, labels = labels)
+
+    if get_samples:
+        mix_samples = get_gaussian_mix_from_getdist(gauss_mix)
+        return gauss_mix, mix_samples
+    else:
+        return gauss_mix
+
+def get_gaussian_mix_from_getdist(gauss_mix, total_samples = 50000, label = 'Gaussian mix', random_state = 222, burn_in_fraction = 0.3):
+    mix_samples = gauss_mix.MCSamples(total_samples, label=label, random_state = random_state)
+    mix_samples.removeBurn(burn_in_fraction)
+    return mix_samples
 
 def get_gauss_mix_ori(exp, cov_mat = None, params = None, labels = None, whichcosmo = 'lcdm', fix_params = ['ws', 'wa', 'mnu', 'neff', 'nrun'], prior_dic = None): 
     if cov_mat is None:
@@ -891,7 +949,7 @@ def get_gauss_mix_ori(exp, cov_mat = None, params = None, labels = None, whichco
         params = fisher_params
         labels = fisher_params_latex_label_arr
     
-    print( params, np.diag(cov_mat)**0.5 )
+    #print( params, np.diag(cov_mat)**0.5 )
     params_mean = []
     for ppp in params:
         if ppp in param_dict:
