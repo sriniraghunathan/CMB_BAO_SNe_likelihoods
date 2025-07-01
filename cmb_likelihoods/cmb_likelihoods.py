@@ -508,7 +508,17 @@ class spt3g_winter_TTEETE(CMBmocks):
     Likelihood for SPT-3G Winter field ILC.
     """
 
+class spt3g_winter2y_TTEETE(CMBmocks):
+    """
+    Likelihood for SPT-3G Winter field ILC.
+    """
+
 class spt3g_winter_TTEETEPP(CMBmocks):
+    """
+    Likelihood for SPT-3G Winter field ILC with lensing.
+    """
+
+class spt3g_winter2y_TTEETEPP(CMBmocks):
     """
     Likelihood for SPT-3G Winter field ILC with lensing.
     """
@@ -518,7 +528,17 @@ class spt3g_summer_TTEETE(CMBmocks):
     Likelihood for SPT-3G summer field ILC.
     """
 
+class spt3g_summer2y_TTEETE(CMBmocks):
+    """
+    Likelihood for SPT-3G summer field ILC.
+    """
+
 class spt3g_summer_TTEETEPP(CMBmocks):
+    """
+    Likelihood for SPT-3G summer field ILC with lensing.
+    """
+
+class spt3g_summer2y_TTEETEPP(CMBmocks):
     """
     Likelihood for SPT-3G summer field ILC with lensing.
     """
