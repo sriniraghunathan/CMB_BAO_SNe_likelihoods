@@ -1,0 +1,13 @@
+# Settings for the LSSTY3 SN Ia analysis.
+# Path to the data: where the sn_data has been cloned
+path: null
+measurements_file: bao_data/desi_bao_dr2/desi_bao_dr2_mock/desi_gaussian_bao_ALL_GCcomb_mean_camb.txt
+cov_file: bao_data/desi_bao_dr2/desi_bao_dr2_mock/desi_gaussian_bao_ALL_GCcomb_cov.txt
+dataset_params:
+# field: value
+# Aliases for automatic covariance matrix
+aliases: [DESI_DR2_mock] #for sim1
+# Use absolute magnitude
+use_abs_mag: False
+# Speed in evaluations/second
+speed: 100

@@ -1,0 +1,15 @@
+# Settings for the LSSTY3 SN Ia analysis.
+# Path to the data: where the sn_data has been cloned
+path: null
+###data_file: data/sne_data/LSSTY3/sim1/LSSTY3_SN_sim1.csv
+# .dataset file with settings
+dataset_file: LSSTY3/sim1/config.dataset
+# Overriding of .dataset parameters
+dataset_params:
+# field: value
+# Aliases for automatic covariance matrix
+aliases: [LSSTY3_sim1] #for sim1
+# Use absolute magnitude
+use_abs_mag: False
+# Speed in evaluations/second
+speed: 100
