@@ -1,41 +1,15 @@
-#from typing import Optional, Sequence
-#from cobaya.conventions import packages_path_input
-#from cobaya.likelihoods.base_classes import InstallableLikelihood
-from cobaya.likelihoods.sn.pantheonplus import PantheonPlus
+from cobaya.likelihoods.base_classes import BAO
 
-class LSSTY3_mock(PantheonPlus):#, InstallableLikelihood):
-    """
-    Likelihood for LSSTY3 type Ia supernovae sample.
-    Reference
-    ---------
-    https://arxiv.org/abs/2401.02929
+class desi_2024_base(BAO):
+    _is_abstract = True
+    bibtex_file = 'desi_2024_bao.bibtex'
+
+class desidr2bao_mock(desi_2024_base):
+    r"""
+    DESI BAO likelihood for all tracers.
     """
 
-    """    
-    def initialize(self):
-        pass
-    """    
-    def configure(self):
-        self.pre_vars = self.mag_err ** 2
-    
-    def _read_data_file(self, data_file):
-        file_cols = ["zhd", "zhel", "mu", "muerr_final"]
-        self.cols = ["zcmb", "zhel", "mag", "mag_err"]
-        self._read_cols(data_file, file_cols, sep=",")
-
-    """
-    def _read_data_file(self):
-        file_cols = ["zhd", "zhel", "mu", "muerr_final"]
-        self.cols = ["zcmb", "zhel", "mag", "mag_err"]
-        self._read_cols(self.data_file, file_cols, sep=",")
-    """
-
-class lssty3_sne_mock(LSSTY3_mock):
-    """
-    Likelihood for LSSTY3 type Ia supernovae sample mock.
-    """
-
-class lssty3_sne_mock_binned(LSSTY3_mock):
-    """
-    Likelihood for LSSTY3 type Ia supernovae sample mock binned.
+class desidr3bao_mock(desi_2024_base):
+    r"""
+    DESI BAO likelihood for all tracers.
     """
