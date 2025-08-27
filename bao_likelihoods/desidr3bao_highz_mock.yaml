@@ -1,0 +1,9 @@
+# DESI BAO results for all tracers
+measurements_file: bao_data/desi_bao_dr3_mock/Tab7_data_vector_bao_lya_zbin_1p9_3p7.ecsv
+cov_file: bao_data/desi_bao_dr3_mock/Tab7_covariance_matrix_bao_lya_zbin_1p9_3p7.ecsv 
+# Fiducial sound horizon with which data have been stored
+rs_fid: 1  # Mpc
+# Aliases for automatic covariance matrix
+aliases: [BAO]
+# Speed in evaluations/second
+speed: 2000
