@@ -6,9 +6,12 @@ from astropy import constants as const
 from astropy import units as u
 
 #which_bao_data = 'desi_dr2'
-which_bao_data = 'desi_dr3'
+#which_bao_data = 'desi_dr3'
+#which_bao_data = 'desi_dr3_lowz'
+which_bao_data = 'desi_dr3_highz'
 
-if which_bao_data == 'desi_dr3':
+ignore_first_entry_for_dr3_highz = True
+if which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
     camb_or_astropy = 'camb'
 else:
     camb_or_astropy = 'camb'
@@ -28,7 +31,8 @@ if camb_or_astropy == 'astropy':
     cosmo = sne_cmb_fisher_tools.set_cosmo(param_dict, baselinecosmo = baselinecosmo)
     camb_results = None
 elif camb_or_astropy == 'camb':
-    pars, camb_results = sne_cmb_fisher_tools.set_camb(param_dict, lmax = 10, WantTransfer = False)
+    camb_results = None
+    #pars, camb_results = sne_cmb_fisher_tools.set_camb(param_dict, lmax = 10, WantTransfer = True)
     cosmo = None
 #sys.exit()
 
@@ -37,11 +41,16 @@ if which_bao_data == 'desi_dr2':
     bao_data_fname = '%s/desi_gaussian_bao_ALL_GCcomb_mean.txt' %(bao_data_fd)
     bao_data_cov_fname = '%s/bao_data/desi_gaussian_bao_ALL_GCcomb_cov.txt' %(bao_data_fd)
     bao_data_opfd = 'data/bao_data/desi_bao_dr2'
-elif which_bao_data == 'desi_dr3':
+elif which_bao_data == 'desi_dr3_highz':
     bao_data_fd = 'data/bao_data/desi_bao_dr3_stuffs/'
     bao_data_fname = '%s/Tab7_data_vector_bao_lya_zbin_1p9_3p7.ecsv' %(bao_data_fd)
     bao_data_cov_fname = '%s/Tab7_covariance_matrix_bao_lya_zbin_1p9_3p7.ecsv' %(bao_data_fd)
-    bao_data_opfd = 'data/bao_data/desi_bao_dr3'
+    bao_data_opfd = 'data/bao_data/desi_bao_dr3_mock'
+elif which_bao_data == 'desi_dr3_lowz':
+    bao_data_fd = 'data/bao_data/desi_bao_dr3_stuffs/'
+    bao_data_fname = '%s/Tab7_data_vector_baorsd_zbin_0p0_2p1.ecsv' %(bao_data_fd)
+    bao_data_cov_fname = '%s/Tab7_covariance_matrix_baorsd_zbin_0p0_2p1.ecsv' %(bao_data_fd)
+    bao_data_opfd = 'data/bao_data/desi_bao_dr3_mock'
 bao_data_cov_fname_op = bao_data_cov_fname.replace( bao_data_fd, bao_data_opfd )
 
 def bao_model(param_dict, z_arr, observable_arr, cosmo = None, camb_results = None):
@@ -64,12 +73,15 @@ def bao_model(param_dict, z_arr, observable_arr, cosmo = None, camb_results = No
         cosmo = sne_cmb_fisher_tools.set_cosmo(param_dict_sampler, baselinecosmo = baselinecosmo)
     """
 
+    if camb_or_astropy == 'camb' and camb_results is None:
+        pars, camb_results = sne_cmb_fisher_tools.set_camb(param_dict, lmax = 10, WantTransfer = True, z_arr_for_matter_power = z_arr)
+
     #compute the models
     ombh2 = param_dict['ombh2']
     ommh2 = param_dict['omch2'] + param_dict['ombh2']
     neff = param_dict['neff']
     model_arr =[]
-    for (z, o) in zip( z_arr, observable_arr ):
+    for zcntr, (z, o) in enumerate( zip( z_arr, observable_arr ) ):
         ##print(z, o)
 
         if camb_or_astropy == 'astropy':
@@ -80,6 +92,7 @@ def bao_model(param_dict, z_arr, observable_arr, cosmo = None, camb_results = No
             curr_DM = curr_DA * (1+z) #Transverse comoving distance
             curr_DH = ( constants.c.to('km/s')/camb_results.hubble_parameter(z) ).value #Hubble distance
             curr_Hs = camb_results.hubble_parameter(z)#, units="km/s/Mpc")
+            #from IPython import embed; embed()
 
         """
             return np.cbrt(
@@ -105,6 +118,9 @@ def bao_model(param_dict, z_arr, observable_arr, cosmo = None, camb_results = No
             curr_model = curr_DA / curr_rd
         elif o == 'Hz_rs':
             curr_model = curr_Hs * curr_rd
+        elif o == "f_sigma8":
+            curr_model = camb_results.get_fsigma8()[zcntr]
+
         model_arr.append( curr_model )
     model_arr = np.asarray( model_arr )
 
@@ -137,24 +153,41 @@ if which_bao_data == 'desi_dr2':
         #op_arr.append( [curr_z, curr_model_val, curr_obs] )
         opline = '%s %s %s' %(curr_z, curr_model_val, curr_obs)
         opf.writelines( '%s\n' %(opline) )
-elif which_bao_data == 'desi_dr3':
+elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
     opf = open( opfname, 'w' )
     opline = '# [z] [value at z] [quantity]'
     opf.writelines( '%s\n' %(opline) )
-    curr_obs_arr = ['DA_over_rs', 'Hz_rs']
-    for curr_rec in bao_rec:
+    if which_bao_data  == 'desi_dr3_highz':
+        curr_obs_arr = ['DA_over_rs', 'Hz_rs']
+    elif which_bao_data  == 'desi_dr3_lowz':
+        curr_obs_arr = ['f_sigma8', 'DA_over_rs', 'Hz_rs']
+    for recntr, curr_rec in enumerate( bao_rec ):
         curr_rec = list( curr_rec )
-        curr_z, curr_val1, curr_val2 = curr_rec
-        curr_z = curr_z.decode("utf-8")
-        curr_val1 = curr_val1.decode("utf-8")
-        curr_val2 = curr_val2.decode("utf-8")
+        if which_bao_data  == 'desi_dr3_highz':
+            curr_z, curr_val1, curr_val2 = curr_rec
+            curr_z = curr_z.decode("utf-8")
+            curr_val1 = curr_val1.decode("utf-8")
+            curr_val2 = curr_val2.decode("utf-8")
+        elif which_bao_data  == 'desi_dr3_lowz':
+            curr_z, curr_val1, curr_val2, curr_val3 = curr_rec
+            curr_z = curr_z.decode("utf-8")
+            curr_val1 = curr_val1.decode("utf-8")
+            curr_val2 = curr_val2.decode("utf-8")
+            curr_val3 = curr_val3.decode("utf-8")
+
+        if which_bao_data  == 'desi_dr3_highz' and ignore_first_entry_for_dr3_highz and recntr == 1:
+            print(curr_rec, 'hi')
+            continue
 
         if curr_z == 'z': continue
         curr_z = float( curr_z )
         curr_val1 = float( curr_val1 )
         curr_val2 = float( curr_val2 )
-
         curr_val_arr = [curr_val1, curr_val2]
+        if which_bao_data  == 'desi_dr3_lowz':
+            curr_val3 = float( curr_val3 )
+            curr_val_arr = [curr_val1, curr_val2, curr_val3]
+
         for (curr_obs, curr_val) in zip(curr_obs_arr, curr_val_arr):
             curr_model_val = bao_model(param_dict, [curr_z], [curr_obs], cosmo = cosmo, camb_results = camb_results)[0]
             opline = '%s %s %s' %(curr_z, curr_model_val, curr_obs)
@@ -166,15 +199,18 @@ elif which_bao_data == 'desi_dr3':
 
 ###np.savetxt( opfname, bao_rec, fmt = '', header = "# [z] [value at z] [quantity]")
 #push the cov now
-print(bao_data_cov_fname_op)
 if which_bao_data == 'desi_dr2':
     cmd = 'cp %s %s' %(bao_data_cov_fname, bao_data_cov_fname_op)
     os.system( cmd )
-elif which_bao_data == 'desi_dr3':
+elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
     f = open(bao_data_cov_fname, 'r');
     cov_arr = []
-    for line in f:
-        if line.find('#')>-1 or line.find('covariance')>-1: continue
+    for lcntr, line in enumerate( f ):
+        if line.find('#')>-1 or line.find('covariance')>-1: 
+            prevlcntr = lcntr
+            continue
+        if which_bao_data  == 'desi_dr3_highz' and ignore_first_entry_for_dr3_highz and lcntr in [prevlcntr+1, prevlcntr+2]:
+            continue
         tmp = line.strip().replace('[','').replace(']','').split(',')
         print(tmp)
         cov_arr.append(tmp)
@@ -182,4 +218,5 @@ elif which_bao_data == 'desi_dr3':
     cov_arr = np.asarray( cov_arr )
     cov_arr = cov_arr.astype(np.float)
     np.savetxt(bao_data_cov_fname_op, cov_arr, fmt = '%g')  
+print(bao_data_cov_fname_op)
 print('Done')
