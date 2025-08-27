@@ -209,14 +209,17 @@ elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
         if line.find('#')>-1 or line.find('covariance')>-1: 
             prevlcntr = lcntr
             continue
-        if which_bao_data  == 'desi_dr3_highz' and ignore_first_entry_for_dr3_highz and lcntr in [prevlcntr+1, prevlcntr+2]:
-            continue
         tmp = line.strip().replace('[','').replace(']','').split(',')
         print(tmp)
         cov_arr.append(tmp)
 
     cov_arr = np.asarray( cov_arr )
     cov_arr = cov_arr.astype(np.float)
+
+    if which_bao_data  == 'desi_dr3_highz' and ignore_first_entry_for_dr3_highz:
+        cov_arr = cov_arr[2:, 2:]
+        #print(cov_arr.shape)
+
     np.savetxt(bao_data_cov_fname_op, cov_arr, fmt = '%g')  
 print(bao_data_cov_fname_op)
 print('Done')
