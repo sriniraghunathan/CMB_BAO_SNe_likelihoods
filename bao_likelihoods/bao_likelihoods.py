@@ -13,3 +13,13 @@ class desidr3bao_mock(desi_2024_base):
     r"""
     DESI BAO likelihood for all tracers.
     """
+
+class desidr3bao_lowz_mock(desi_2024_base):
+    r"""
+    DESI BAO likelihood for all tracers.
+    """
+
+class desidr3bao_highz_mock(desi_2024_base):
+    r"""
+    DESI BAO likelihood for all tracers.
+    """

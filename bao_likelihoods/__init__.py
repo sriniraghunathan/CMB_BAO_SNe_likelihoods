@@ -1,2 +1,3 @@
 from .bao_likelihoods import desidr2bao_mock
-from .bao_likelihoods import desidr3bao_mock
+from .bao_likelihoods import desidr3bao_lowz_mock
+from .bao_likelihoods import desidr3bao_highz_mock
