@@ -217,19 +217,38 @@ elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
     cov_arr = cov_arr.astype(np.float)
 
     if which_bao_data  == 'desi_dr3_highz': #swap indices now.
-        print(cov_arr)
+        cov_diag = np.diag(cov_arr)
+        cov_diag_rolled = np.roll(cov_diag, 1)
+        #sys.exit()
         odd_inds = np.arange(1,len(cov_arr), 2)
         even_inds = np.arange(0,len(cov_arr), 2)
+        cov_arr_odd_inds = cov_diag[odd_inds]
+        cov_arr_even_inds = cov_diag[even_inds]
+        cov_diag_mod = []
+        for (o,e) in zip(cov_arr_odd_inds, cov_arr_even_inds):
+            cov_diag_mod.append( o )
+            cov_diag_mod.append( e )
+        cov_diag_mod = np.asarray( cov_diag_mod )
+        
+        cov_off_diag_low = np.tril(cov_arr, k=-1)       
+        cov_off_diag_high = np.triu(cov_arr, k=1)
+        cov_arr_mod = np.eye( len(cov_arr) ) * cov_diag_mod
+        cov_arr_mod = cov_arr_mod + cov_off_diag_low + cov_off_diag_high
+        cov_arr = np.copy( cov_arr_mod )
+
+        """
         cov_arr_odd_inds = cov_arr[odd_inds]
         cov_arr_even_inds = cov_arr[even_inds]
-        cov_arr = []
+        cov_arr_mod = []
         for (o,e) in zip(cov_arr_odd_inds, cov_arr_even_inds):
-            cov_arr.append( o )
-            cov_arr.append( e )
-        cov_arr = np.asarray( cov_arr )
+            cov_arr_mod.append( o )
+            cov_arr_mod.append( e )
+        cov_arr_mod = np.asarray( cov_arr_mod )
+        cov_arr = cov_arr_mod
+        """
 
 
-    if which_bao_data  == 'desi_dr3_highz' and ignore_first_entry_for_dr3_highz:
+    if (0):##which_bao_data  == 'desi_dr3_highz' and ignore_first_entry_for_dr3_highz:
         cov_arr = cov_arr[2:, 2:]
         #print(cov_arr.shape)
 
