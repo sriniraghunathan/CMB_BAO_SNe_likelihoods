@@ -188,6 +188,9 @@ elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
             curr_val3 = float( curr_val3 )
             curr_val_arr = [curr_val1, curr_val2, curr_val3]
 
+        if which_bao_data  == 'desi_dr3_highz': #swap indices now.
+            curr_obs_arr = curr_obs_arr[::-1]
+            curr_val_arr = curr_val_arr[::-1]
         for (curr_obs, curr_val) in zip(curr_obs_arr, curr_val_arr):
             curr_model_val = bao_model(param_dict, [curr_z], [curr_obs], cosmo = cosmo, camb_results = camb_results)[0]
             opline = '%s %s %s' %(curr_z, curr_model_val, curr_obs)
@@ -216,6 +219,7 @@ elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
     cov_arr = np.asarray( cov_arr )
     cov_arr = cov_arr.astype(np.float)
 
+    '''
     if which_bao_data  == 'desi_dr3_highz': #swap indices now.
         cov_diag = np.diag(cov_arr)
         cov_diag_rolled = np.roll(cov_diag, 1)
@@ -246,6 +250,7 @@ elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
         cov_arr_mod = np.asarray( cov_arr_mod )
         cov_arr = cov_arr_mod
         """
+    '''
 
 
     if (0):##which_bao_data  == 'desi_dr3_highz' and ignore_first_entry_for_dr3_highz:
@@ -253,5 +258,6 @@ elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
         #print(cov_arr.shape)
 
     np.savetxt(bao_data_cov_fname_op, cov_arr, fmt = '%g')  
+
 print(bao_data_cov_fname_op)
 print('Done')
