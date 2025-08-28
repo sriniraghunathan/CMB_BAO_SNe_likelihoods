@@ -1,9 +1,21 @@
+def corr_from_cov(covmat):
+    diags = np.sqrt(np.diag(covmat))
+    corrmat = np.zeros_like(covmat)
+    for i in range(covmat.shape[0]):
+        for j in range(covmat.shape[0]):
+            corrmat[i, j] = covmat[i, j] / (diags[i] *  diags[j])
+    return corrmat
+
 import numpy as np
 from pylab import *
 
 fd = 'data/bao_data/desi_bao_dr3_mock/'
 cov_lowz = np.loadtxt('%s/Tab7_covariance_matrix_baorsd_zbin_0p0_2p1.ecsv' %(fd))
 cov_highz = np.loadtxt('%s/Tab7_covariance_matrix_bao_lya_zbin_1p9_3p7.ecsv' %(fd))
+
+corr_lowz = corr_from_cov(cov_lowz)
+corr_highz = corr_from_cov(cov_highz)
+sys.exit()
 
 lowz_fields = ['f_sigma8', 'DA_over_rs', 'Hz_rs']
 highz_fields = ['DA_over_rs', 'Hz_rs']

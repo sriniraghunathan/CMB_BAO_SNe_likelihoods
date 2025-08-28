@@ -10,7 +10,7 @@ from astropy import units as u
 #which_bao_data = 'desi_dr3_lowz'
 which_bao_data = 'desi_dr3_highz'
 
-ignore_first_entry_for_dr3_highz = True ##False ##True
+ignore_first_entry_for_dr3_highz = False ##True
 if which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
     camb_or_astropy = 'camb'
 else:
@@ -157,10 +157,6 @@ elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
     opf = open( opfname, 'w' )
     opline = '# [z] [value at z] [quantity]'
     opf.writelines( '%s\n' %(opline) )
-    if which_bao_data  == 'desi_dr3_highz':
-        curr_obs_arr = ['DA_over_rs', 'Hz_rs']
-    elif which_bao_data  == 'desi_dr3_lowz':
-        curr_obs_arr = ['f_sigma8', 'DA_over_rs', 'Hz_rs']
     for recntr, curr_rec in enumerate( bao_rec ):
         curr_rec = list( curr_rec )
         if which_bao_data  == 'desi_dr3_highz':
@@ -188,15 +184,23 @@ elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
             curr_val3 = float( curr_val3 )
             curr_val_arr = [curr_val1, curr_val2, curr_val3]
 
+        if which_bao_data  == 'desi_dr3_highz':
+            curr_obs_arr = ['DA_over_rs', 'Hz_rs']
+        elif which_bao_data  == 'desi_dr3_lowz':
+            curr_obs_arr = ['f_sigma8', 'DA_over_rs', 'Hz_rs']
+
         if which_bao_data  == 'desi_dr3_highz': #swap indices now.
             curr_obs_arr = curr_obs_arr[::-1]
             curr_val_arr = curr_val_arr[::-1]
+            ###print( curr_obs_arr, curr_val_arr )
+
         for (curr_obs, curr_val) in zip(curr_obs_arr, curr_val_arr):
             curr_model_val = bao_model(param_dict, [curr_z], [curr_obs], cosmo = cosmo, camb_results = camb_results)[0]
             opline = '%s %s %s' %(curr_z, curr_model_val, curr_obs)
             print( curr_z, curr_val, curr_obs, curr_model_val )
             opf.writelines( '%s\n' %(opline) )
 
+    ##sys.exit()
 
 #op_arr = np.asarray( op_arr )
 
@@ -253,7 +257,7 @@ elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
     '''
 
 
-    if (0):##which_bao_data  == 'desi_dr3_highz' and ignore_first_entry_for_dr3_highz:
+    if which_bao_data  == 'desi_dr3_highz' and ignore_first_entry_for_dr3_highz:
         cov_arr = cov_arr[2:, 2:]
         #print(cov_arr.shape)
 
