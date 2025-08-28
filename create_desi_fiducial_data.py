@@ -10,7 +10,7 @@ from astropy import units as u
 #which_bao_data = 'desi_dr3_lowz'
 which_bao_data = 'desi_dr3_highz'
 
-ignore_first_entry_for_dr3_highz = True
+ignore_first_entry_for_dr3_highz = True ##False ##True
 if which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
     camb_or_astropy = 'camb'
 else:
@@ -215,6 +215,19 @@ elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
 
     cov_arr = np.asarray( cov_arr )
     cov_arr = cov_arr.astype(np.float)
+
+    if which_bao_data  == 'desi_dr3_highz': #swap indices now.
+        print(cov_arr)
+        odd_inds = np.arange(1,len(cov_arr), 2)
+        even_inds = np.arange(0,len(cov_arr), 2)
+        cov_arr_odd_inds = cov_arr[odd_inds]
+        cov_arr_even_inds = cov_arr[even_inds]
+        cov_arr = []
+        for (o,e) in zip(cov_arr_odd_inds, cov_arr_even_inds):
+            cov_arr.append( o )
+            cov_arr.append( e )
+        cov_arr = np.asarray( cov_arr )
+
 
     if which_bao_data  == 'desi_dr3_highz' and ignore_first_entry_for_dr3_highz:
         cov_arr = cov_arr[2:, 2:]
