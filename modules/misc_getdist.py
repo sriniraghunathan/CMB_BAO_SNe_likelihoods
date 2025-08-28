@@ -785,6 +785,8 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
             curr_lab = 'LSST-Y3-SNe'# (Sim 1)'
         elif ddd == 'desidr2bao_mock':
             curr_lab = 'DESI-DR2-BAO'
+        elif ddd in ['desidr3bao_mock', 'desidr3bao_lowz_mock', 'desidr3bao_highz_mock']:
+            curr_lab = 'DESI-DR3-BAO'
         elif ddd in ['desy5sne_lcdm', 'desy5sne_w0walcdm']:
             curr_lab = 'DES-Y5-SNe (Data)'
         elif ddd in ['desy5snesim_w0walcdm', 'desy5snesim_lcdm']:

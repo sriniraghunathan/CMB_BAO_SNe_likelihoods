@@ -735,7 +735,7 @@ def perform_cl_binning(els, cl, delta_l = 1):
 
     return binned_el, binned_cl
 
-def set_camb(param_dict, thetastar_or_cosmomctheta_or_h = 'h', lmax = None, WantTransfer = True):
+def set_camb(param_dict, thetastar_or_cosmomctheta_or_h = 'h', lmax = None, WantTransfer = True, z_arr_for_matter_power = None):
 
     """
     set CAMB cosmology.
@@ -773,6 +773,9 @@ def set_camb(param_dict, thetastar_or_cosmomctheta_or_h = 'h', lmax = None, Want
             omk=param_dict['omk'], tau=param_dict['tau'], YHe = param_dict['YHe'], Alens = param_dict['Alens'], \
             num_massive_neutrinos = param_dict['num_nu_massive'])
     
+    if z_arr_for_matter_power is not None:
+        pars.set_matter_power(redshifts=z_arr_for_matter_power, kmax=2.0) #to get sigma8
+    
     #20200619
     #print('\n\tswitching order on 20200619 following https://camb.readthedocs.io/en/latest/camb.html\n')
     if lmax is None:
@@ -788,6 +791,8 @@ def set_camb(param_dict, thetastar_or_cosmomctheta_or_h = 'h', lmax = None, Want
         pars.InitPower.set_params(ns=param_dict['ns'], r=param_dict['r'], As = param_dict['As'], nrun = param_dict['nrun'])
 
     results = camb.get_results(pars)
+    #powers = results.get_cmb_power_spectra(pars, lmax = param_dict['max_l_limit'], raw_cl = True)#, spectra = [which_spectra])#, CMB_unit=None, raw_cl=False)
+    ##print(results.get_sigma8()); sys.exit()
     
     return pars, results
 
