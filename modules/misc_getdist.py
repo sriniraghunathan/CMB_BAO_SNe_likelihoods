@@ -799,6 +799,8 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
             curr_lab = curr_lab.replace('-TTEETE', '')
         chain_lab = '%s + %s' %(chain_lab, curr_lab)
 
+    chain_lab = chain_lab.replace('DESI-DR3-BAO + DESI-DR3-BAO', 'DESI-DR3-BAO')
+
     chain_lab = chain_lab.strip(' + ')
     
     return chain_lab
