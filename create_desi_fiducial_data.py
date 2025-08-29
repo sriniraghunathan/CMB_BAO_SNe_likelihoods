@@ -10,7 +10,7 @@ from astropy import units as u
 #which_bao_data = 'desi_dr3_lowz'
 which_bao_data = 'desi_dr3_highz'
 
-ignore_first_entry_for_dr3_highz = False ##True
+ignore_first_entry_for_dr3_highz = True ##False ##True
 if which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
     camb_or_astropy = 'camb'
 else:
