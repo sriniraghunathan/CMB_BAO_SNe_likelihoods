@@ -10,7 +10,8 @@ import sne_cmb_fisher_tools, misc
 from pylab import *
 
 #default_param_limits_dic = {'omegam': [0.2, 0.6], 'w': [-1.5, -0.5], 'wa': [-1.8, 0.8]}
-default_param_limits_dic = {'omegam': [0.28, 0.35], 
+default_param_limits_dic = {'omegam': [0.28, 0.35],
+                    'rdh': [90., 110.],  
                     'w': [-1.3, -0.5], 
                     'wa': [-1.8, 0.8], 
                     'mnu': [0., 0.24], 
@@ -153,7 +154,7 @@ def get_constraints_table(params_to_plot, sample_arr_to_plot, color_arr = None):
             constraints_table[sind, pind] = r'$%s$' %(curr_val)
             colors_table[sind, pind] = c
             constraints_dic[ppp][sind] = r'$%s$' %(curr_val)
-        col_labels.append( r'$%s$' %(param_label) )
+        col_labels.append( r'$\sigma(%s)$' %(param_label) )
     return constraints_dic, constraints_table, colors_table, col_labels
 
 def write_errors_in_diagonal_posteriors(g, params_to_plot, color_arr, constraints_dic, legfsval = 10, legloc = 4, handlelength = 1, handletextpad = 0.3, ncol = 2, frameon = True):
@@ -243,7 +244,15 @@ def make_getdist_plot(which_plot,
         if array_of_num_plot_contours is None:
             array_of_num_plot_contours = np.tile( num_plot_contours, len(samples_to_plot) )
         if array_of_zoom is None:
-            array_of_zoom = np.tile( False, len(samples_to_plot) )
+            array_of_zoom = np.tile( None, len(samples_to_plot) )
+        if array_of_table_locs is None:
+            array_of_table_locs = np.tile( None, len(samples_to_plot) )
+        if array_of_table_width is None:
+            array_of_table_width = np.tile( None, len(samples_to_plot) )
+        if array_of_table_col_width is None:
+            array_of_table_col_width = np.tile( None, len(samples_to_plot) )
+        if array_to_table_fontsize is None:
+            array_to_table_fontsize = np.tile( None, len(samples_to_plot) )
 
     clf()
     if which_plot.find('multiple_2d')>-1:
@@ -265,11 +274,11 @@ def make_getdist_plot(which_plot,
 
         if len( params_or_pairs_to_plot ) == 1:
             #get the limits
-            p1, p2 = params_or_pairs_to_plot
+            p1, p2 = params_or_pairs_to_plot[0]
             xmin, xmax = param_limits_dic[p1]
             ymin, ymax = param_limits_dic[p2]
 
-            g.plots_2d(samples_to_plot, param_pairs=[params_or_pairs_to_plot], filled=filled, \
+            g.plots_2d(samples_to_plot, param_pairs=params_or_pairs_to_plot, filled=filled, \
                        lims = [xmin, xmax, ymin, ymax], 
                        legend_labels = '',#labels,
                        colors=color_arr, 
@@ -277,13 +286,15 @@ def make_getdist_plot(which_plot,
                        )
 
             paramnames = params_or_pairs_to_plot
-            g = mark_axlines(g, paramnames, param_dict = param_dict)
+            g = mark_axlines(g, paramnames, param_dict = param_dict, alphaval = 0.2, lwval = 0.2)
 
             #ax.yaxis.set_major_locator(MaxNLocator(nbins=6))
             legend = g.add_legend(labels, colored_text=False, fontsize = legfsval, legend_loc = legloc, 
                                   handlelength = 1.4, handletextpad = 0.5,
                                   labelspacing = 0.8,
-                                 );        
+                                  framealpha = 1.,
+                                 );       
+
 
         elif len( params_or_pairs_to_plot ) == 2:
             p1, params_for_pairing_with_p1 = params_or_pairs_to_plot
@@ -429,13 +440,14 @@ def make_getdist_plot(which_plot,
                     param_limits_changed = True
 
             #params
+            print(curr_param_pairs_to_plot)
             p1, p2 = curr_param_pairs_to_plot
             xmin, xmax = curr_param_limits_dic[p1]
             ymin, ymax = curr_param_limits_dic[p2]
 
             curr_ax = subplot(tr, tc, axcntr+1)
             g.plot_2d(curr_samples_to_plot, p1, p2, ax = curr_ax, 
-                filled = curr_filled, 
+                filled = curr_filled,
                 colors = curr_colors,
                 lims = [xmin, xmax, ymin, ymax], 
                 #contours = curr_contours,
@@ -460,9 +472,10 @@ def make_getdist_plot(which_plot,
                 curr_ax.set_ylabel(r'$H_{0}$ [km s$^{-1}$ Mpc$^{-1}$]')
 
             if axcntr>0:
-                if not yvisibility: #not param_limits_changed:
-                    setp(curr_ax.get_yticklabels(), visible=False)
-                curr_ax.set_ylabel(None)
+                if curr_param_pairs_to_plot[1] == array_of_params_or_pairs_to_plot[axcntr-1][1]:
+                    if not yvisibility: #not param_limits_changed:
+                        setp(curr_ax.get_yticklabels(), visible=False)
+                    curr_ax.set_ylabel(None)
             else:
                 pass
 
