@@ -357,7 +357,7 @@ def make_getdist_plot(which_plot,
 
             
     elif which_plot == 'triangle':
-        g.triangle_plot(samples_to_plot, params=params_or_pairs_to_plot, filled=True, \
+        g.triangle_plot(samples_to_plot, params=params_or_pairs_to_plot, filled=filled, \
                         legend_labels = labels, 
                         param_limits = param_limits_dic, \
                         contour_colors=color_arr, 
@@ -768,10 +768,10 @@ def make_whisker(samples_to_plot, params_to_plot, param_dict, baseline_sample_in
 def get_cosmo_label(cosmo_name):
     cosmo_label_dic = {'lcdm': r'$\Lambda {\rm CDM}$',
                        'mnulcdm': r'$\sum m_{\nu} + \Lambda {\rm CDM}$',
-                       'w0walcdm': r'$w_{0} + w_{a} + \Lambda {\rm CDM}$',
+                       'w0walcdm': r'$w_{0} + w_{a} +  {\rm CDM}$',
                        'nefflcdm': r'$N_{\rm eff} + \Lambda {\rm CDM}$',
                        'neffmnulcdm': r'$N_{\rm eff} + \sum m_{\nu} + \Lambda {\rm CDM}$',
-                       'w0wamnulcdm': r'$w_{0} + w_{a} + \sum m_{\nu} + \Lambda {\rm CDM}$',
+                       'w0wamnulcdm': r'$w_{0} + w_{a} + \sum m_{\nu} + {\rm CDM}$',
                       }
     return cosmo_label_dic[cosmo_name]
 
