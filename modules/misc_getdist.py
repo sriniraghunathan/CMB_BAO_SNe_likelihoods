@@ -150,6 +150,12 @@ def get_constraints_table(params_to_plot, sample_arr_to_plot, color_arr = None):
             ###print( ppp, s.getLatex(ppp) )
             #tmp = s.getLatex(ppp)
             tmp = s.getInlineLatex(ppp)#, limit = 1, err_sig_figs = 3)
+            if tmp.find('<')>-1: #increase to 95% C.L>
+                tmp = s.getInlineLatex(ppp, limit = 2)#, err_sig_figs = 3)
+                if tmp.find('--')>-1:
+                    tmp = tmp.replace('---', '-')
+                else:
+                    tmp = r'%s\ ({\rm 95\%% C.L.})' %(tmp)
             param_label, curr_val = strip_getdist_latex_str(tmp)
             constraints_table[sind, pind] = r'$%s$' %(curr_val)
             colors_table[sind, pind] = c
@@ -423,6 +429,7 @@ def make_getdist_plot(which_plot,
             curr_table_width = array_of_table_width[axcntr]
             curr_table_col_width = array_of_table_col_width[axcntr]
             curr_table_fontsize = array_to_table_fontsize[axcntr]
+            curr_legcol = legcol[axcntr]
             #curr_contours = array_of_num_plot_contours[axcntr]
             if array_of_titles is not None:
                 curr_title = array_of_titles[axcntr]
@@ -517,7 +524,8 @@ def make_getdist_plot(which_plot,
                         else:
                             plot([], [], color = c, label = l)
                         ##show(); sys.exit()
-                    cax.legend(fontsize = curr_legfsval, framealpha = 1., handlelength = 1.4, handletextpad = 0.4, loc = curr_legloc, )
+                    cax.legend(fontsize = curr_legfsval, framealpha = 1., handlelength = 1.3, handletextpad = 0.2, loc = curr_legloc, ncol = curr_legcol, 
+                                columnspacing = 0.3)
                     axis('off')
                     '''
                     vmin, vmax = 1., max(reqd_delta_z_50_arr)
@@ -578,7 +586,7 @@ def make_getdist_plot(which_plot,
                 
                 curr_ax2=add_subplot_axes(curr_ax, curr_zoom_rect)
                 g.plot_2d(curr_samples_to_plot_strip, p1, p2, ax = curr_ax2, 
-                    filled = curr_filled, 
+                    filled = True, 
                     colors = curr_colors_strip,
                     lims = [xmin, xmax, ymin, ymax], 
                     #contours = curr_contours,
@@ -769,9 +777,11 @@ def get_cosmo_label(cosmo_name):
     cosmo_label_dic = {'lcdm': r'$\Lambda {\rm CDM}$',
                        'mnulcdm': r'$\sum m_{\nu} + \Lambda {\rm CDM}$',
                        'w0walcdm': r'$w_{0} + w_{a} +  {\rm CDM}$',
+                       'w0waomklcdm': r'$w_{0} + w_{a} + \Omega_{k} + {\rm CDM}$',
                        'nefflcdm': r'$N_{\rm eff} + \Lambda {\rm CDM}$',
                        'neffmnulcdm': r'$N_{\rm eff} + \sum m_{\nu} + \Lambda {\rm CDM}$',
                        'w0wamnulcdm': r'$w_{0} + w_{a} + \sum m_{\nu} + {\rm CDM}$',
+                       'w0wamnuomklcdm': r'$w_{0} + w_{a} + \sum m_{\nu} + \Omega_{k} + {\rm CDM}$',
                       }
     return cosmo_label_dic[cosmo_name]
 
