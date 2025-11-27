@@ -478,6 +478,11 @@ def make_getdist_plot(which_plot,
             elif p2 == 'H0':
                 curr_ax.set_ylabel(r'$H_{0}$ [km s$^{-1}$ Mpc$^{-1}$]')
 
+            xlabval = curr_ax.get_xlabel()
+            curr_ax.set_xlabel( xlabval, fontsize = 20)    
+            ylabval = curr_ax.get_ylabel()
+            curr_ax.set_ylabel( ylabval, fontsize = 20)    
+
             if axcntr>0:
                 if curr_param_pairs_to_plot[1] == array_of_params_or_pairs_to_plot[axcntr-1][1]:
                     if not yvisibility: #not param_limits_changed:
@@ -500,7 +505,7 @@ def make_getdist_plot(which_plot,
                 else:
                     lab_fsval = fsval+7
                 #figtext(0.04, 0.5, cosmo_label, fontsize = lab_fsval, rotation = 90., va = 'center')
-                figtext(0.03, 0.5, cosmo_label, fontsize = lab_fsval, rotation = 90., va = 'center')
+                figtext(0.02, 0.5, cosmo_label, fontsize = lab_fsval, rotation = 90., va = 'center')
 
             #g=mark_axlines(g, curr_param_pairs_to_plot, param_dict = param_dict)
 
@@ -773,16 +778,18 @@ def make_whisker(samples_to_plot, params_to_plot, param_dict, baseline_sample_in
 
     return ax
 
-def get_cosmo_label(cosmo_name):
+def get_cosmo_label(cosmo_name, remove_plus = True):
     cosmo_label_dic = {'lcdm': r'$\Lambda {\rm CDM}$',
                        'mnulcdm': r'$\sum m_{\nu} + \Lambda {\rm CDM}$',
                        'w0walcdm': r'$w_{0} + w_{a} +  {\rm CDM}$',
-                       'w0waomklcdm': r'$w_{0} + w_{a} + \Omega_{k} + {\rm CDM}$',
+                       'w0waomklcdm': r'$\Omega_{k} + w_{0} + w_{a} + {\rm CDM}$',
                        'nefflcdm': r'$N_{\rm eff} + \Lambda {\rm CDM}$',
                        'neffmnulcdm': r'$N_{\rm eff} + \sum m_{\nu} + \Lambda {\rm CDM}$',
-                       'w0wamnulcdm': r'$w_{0} + w_{a} + \sum m_{\nu} + {\rm CDM}$',
-                       'w0wamnuomklcdm': r'$w_{0} + w_{a} + \sum m_{\nu} + \Omega_{k} + {\rm CDM}$',
+                       'w0wamnulcdm': r'$\sum m_{\nu} + w_{0} + w_{a} + {\rm CDM}$',
+                       'w0wamnuomklcdm': r'$\sum m_{\nu} + \Omega_{k} + w_{0} + w_{a} + {\rm CDM}$',
                       }
+    if remove_plus:
+        cosmo_label_dic[cosmo_name] = cosmo_label_dic[cosmo_name].replace('+', '')
     return cosmo_label_dic[cosmo_name]
 
 def get_chain_label(chainname, remove_cmb_datachars = False):
@@ -888,7 +895,7 @@ def get_latex_param_str(param):
     'w0': r'$w_{0}$', 'wa': r'$w_{a}$', \
     'tau': r'$\tau_{\rm re}$', 
     'As': r'$A_{\rm s}$', 
-    'logA': r'log(10$^{10}$ A$_{s}$)',
+    'logA': r'log(10$^{10}$ $A_{s}$)',
     #'As': r'log$A_{\rm s}$', 
     'ns': r'$n_{\rm s}$', 'neff': r'$N_{\rm eff}$', \
     'mnu': r'$\sum m_{\nu}$', 'thetastar': r'$\theta_{\ast}$', \
