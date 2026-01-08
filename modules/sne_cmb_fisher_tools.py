@@ -245,8 +245,54 @@ def refine_covs_based_on_cuts(cov_dic_or_cov, good_inds):
         cov_mod = cov_dic_or_cov[good_inds[:, None], good_inds[None,:]]
         return cov_mod
 
+def get_random_samples_given_pdf(x, y, howmanysamples = 100000, burn_in = 5000):
+    import scipy.integrate as integrate
+    import scipy.interpolate as interpolate
 
-def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, perform_random_z_selection = False, z_binning_kind = 'cumulative', unbinned_sne_sim_no = 1, obtain_covs = False, reqd_cov_tags = [0, 1, 2, 3, 4, 5, 6, 7], zmin = -1, zmax = -1):
+    #plot(x, y);show()
+    norm = integrate.simps(y, x) #area under curve for norm
+    y = y/norm #normalise dn/dM here
+
+    cdf = np.asarray([integrate.simps(y[:i+1], x[:i+1]) for i in xrange(len(x))])
+    #print len(cdf)
+    #plot(cdf);show()
+    cdf_inv = interpolate.interp1d(cdf, x)
+
+    random_sample = cdf_inv(np.random.rand(howmanysamples))
+    #plot(random_sample);show()#;sys.exit()
+
+    return random_sample[burn_in:]  
+
+def create_sample_with_underlying_dist(field_underlying, field, bins = None, cat = None, rsval = -1):
+    if rsval != -1:
+        np.random.seed( rsval )
+    counts, bins = np.histogram(field_underlying, bins = bins)
+    bins = bins[:-1] + np.diff(bins)[0]/2.
+
+    delta = np.diff(bins)[0]
+    new_sample_inds = []
+    for currbin, currcount in zip( bins, counts ):
+
+        low, high = currbin - delta/2., currbin + delta/2.
+        inds = np.where( (field >= low) & (field<high) )[0]
+        ##print(low, high, currcount, len(inds), field[inds]); sys.exit()
+        if len(inds) == 0 or currcount == 0: continue
+
+        if len(inds)<=currcount:
+            replace = True
+        else:
+            replace = False        
+        randsample_inds = np.random.choice( inds, currcount, replace = replace)
+        new_sample_inds.extend( randsample_inds )
+        
+    new_sample_inds = np.asarray( new_sample_inds )
+    if cat is not None:
+        cat = np.asarray( cat )
+        return new_sample_inds, cat[:, new_sample_inds]
+    else:
+        return new_sample_inds
+
+def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, perform_random_z_selection = False, z_binning_kind = 'cumulative', unbinned_sne_sim_no = 1, obtain_covs = False, reqd_cov_tags = [0, 1, 2, 3, 4, 5, 6, 7], zmin = -1, zmax = -1, underlying_zdist_for_sampling = None, rsval = -1, inds_to_pick = None):
 
     assert z_binning_kind in ['cumulative', 'individual']
     assert sne_exp in ['lsst_binned', 'lsst_unbinned', 'lsst_v2_unbinned', 'lsst_v2_binned', 'des', 'des_cobaya', 'test', 'roman']
@@ -501,14 +547,38 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
     if stretch_x1_arr is None: stretch_x1_arr = np.zeros( len(z_arr) )
     if color_c_arr is None: color_c_arr = np.zeros( len(z_arr) )
     sne_cat = np.asarray( [sne_arr, z_arr, mu_arr, muerr_stat_arr, muerr_sys_arr, stretch_x1_arr, color_c_arr] )
+    if inds_to_pick is not None:
+        sne_cat = sne_cat[:, inds_to_pick]
     sne_cat, passed_inds = perform_redshift_cuts(zmin, zmax, z_arr, sne_cat)
+
+    if underlying_zdist_for_sampling is not None:
+        #tmpmin, tmpmax = min(underlying_zdist_for_sampling), max(underlying_zdist_for_sampling)
+        tmpmin, tmpmax, tmpbin = 0., 1., 0.1
+        binbin = np.arange(tmpmin, tmpmax, tmpbin)
+        ##print(sne_cat.shape)
+        new_sample_inds, sne_cat = create_sample_with_underlying_dist(underlying_zdist_for_sampling, sne_cat[1], bins = binbin, cat = sne_cat, rsval = rsval)
+    else:
+        new_sample_inds = None
     sne_arr, z_arr, mu_arr, muerr_stat_arr, muerr_sys_arr, stretch_x1_arr, color_c_arr = sne_cat
+
+    if (0):##underlying_zdist_for_sampling is not None:
+        tmpbinbin = np.arange(0., 2, 0.02)
+        hist(underlying_zdist_for_sampling, bins = tmpbinbin, histtype = 'step')
+        hist(z_arr, bins = tmpbinbin, histtype = 'step', color = 'orangered')
+        show(); sys.exit()
 
     if obtain_covs:
         sne_sys_cov_dic = refine_covs_based_on_cuts(sne_sys_cov_dic, passed_inds)
         sne_stat_cov = refine_covs_based_on_cuts(sne_stat_cov, passed_inds)
         sne_tot_cov_dic = refine_covs_based_on_cuts(sne_tot_cov_dic, passed_inds)
         sne_tot_cov_inv_dic = None #20240422 - inverse yet to be implemented. Only needed for Fisher.
+
+        if new_sample_inds is not None:
+            sne_sys_cov_dic = refine_covs_based_on_cuts(sne_sys_cov_dic, new_sample_inds)
+            sne_stat_cov = refine_covs_based_on_cuts(sne_stat_cov, new_sample_inds)
+            sne_tot_cov_dic = refine_covs_based_on_cuts(sne_tot_cov_dic, new_sample_inds)
+            sne_tot_cov_inv_dic = None #20240422 - inverse yet to be implemented. Only needed for Fisher.
+
     #---------
 
     ret_dic = {}
@@ -521,6 +591,7 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
     ret_dic['sne_cov_tag_dic'] = sne_cov_tag_dic
     ret_dic['sne_z_bin_dic'] = z_bin_dic
     ret_dic['sne_params'] = params
+    ret_dic['passed_inds'] = passed_inds
     if obtain_covs:
         ret_dic['sne_sys_cov_dic'] = sne_sys_cov_dic
         ret_dic['sne_stat_cov'] = sne_stat_cov

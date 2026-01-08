@@ -784,10 +784,10 @@ def make_whisker(samples_to_plot, params_to_plot, param_dict, baseline_sample_in
 
 def get_default_param_limits_for_kde(p):
     #param_limits_for_kde = {'w': [-30, 30], 'wa': [-30, 30], 'omegam': [0., 1]}
-    param_limits_for_kde = {'w': [-5, 5], 'wa': [-5, 5], 'omegam': [0., 1.], 'omch2': [0., 1.]}
+    param_limits_for_kde = {'w': [-5, 5], 'wa': [-5, 5], 'omegam': [0., 1.], 'omch2': [0., 1.], 'ombh2': [0., 1.], 'H0': [0., 100.]}
     return param_limits_for_kde[p]
 
-def get_density(samples, params, xmin = None, xmax = None, ymin = None, ymax = None, gridlen = 1000, normalized = False, conts = 5):
+def get_density(samples, params, xmin = None, xmax = None, ymin = None, ymax = None, gridlen = 1000, normalized = False, contours = 5):
     if len(params) == 2:
         p1, p2 = params  
         if xmin is None and xmax is None: xmin, xmax = get_default_param_limits_for_kde(p1)
@@ -795,15 +795,15 @@ def get_density(samples, params, xmin = None, xmax = None, ymin = None, ymax = N
         xarr = np.linspace(xmin, xmax, gridlen)
         yarr = np.linspace(ymin, ymax, gridlen)
         xgrid, ygrid = np.meshgrid(xarr, yarr)
-        density_obj = samples.get2DDensity(params[0], params[1], conts=conts, normalized=normalized)#[0.68, 0.99])
-        #density_obj = samples.get2DDensityGridData(p1, p2, get_density = True, conts=conts, normalized=normalized)#[0.68, 0.99])
-        #zgrid = density_obj.Prob(xarr, yarr, grid = True)
-        result_grid = density_obj(xarr, yarr)
-        ###clf(); imshow(zgrid, extent = [xmin, xmax, ymin, ymax]); colorbar(); show(); sys.exit()
+        #density_obj = samples.get2DDensity(params[0], params[1], contours=contours, normalized=normalized)#[0.68, 0.99])
+        density_obj = samples.get2DDensityGridData(p1, p2, get_density = True, conts=contours, normalized=normalized)#[0.68, 0.99])
+        result_grid = density_obj(xarr, yarr, grid = True)
+        #result_grid = density_obj(xarr, yarr)
+        ###clf(); imshow(result_grid, extent = [xmin, xmax, ymin, ymax]); colorbar(); show(); sys.exit()
         #print(density_obj.integrate(density_obj.P)); sys.exit()
         return xarr, yarr, xgrid, ygrid, result_grid.T
     if len(params) == 3:
-        density_obj = samples.getRawNDDensity(params, conts=conts, normalized=normalized)#[0.68, 0.99])
+        density_obj = samples.getRawNDDensity(params, contours=contours, normalized=normalized)#[0.68, 0.99])
         p1, p2, p3 = params
         a_min, a_max = get_default_param_limits_for_kde(p1)
         b_min, b_max = get_default_param_limits_for_kde(p2)
