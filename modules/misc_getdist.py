@@ -396,7 +396,10 @@ def make_getdist_plot(which_plot,
         #define subplots and plot
         lwval = 0.5
         tr, tc = 1, len( array_of_params_or_pairs_to_plot )
-        fig = figure(figsize = (10., 4.3))
+        if tc>1:
+            fig = figure(figsize = (10., 4.3))
+        else:
+            fig = figure(figsize = (6., 4.5))
 
         '''
         if array_of_param_limits_dic is None:
@@ -495,7 +498,7 @@ def make_getdist_plot(which_plot,
             curr_ax.yaxis.set_major_locator(MaxNLocator(nbins=4))
             curr_ax.xaxis.set_major_locator(MaxNLocator(nbins=4))
 
-            title(r'%s' %(curr_title), fontsize = fsval)
+            if curr_title is not None: title(r'%s' %(curr_title), fontsize = fsval)
             if cosmo_label is not None and axcntr == 0:
                 #xloc, yloc = curr_ax.yaxis.label.get_position()
                 lab_fsval = fsval+5
@@ -552,6 +555,7 @@ def make_getdist_plot(which_plot,
                 constraints_dic, constraints_table, colors_table, col_labels = get_constraints_table(curr_param_pairs_to_plot, curr_samples_to_plot, curr_colors)
 
                 tx, ty = curr_table_locs
+                ###print(curr_table_width); sys.exit()
                 tab_width, tab_height = curr_table_width
                 table = curr_ax.table(cellText=constraints_table, 
                                 colLabels=col_labels, cellLoc = 'center', 
@@ -588,7 +592,7 @@ def make_getdist_plot(which_plot,
                 for iii in curr_sampleinds_for_zoom:
                     curr_samples_to_plot_strip.append( curr_samples_to_plot[iii] )
                     curr_colors_strip.append( curr_colors[iii] )
-                
+
                 curr_ax2=add_subplot_axes(curr_ax, curr_zoom_rect)
                 g.plot_2d(curr_samples_to_plot_strip, p1, p2, ax = curr_ax2, 
                     filled = True, 
@@ -778,6 +782,42 @@ def make_whisker(samples_to_plot, params_to_plot, param_dict, baseline_sample_in
 
     return ax
 
+def get_default_param_limits_for_kde(p):
+    #param_limits_for_kde = {'w': [-30, 30], 'wa': [-30, 30], 'omegam': [0., 1]}
+    param_limits_for_kde = {'w': [-5, 5], 'wa': [-5, 5], 'omegam': [0., 1.], 'omch2': [0., 1.]}
+    return param_limits_for_kde[p]
+
+def get_density(samples, params, xmin = None, xmax = None, ymin = None, ymax = None, gridlen = 1000, normalized = False, conts = 5):
+    if len(params) == 2:
+        p1, p2 = params  
+        if xmin is None and xmax is None: xmin, xmax = get_default_param_limits_for_kde(p1)
+        if ymin is None and ymax is None: ymin, ymax = get_default_param_limits_for_kde(p2)
+        xarr = np.linspace(xmin, xmax, gridlen)
+        yarr = np.linspace(ymin, ymax, gridlen)
+        xgrid, ygrid = np.meshgrid(xarr, yarr)
+        density_obj = samples.get2DDensity(params[0], params[1], conts=conts, normalized=normalized)#[0.68, 0.99])
+        #density_obj = samples.get2DDensityGridData(p1, p2, get_density = True, conts=conts, normalized=normalized)#[0.68, 0.99])
+        #zgrid = density_obj.Prob(xarr, yarr, grid = True)
+        result_grid = density_obj(xarr, yarr)
+        ###clf(); imshow(zgrid, extent = [xmin, xmax, ymin, ymax]); colorbar(); show(); sys.exit()
+        #print(density_obj.integrate(density_obj.P)); sys.exit()
+        return xarr, yarr, xgrid, ygrid, result_grid.T
+    if len(params) == 3:
+        density_obj = samples.getRawNDDensity(params, conts=conts, normalized=normalized)#[0.68, 0.99])
+        p1, p2, p3 = params
+        a_min, a_max = get_default_param_limits_for_kde(p1)
+        b_min, b_max = get_default_param_limits_for_kde(p2)
+        c_min, c_max = get_default_param_limits_for_kde(p3)
+        a_arr = np.linspace(a_min, a_max, gridlen)
+        b_arr = np.linspace(b_min, b_max, gridlen)
+        c_arr = np.linspace(c_min, c_max, gridlen)
+        xs = np.asarray( [a_arr, b_arr, c_arr] ).T
+        print(xs.shape); sys.exit()
+        result_grid = density_obj(xs)
+        return a_arr, b_arr, c_arr, result_grid.T
+
+
+
 def get_cosmo_label(cosmo_name, remove_plus = True):
     cosmo_label_dic = {'lcdm': r'$\Lambda {\rm CDM}$',
                        'mnulcdm': r'$\sum m_{\nu} + \Lambda {\rm CDM}$',
@@ -933,13 +973,12 @@ def get_gauss_mix_from_fisher(param_dict, f_mat, params, labels, fix_params = ['
         cov_mat = np.linalg.inv( f_mat ) 
     '''
     if fix_params is not None:
-        if len(fix_params) > 1:
+        if len(fix_params) >= 1:
             f_mat, params = misc.fix_params(f_mat, params, fix_params)
     if prior_dic is not None:
         f_mat = misc.add_prior(f_mat, params, prior_dic)
 
     cov_mat = np.linalg.inv( f_mat ) 
-    #print( cov_mat ); sys.exit()
     
     #print( params, np.diag(cov_mat)**0.5 )
     params_mean = []

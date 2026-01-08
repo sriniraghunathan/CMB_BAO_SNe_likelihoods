@@ -776,7 +776,7 @@ def make_triangle_plot(F_dic, tr, tc, param_names, param_values_dict, desired_pa
 
     return color_dic, ls_dic
 
-def get_kde(samples, xcol, ycol, xmin = None, xmax = None, ymin = None, ymax = None, xgridlen = 100, ygridlen = 100):
+def get_kde(samples, xcol = None, ycol = None, p1 = None, p2 = None, xmin = None, xmax = None, ymin = None, ymax = None, xgridlen = 500, ygridlen = 500):
     """curr_samples = samples_dic[chainkeyname]
     p = curr_samples.getParamNames()
     def get_kde(samples, xcol, ycol, xmin = None, xmax = None, ymin = None, ymax = None, xgridlen = ):
@@ -808,6 +808,11 @@ def get_kde(samples, xcol, ycol, xmin = None, xmax = None, ymin = None, ymax = N
     """
 
     from scipy.stats import gaussian_kde
+    if xcol is None:
+        assert p1 is not None and p2 is not None
+        paramlist = None
+        print(p1, p2)
+        sys.exit()
     x, y = samples.samples[:, xcol], samples.samples[:, ycol]
     #counts, xedges, yedges = np.histogram2d(x, y, bins = 100)
     kde = gaussian_kde([x,y], bw_method='silverman')
@@ -823,7 +828,7 @@ def get_kde(samples, xcol, ycol, xmin = None, xmax = None, ymin = None, ymax = N
     xy = np.vstack([xgrid.ravel(), ygrid.ravel()])
     zgrid = np.reshape(kde(xy).T, xgrid.shape)
     
-    return xgrid, ygrid, zgrid
+    return xarr, yarr, xgrid, ygrid, zgrid
 
 def make_contour(ax, xgrid, ygrid, zgrid, threshold_arr = [1, 2], filled = True, max_threshold = 1e4, alpha_arr = [0.3, 0.8], color_arr = ['darkgreen', 'darkgreen']):
     threshold_arr.append(max_threshold)
@@ -833,7 +838,7 @@ def make_contour(ax, xgrid, ygrid, zgrid, threshold_arr = [1, 2], filled = True,
     else:
         which_contour = ax.contour
     for cntr, (curr_level, curr_col, curr_alpha) in enumerate( zip( level_arr[:-1], color_arr, alpha_arr) ):
-        print(curr_level, curr_col, curr_alpha)
+        ##print(curr_level, curr_col, curr_alpha)
         which_contour(xgrid, ygrid, zgrid, levels = [curr_level, level_arr[cntr+1]], linewidths = 1., linestyles = ['-'], colors = [curr_col], alpha = curr_alpha)
         if filled:
             ax.contour(xgrid, ygrid, zgrid, levels = [curr_level, level_arr[cntr+1]], linewidths = 0.5, linestyles = '-', colors = [curr_col], alpha = curr_alpha)
