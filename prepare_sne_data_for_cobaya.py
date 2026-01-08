@@ -15,7 +15,7 @@ if (1):
         if sample_based_on_z_from == 'des':
             des_sne_details_dic = sne_cmb_fisher_tools.get_sne_details('des', 0, unbinned_sne_sim_no = 0, obtain_covs = False)
             z_underlying = des_sne_details_dic['sne_zarr']
-            rsval = 1
+            rsval = 1 ##5 ##4 ##1
 
 if (0): #LSST binned
     sne_exp = 'lsst_binned'
@@ -122,7 +122,7 @@ for sim_no in sim_no_arr:
     if (1):###not os.path.exists(cov_opfname):
         sne_details_dic = sne_cmb_fisher_tools.get_sne_details(sne_exp, add_stat_error, unbinned_sne_sim_no = sim_no, obtain_covs = True, reqd_cov_tags = [0], zmin = zmin, zmax = zmax, underlying_zdist_for_sampling = z_underlying, rsval = rsval)
         sne_cov = sne_details_dic['sne_tot_cov_dic'][0]
-        print(sne_details_dic['sne_zarr'].shape, sne_cov.shape); sys.exit()
+        print(sne_details_dic['sne_zarr'].shape, sne_cov.shape); ###sys.exit()
         op_arr = np.concatenate( ([total_sne], sne_cov.ravel()))
         np.savetxt( cov_opfname, op_arr, fmt = '%g' )
     #------------------------------
