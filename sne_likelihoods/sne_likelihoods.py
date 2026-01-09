@@ -40,7 +40,32 @@ class lssty3_sne_mock_binned(LSSTY3_mock):
     Likelihood for LSSTY3 type Ia supernovae sample mock binned.
     """
 
-class lssty3_sne_zmax1_mock(LSSTY3_mock):
+class lssty3_zmax1_sim1(LSSTY3_mock):    
     """
-    Likelihood for LSSTY3 type Ia supernovae sample mock.
+    Likelihood for LSSTY3 type Ia supernovae sample mock binned.
     """
+
+class lssty3_samplebasedonzfromdes_rsval1_sim1(LSSTY3_mock):    
+    """
+    Likelihood for LSSTY3 type Ia supernovae sample mock binned.
+    """
+
+class lssty3_samplebasedonzfromdes_rsval2_sim1(LSSTY3_mock):    
+    """
+    Likelihood for LSSTY3 type Ia supernovae sample mock binned.
+    """
+
+class lssty3_samplebasedonzfromdes_rsval3_sim1(LSSTY3_mock):    
+    """
+    Likelihood for LSSTY3 type Ia supernovae sample mock binned.
+    """
+
+class lssty3_samplebasedonzfromdes_rsval4_sim1(LSSTY3_mock):    
+    """
+    Likelihood for LSSTY3 type Ia supernovae sample mock binned.
+    """
+
+class lssty3_samplebasedonzfromdes_rsval5_sim1(LSSTY3_mock):    
+    """
+    Likelihood for LSSTY3 type Ia supernovae sample mock binned.
+    """    

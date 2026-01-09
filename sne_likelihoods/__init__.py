@@ -1,2 +1,3 @@
-from .sne_likelihoods import lssty3_sne_mock, lssty3_sne_zmax1_mock
+from .sne_likelihoods import lssty3_sne_mock
 from .sne_likelihoods import lssty3_sne_mock_binned
+from .sne_likelihoods import lssty3_zmax1_sim1, lssty3_samplebasedonzfromdes_rsval1_sim1, lssty3_samplebasedonzfromdes_rsval2_sim1, lssty3_samplebasedonzfromdes_rsval3_sim1, lssty3_samplebasedonzfromdes_rsval4_sim1, lssty3_samplebasedonzfromdes_rsval5_sim1
