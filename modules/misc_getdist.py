@@ -787,7 +787,8 @@ def get_default_param_limits_for_kde(p):
     param_limits_for_kde = {'w': [-5, 5], 'wa': [-5, 5], 'omegam': [0., 1.], 'omch2': [0., 1.], 'ombh2': [0., 1.], 'H0': [0., 100.]}
     return param_limits_for_kde[p]
 
-def get_density(samples, params, xmin = None, xmax = None, ymin = None, ymax = None, gridlen = 1000, normalized = False, contours = 5):
+def get_density(samples, params, xmin = None, xmax = None, ymin = None, ymax = None, gridlen = 1000, normalized = False, contours = 5, use_getdist = True):
+    from scipy.stats import gaussian_kde
     if len(params) == 2:
         p1, p2 = params  
         if xmin is None and xmax is None: xmin, xmax = get_default_param_limits_for_kde(p1)
@@ -795,12 +796,22 @@ def get_density(samples, params, xmin = None, xmax = None, ymin = None, ymax = N
         xarr = np.linspace(xmin, xmax, gridlen)
         yarr = np.linspace(ymin, ymax, gridlen)
         xgrid, ygrid = np.meshgrid(xarr, yarr)
-        #density_obj = samples.get2DDensity(params[0], params[1], contours=contours, normalized=normalized)#[0.68, 0.99])
-        density_obj = samples.get2DDensityGridData(p1, p2, get_density = True, conts=contours, normalized=normalized)#[0.68, 0.99])
-        result_grid = density_obj(xarr, yarr, grid = True)
-        #result_grid = density_obj(xarr, yarr)
-        ###clf(); imshow(result_grid, extent = [xmin, xmax, ymin, ymax]); colorbar(); show(); sys.exit()
-        #print(density_obj.integrate(density_obj.P)); sys.exit()
+        if use_getdist:
+            density_obj = samples.get2DDensity(p1, p2, contours=contours, normalized=normalized)#[0.68, 0.99])
+            #density_obj = samples.get2DDensityGridData(p1, p2, get_density = True, conts=contours, normalized=normalized)#[0.68, 0.99])
+            #result_grid = density_obj(xarr, yarr, grid = True)
+            result_grid = density_obj(xarr, yarr)
+            ###clf(); imshow(result_grid, extent = [xmin, xmax, ymin, ymax]); colorbar(); show(); sys.exit()
+            #print(density_obj.integrate(density_obj.P)); sys.exit()
+        else:
+            tmpparams = np.asarray( samples.getParamNames().list() )
+            xcol = np.where( tmpparams == p1)[0][0]
+            ycol = np.where( tmpparams == p2)[0][0]
+            x, y = samples.samples[:, xcol], samples.samples[:, ycol]
+            kde = gaussian_kde([x,y], bw_method='silverman')
+            xy = np.vstack([xgrid.ravel(), ygrid.ravel()])
+            result_grid = np.reshape(kde(xy).T, xgrid.shape).T
+
         return xarr, yarr, xgrid, ygrid, result_grid.T
     if len(params) == 3:
         density_obj = samples.getRawNDDensity(params, contours=contours, normalized=normalized)#[0.68, 0.99])
@@ -851,6 +862,11 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
             curr_lab = 'LSST-Y3-SNe'
         elif ddd == 'lssty3_sne_mock_binned':
             curr_lab = 'LSST-Y3-SNe (Binned)'
+        elif ddd in ['lssty3_zmax1_sim1']:
+            curr_lab = 'LSST-Y3-SNe (zmax)'
+        elif ddd in ['lssty3_samplebasedonzfromdes_rsval1_sim1', 'lssty3_samplebasedonzfromdes_rsval2_sim1', 'lssty3_samplebasedonzfromdes_rsval3_sim1', 'lssty3_samplebasedonzfromdes_rsval4_sim1', 'lssty3_samplebasedonzfromdes_rsval5_sim1']:
+            rsval = int( ddd.split('_')[2].replace('rsval', '') )
+            curr_lab = 'LSST-Y3-SNe (DES-like: %s)' %(rsval)# (Sim 1)'
         elif ddd in ['lssty3snesim1_w0walcdm', 'lssty3snesim1_lcdm']:
             curr_lab = 'LSST-Y3-SNe'# (Sim 1)'
         elif ddd == 'desidr2bao_mock':

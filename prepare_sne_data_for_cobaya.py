@@ -15,7 +15,7 @@ if (1):
         if sample_based_on_z_from == 'des':
             des_sne_details_dic = sne_cmb_fisher_tools.get_sne_details('des', 0, unbinned_sne_sim_no = 0, obtain_covs = False)
             z_underlying = des_sne_details_dic['sne_zarr']
-            rsval = 1 ##5 ##4 ##1
+            rsval = 5 ##1 ##5 ##4 ##1
 
 if (0): #LSST binned
     sne_exp = 'lsst_binned'
@@ -32,15 +32,18 @@ if sample_based_on_z_from is None:
     z_underlying = None
     rsval = -1
 
-cobaya_fd_spt = '/home/sri/.local/lib/python3.9/site-packages/cobaya/likelihoods/sn/'
+#cobaya_fd_spt = '/home/sri/.local/lib/python3.9/site-packages/cobaya/likelihoods/sn/'
+cobaya_fd_spt = '/home/sri/git/CMB_BAO_SNe_likelihoods/sne_likelihoods/'
 cobaya_data_fd_spt = '/home/sri/cobaya/desi/data/sn_data/'
-if os.path.exists( cobaya_fd_spt ): #local
+if os.path.exists( cobaya_data_fd_spt ): #local
     cobaya_fd = cobaya_fd_spt
     cobaya_data_fd = cobaya_data_fd_spt
     machine_name = 'spt'
 else:
-    cobaya_fd = '/usr/local/lib/python3.9/site-packages/cobaya/likelihoods/sn/'
-    cobaya_data_fd = '/Users/sraghunathan/Research/cobaya/desi/data/sn_data/'
+    #cobaya_fd = '/usr/local/lib/python3.9/site-packages/cobaya/likelihoods/sn/'
+    #cobaya_data_fd = '/Users/sraghunathan/Research/cobaya/desi/data/sn_data/'
+    cobaya_fd = 'sne_likelihoods/'
+    cobaya_data_fd = 'data/sn_data/'
     machine_name = 'local'
 
 
@@ -50,43 +53,48 @@ for sim_no in sim_no_arr:
     sne_details_dic = sne_cmb_fisher_tools.get_sne_details(sne_exp, add_stat_error, unbinned_sne_sim_no = sim_no, obtain_covs = False, zmin = zmin, zmax = zmax, underlying_zdist_for_sampling = z_underlying, rsval = rsval)
     print(sne_details_dic.keys())
 
+    def modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from):
+        if zmin != -1:
+            exp_dr_str = '%s_zim%g' %(exp_dr_str, zmin)
+        if zmax != -1:
+            exp_dr_str = '%s_zmax%g' %(exp_dr_str, zmax)
+        if sample_based_on_z_from is not None:
+            exp_dr_str = '%s_samplebasedonzfrom%s_rsval%s' %(exp_dr_str, sample_based_on_z_from, rsval)
+        return exp_dr_str
+
     if sne_exp == 'lsst_unbinned':
         exp_dr_str = 'LSSTY3'
+        exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from)
         op_fd = '%s/%s_sim%s/' %(cobaya_data_fd, exp_dr_str, sim_no)
         #opfname_suff = '%s_SN_sim%s.csv' %(exp_dr_str, sim_no)
     elif sne_exp == 'lsst_binned':
         exp_dr_str = 'LSSTY3_binned'
+        exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from)
         op_fd = '%s/%s_sim%s/' %(cobaya_data_fd, exp_dr_str, sim_no)
         #opfname_suff = '%s_SN_sim%s.csv' %(exp_dr_str, sim_no)
     elif sne_exp == 'lsst_v2_unbinned':
         exp_dr_str = 'LSSTY3_v2'
+        exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from)
         op_fd = '%s/%s_sim%s/' %(cobaya_data_fd, exp_dr_str, sim_no)
         #opfname_suff = '%s_SN_sim%s.csv' %(exp_dr_str, sim_no)
     elif sne_exp == 'lsst_v2_binned':
         exp_dr_str = 'LSSTY3_v2_binned'
+        exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from)
         op_fd = '%s/%s_sim%s/' %(cobaya_data_fd, exp_dr_str, sim_no)
         #opfname_suff = '%s_SN_sim%s.csv' %(exp_dr_str, sim_no)
     elif sne_exp == 'des':
         exp_dr_str = 'DESY5'
+        exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from)
         op_fd = '%s/%s_sim/' %(cobaya_data_fd, exp_dr_str)
         #opfname_suff = '%s_SN_sim.csv' %(exp_dr_str)
 
-
-    op_fd = op_fd.strip('/')
-    if zmin != -1:
-        op_fd = '%s_zim%g' %(op_fd, zmin)
-        exp_dr_str = '%s_zim%g' %(exp_dr_str, zmin)
-    if zmax != -1:
-        op_fd = '%s_zmax%g' %(op_fd, zmax)
-        exp_dr_str = '%s_zmax%g' %(exp_dr_str, zmax)
-    if sample_based_on_z_from is not None:
-        op_fd = '%s_samplebasedonzfrom%s_rsval%s' %(op_fd, sample_based_on_z_from, rsval)
-        exp_dr_str = '%s_samplebasedonzfrom%s_rsval%s' %(exp_dr_str, sample_based_on_z_from, rsval)
 
     if sne_exp == 'des':
         opfname_suff = '%s_SN_sim.csv' %(exp_dr_str)
     else:
         opfname_suff = '%s_SN_sim%s.csv' %(exp_dr_str, sim_no)
+
+    print(op_fd); ###sys.exit()
 
     if not os.path.exists(op_fd): os.system('mkdir -p %s' %(op_fd))
 
@@ -153,6 +161,7 @@ for sim_no in sim_no_arr:
     #------------------------------
 
     #------------------------------
+    '''
     #xxx.py in /usr/local/lib/python3.9/site-packages/cobaya/likelihoods/sn
     line_arr = ['from .pantheonplus import PantheonPlus',
                 'class %s_sim%s(PantheonPlus):' %(exp_dr_str, sim_no),
@@ -176,24 +185,32 @@ for sim_no in sim_no_arr:
     for line in line_arr:
         opf.writelines('%s\n' %(line))
     opf.close()
+    '''
     #------------------------------
 
     #------------------------------
     if machine_name == 'local': #transfer to spt
+        pass
+        """
         #data folder
         #cmd = 'rsync -trvz %s spt:%s' %(op_fd.strip('/'), cobaya_data_fd_spt)
         cmd = 'rsync -trvz %s spt:%s' %(op_fd, cobaya_data_fd_spt)
         print(cmd); ###sys.exit()
         os.system(cmd)
+        """
 
+        """
         #yaml and py files
         cmd = 'rsync -trvz %s spt:%s/' %(yaml_opfname, cobaya_fd_spt)
         print(cmd)
         os.system(cmd)
+        """
 
+        """
         cmd = 'rsync -trvz %s spt:%s/' %(py_opfname, cobaya_fd_spt)
         print(cmd)
         os.system(cmd)
+        """
 
     #------------------------------
     #diagonal cov
