@@ -1024,11 +1024,12 @@ def get_camb_cl_and_derivatives(params, param_dict, param_steps_dict = None, ste
             param_dict_high[ppp] = pval_high
             print('\t\tvalues: fid=%g, low=%g, high=%g, step=%g' %(pval, pval_low, pval_high, pval_step)); ##sys.exit()
 
-            dummypars, cl_mod_dic_low = get_camb_cl(param_dict_low, which_spectra, thetastar_or_cosmomctheta_or_h = thetastar_or_cosmomctheta_or_h)
-            dummypars, cl_mod_dic_high = get_camb_cl(param_dict_high, which_spectra, thetastar_or_cosmomctheta_or_h = thetastar_or_cosmomctheta_or_h)
+            dummypars, cl_mod_dic_low = get_camb_cl(param_dict_low, which_spectra, thetastar_or_cosmomctheta_or_h = thetastar_or_cosmomctheta_or_h, delta_l = delta_l)
+            dummypars, cl_mod_dic_high = get_camb_cl(param_dict_high, which_spectra, thetastar_or_cosmomctheta_or_h = thetastar_or_cosmomctheta_or_h, delta_l = delta_l)
 
             cl_deriv_dic[ppp] = {}
             for XX in cl_dic: #loop over TT, EE, BB, TE, and lensing
+                if XX == 'els': continue
                 cl_deriv_dic[ppp][XX] = (cl_mod_dic_high[XX] - cl_mod_dic_low[XX]) / (2*pval_step)
                 print('\t\t\t%s:' %(XX), cl_deriv_dic[ppp][XX])
 
