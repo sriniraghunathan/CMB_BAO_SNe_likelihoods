@@ -997,7 +997,7 @@ def get_camb_cl_and_derivatives(params, param_dict, param_steps_dict = None, ste
 
     #Fiducial Cl
     print('\nGet fiducial CAMB power spectra. Spectra = %s' %(which_spectra))
-    pars, cl_dic = get_camb_cl(param_dict, which_spectra, thetastar_or_cosmomctheta_or_h = thetastar_or_cosmomctheta_or_h)
+    pars, cl_dic = get_camb_cl(param_dict, which_spectra, thetastar_or_cosmomctheta_or_h = thetastar_or_cosmomctheta_or_h, delta_l = delta_l)
 
     cl_deriv_dic = None
     if get_derivatives: #derivatives
