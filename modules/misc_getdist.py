@@ -135,7 +135,7 @@ def strip_getdist_latex_str(later_str, what_kind_of_constraint = 'full'):
 
     return param_label, curr_val
 
-def get_constraints_table(params_to_plot, sample_arr_to_plot, color_arr = None):
+def get_constraints_table(params_to_plot, sample_arr_to_plot, color_arr = None, rounding_dic = {}):
     if color_arr is None:
         color_arr = np.tile(None, len( sample_arr_to_plot) )
     #get the constraints
@@ -156,6 +156,11 @@ def get_constraints_table(params_to_plot, sample_arr_to_plot, color_arr = None):
                     tmp = tmp.replace('---', '-')
                 else:
                     tmp = r'%s\ ({\rm 95\%% C.L.})' %(tmp)
+            else:
+                if ppp in rounding_dic:
+                    errval = float(tmp.split('pm')[1])
+                    errval_rounded = round(errval, rounding_dic[ppp])
+                    tmp = tmp.replace('%g' %(errval), '%s' %(errval_rounded))
             param_label, curr_val = strip_getdist_latex_str(tmp)
             constraints_table[sind, pind] = r'$%s$' %(curr_val)
             colors_table[sind, pind] = c
@@ -374,9 +379,10 @@ def make_getdist_plot(which_plot,
 
         if write_errors_on_diagonal: #get constraints
             constraints_dic, constraints_table, colors_table, col_labels = get_constraints_table(params_or_pairs_to_plot, samples_to_plot, color_arr)        
+            ##print(constraints_table); sys.exit()
             g = write_errors_in_diagonal_posteriors(g, params_or_pairs_to_plot, color_arr, constraints_dic, legfsval = diagonal_errors_fsval, ncol=1, legloc = diagonal_errors_legloc)
         g = mark_axlines(g, params_or_pairs_to_plot, param_dict = param_dict)
-
+        
         '''
         print(g.subplots)
         leg_ax = g.subplots[1,1]
