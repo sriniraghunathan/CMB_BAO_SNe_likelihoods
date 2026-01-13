@@ -69,3 +69,22 @@ class lssty3_samplebasedonzfromdes_rsval5_sim1(LSSTY3_mock):
     """
     Likelihood for LSSTY3 type Ia supernovae sample mock binned.
     """    
+
+class lssty3_sim2(LSSTY3_mock):    
+    """
+    Likelihood for LSSTY3 type Ia supernovae sample mock binned.
+    """
+class lssty3_sim3(LSSTY3_mock):    
+    """
+    Likelihood for LSSTY3 type Ia supernovae sample mock binned.
+    """
+
+class lssty3_sim4(LSSTY3_mock):    
+    """
+    Likelihood for LSSTY3 type Ia supernovae sample mock binned.
+    """
+
+class lssty3_sim5(LSSTY3_mock):    
+    """
+    Likelihood for LSSTY3 type Ia supernovae sample mock binned.
+    """        

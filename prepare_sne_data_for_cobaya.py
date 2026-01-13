@@ -6,10 +6,10 @@ zmin, zmax = -1, -1
 sample_based_on_z_from = None
 if (1):
     sne_exp = 'lsst_unbinned'
-    sim_no_arr = [1]##, 2, 3, 4, 5]
+    sim_no_arr = [3, 4, 5] ##[1]##, 2, 3, 4, 5]
     if (0): #removing high-z
         zmax = 1.
-    if (1): #sample based on DES
+    if (0): #sample based on DES
         sample_based_on_z_from = 'des'
 
         if sample_based_on_z_from == 'des':
