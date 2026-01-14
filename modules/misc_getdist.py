@@ -373,6 +373,7 @@ def make_getdist_plot(which_plot,
                         param_limits = param_limits_dic, \
                         contour_colors=color_arr, 
                         framealpha = 1., 
+                        legend_loc = legloc, 
                         #analysis_settings={'ignore_rows': 0.5},
                         #contour_ls = ls_arr, contour_lw = lw_arr, legend_ncol = len(param_names), param_limits = param_limits_dic, 
                         )
@@ -382,6 +383,7 @@ def make_getdist_plot(which_plot,
             ##print(constraints_table); sys.exit()
             g = write_errors_in_diagonal_posteriors(g, params_or_pairs_to_plot, color_arr, constraints_dic, legfsval = diagonal_errors_fsval, ncol=1, legloc = diagonal_errors_legloc)
         g = mark_axlines(g, params_or_pairs_to_plot, param_dict = param_dict)
+        g.settings.legend_fontsize = legfsval
         
         '''
         print(g.subplots)
@@ -873,6 +875,9 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
         elif ddd in ['lssty3_samplebasedonzfromdes_rsval1_sim1', 'lssty3_samplebasedonzfromdes_rsval2_sim1', 'lssty3_samplebasedonzfromdes_rsval3_sim1', 'lssty3_samplebasedonzfromdes_rsval4_sim1', 'lssty3_samplebasedonzfromdes_rsval5_sim1']:
             rsval = int( ddd.split('_')[2].replace('rsval', '') )
             curr_lab = 'LSST-Y3-SNe (DES-like: %s)' %(rsval)# (Sim 1)'
+        elif ddd in ['lssty3_sim1', 'lssty3_sim2', 'lssty3_sim3', 'lssty3_sim4', 'lssty3_sim5']:
+            simval = int( ddd.split('_')[-1].replace('sim', '') )
+            curr_lab = 'LSST-Y3-SNe (Sim: %s)' %(simval)
         elif ddd in ['lssty3snesim1_w0walcdm', 'lssty3snesim1_lcdm']:
             curr_lab = 'LSST-Y3-SNe'# (Sim 1)'
         elif ddd == 'desidr2bao_mock':
