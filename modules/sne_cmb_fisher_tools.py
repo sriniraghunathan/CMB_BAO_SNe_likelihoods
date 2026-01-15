@@ -414,7 +414,7 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
             sne_cov_tag_dic = {0: 'Stat + sys-All'}
 
     elif sne_exp in des_exp_arr:
-        if sne_exp == ['des', 'des_moddatavector']:
+        if sne_exp in ['des', 'des_moddatavector']:
             sne_fd = 'data/DES_SNIa/'
             sne_details_fname = '%s/hubble_diagram.txt' %(sne_fd)
             sne_arr, z_arr, mu_arr, muerr_stat_arr, muerr_vpec_arr, muerr_sys_arr = np.loadtxt(sne_details_fname, skiprows = 9, usecols = [1, 4, 5, 6, 7, 8], unpack = True)
