@@ -1,7 +1,7 @@
 from pylab import *
 import numpy as np, sys, os, copy, scipy as sc, pandas as pd
 from astropy import constants as const
-from astropy import units as u
+from astropy import units as u, cosmology
 from astropy import coordinates as coord
 import copy
 import astropy
@@ -292,10 +292,28 @@ def create_sample_with_underlying_dist(field_underlying, field, bins = None, cat
     else:
         return new_sample_inds
 
-def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, perform_random_z_selection = False, z_binning_kind = 'cumulative', unbinned_sne_sim_no = 1, obtain_covs = False, reqd_cov_tags = [0, 1, 2, 3, 4, 5, 6, 7], zmin = -1, zmax = -1, underlying_zdist_for_sampling = None, rsval = -1, inds_to_pick = None):
+def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, perform_random_z_selection = False, z_binning_kind = 'cumulative', unbinned_sne_sim_no = 1, obtain_covs = False, reqd_cov_tags = [0, 1, 2, 3, 4, 5, 6, 7], zmin = -1, zmax = -1, underlying_zdist_for_sampling = None, rsval = -1, inds_to_pick = None, replace_data_vector_with_current_model = False, param_dict = None):
+
+    def get_moddatavector_expnames(exparr):
+        exparr_more = ['%s_moddatavector' %(tmpexp) for tmpexp in exparr]
+        exparr.extend( exparr_more )
+        return exparr
 
     assert z_binning_kind in ['cumulative', 'individual']
-    assert sne_exp in ['lsst_binned', 'lsst_unbinned', 'lsst_v2_unbinned', 'lsst_v2_binned', 'des', 'des_cobaya', 'test', 'roman']
+    
+    possible_sne_exp_arr = ['lsst_binned', 'lsst_unbinned', 'lsst_v2_unbinned', 'lsst_v2_binned', 'des', 'des_cobaya', 'test', 'roman']
+    possible_sne_exp_arr = get_moddatavector_expnames(possible_sne_exp_arr)
+
+    lsst_binned_exp_arr = ['lsst_binned', 'lsst_v2_binned']
+    lsst_binned_exp_arr = get_moddatavector_expnames(lsst_binned_exp_arr)
+    
+    lsst_unbinned_exp_arr = ['lsst_unbinned', 'lsst_v2_unbinned']
+    lsst_unbinned_exp_arr = get_moddatavector_expnames(lsst_unbinned_exp_arr)
+
+    des_exp_arr = ['des', 'des_cobaya', 'des_moddatavector', 'des_cobaya_moddatavector']
+    des_exp_arr = get_moddatavector_expnames(des_exp_arr)
+
+    assert sne_exp in possible_sne_exp_arr
 
     print('Reading and process details for sne_exp = %s' %(sne_exp))
 
@@ -311,7 +329,7 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
             params = np.asarray( ['omega_m', 'ws'] )
 
     #SNe details
-    if sne_exp == 'lsst_binned':
+    if sne_exp in lsst_binned_exp_arr:
         #params = np.asarray( ['omch2', 'ws', 'wa', 'M'] )
         sne_fd = 'data/lsst_SNe/'
         sne_details_fname = '%s/SNIa_distances.txt' %(sne_fd)
@@ -330,7 +348,7 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
                            # 8: 'Stat + sys-Cal'
                           }        
     
-    elif sne_exp in ['lsst_unbinned', 'lsst_v2_unbinned', 'lsst_v2_binned']:
+    elif sne_exp in lsst_unbinned_exp_arr:
         '''
         sne_fd = 'data/lsst_SNe_unbinned/'
         sne_details_fname = '%s/FITOPT000_MUOPT000.FITRES' %(sne_fd)
@@ -341,15 +359,15 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
         stretch_x1_arr, color_c_arr = unbinned_rec['x1'], unbinned_rec['c']
         '''
         #params = np.concatenate( (params, ['alpha', 'beta']) )
-        if sne_exp == 'lsst_unbinned':
+        if sne_exp.find( 'lsst_unbinned' )>-1:
             parent_sne_fd = 'data/lsst_SNe_unbinned/PLASTICC_COMBINED_CWR/'
             sne_fd = '%s/7_CREATE_COV/LSST_UNBINNED_COV_BBC_SIMDATA_PHOTOZ_%d/output/' %(parent_sne_fd, unbinned_sne_sim_no)
             skiprows = 5
-        elif sne_exp == 'lsst_v2_unbinned':
+        elif sne_exp.find( 'lsst_v2_unbinned' )>-1:
             parent_sne_fd = 'data/lsst_v2_SNe_unbinned/PLASTICC_COMBINED_CWR/'
             sne_fd = '%s/7_CREATE_COV/LSST_UNBINNED_COV/output/LSST_UNBINNED_COV_BBC_SIMDATA_PHOTOZ_OUTPUT_BBCFIT-%04d/' %(parent_sne_fd, unbinned_sne_sim_no)
             skiprows = 10
-        elif sne_exp == 'lsst_v2_binned':
+        elif sne_exp.find( 'lsst_v2_binned' )>-1:
             parent_sne_fd = 'data/lsst_v2_SNe_unbinned/PLASTICC_COMBINED_CWR/'
             sne_fd = '%s/7_CREATE_COV/LSST_BINNED_COV/output/LSST_BINNED_COV_BBC_SIMDATA_PHOTOZ_OUTPUT_BBCFIT-%04d/' %(parent_sne_fd, unbinned_sne_sim_no)
             skiprows = 9
@@ -369,10 +387,10 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
             return np.asarray( fitsrec_stretch_x1_arr[association_inds] ), np.asarray( fitsrec_color_c_arr[association_inds] )
 
         sne_details_fname = '%s/hubble_diagram.txt' %(sne_fd)
-        if sne_exp in ['lsst_unbinned', 'lsst_v2_unbinned']: #hubble diagram
+        if sne_exp.find( 'lsst_unbinned' )>-1 or sne_exp.find( 'lsst_v2_unbinned' )>-1: #hubble diagram
             sne_arr, z_arr, mu_arr, muerr_stat_arr, muerr_vpec_arr, muerr_sys_arr = np.loadtxt(sne_details_fname, skiprows = skiprows, usecols = [1, 3, 5, 6, 7, 8], unpack = True)
             #stretch_x1_arr, color_c_arr = get_sne_color_stretch(sne_arr, sim_no = unbinned_sne_sim_no)
-        elif sne_exp in ['lsst_v2_binned']:
+        elif sne_exp.find('lsst_v2_binned')>-1:
             sne_arr, z_arr, mu_arr, muerr_stat_arr, muerr_sys_arr = np.loadtxt(sne_details_fname, skiprows = skiprows, usecols = [1, 2, 4, 5, 6], unpack = True)
         stretch_x1_arr, color_c_arr = np.zeros(len(sne_arr)), np.zeros(len(sne_arr))
 
@@ -395,8 +413,8 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
         else:       
             sne_cov_tag_dic = {0: 'Stat + sys-All'}
 
-    elif sne_exp in ['des', 'des_cobaya']:
-        if sne_exp == 'des':
+    elif sne_exp in des_exp_arr:
+        if sne_exp == ['des', 'des_moddatavector']:
             sne_fd = 'data/DES_SNIa/'
             sne_details_fname = '%s/hubble_diagram.txt' %(sne_fd)
             sne_arr, z_arr, mu_arr, muerr_stat_arr, muerr_vpec_arr, muerr_sys_arr = np.loadtxt(sne_details_fname, skiprows = 9, usecols = [1, 4, 5, 6, 7, 8], unpack = True)
@@ -472,7 +490,7 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
         sne_cov_tag_dic = {0: 'Stat + sys-All', 
                           }
 
-    print(obtain_covs); ##sys.exit()
+    ###print(obtain_covs); sys.exit()
     if obtain_covs:
         #stat cov
         sne_stat_cov = np.diag(muerr_stat_arr**2.)
@@ -491,7 +509,7 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
         else:
             #sys cov
             sne_tot_cov_inv_dic = {}
-        
+
         sne_tot_cov_inv_fname_modified = False
         for curr_cov_tag in sne_cov_tag_dic:
 
@@ -499,12 +517,13 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
 
             print('\t\tgetting the covariance and cov inv for tag = %s (%s)' %(curr_cov_tag, sne_cov_tag_dic[curr_cov_tag]))
 
-            if sne_exp == 'lsst_binned':
+
+            if sne_exp in lsst_unbinned_exp_arr:
                 sne_cov_fname = '%s/covsys_%03d.txt' %(sne_fd, curr_cov_tag)
-            elif sne_exp in ['lsst_unbinned', 'lsst_v2_unbinned', 'lsst_v2_binned']:
+            elif sne_exp in lsst_unbinned_exp_arr:
                 #sne_cov_fname = '%s/covsys_%03d.txt' %(sne_fd, curr_cov_tag)
                 sne_cov_fname = '%s/covsys_%03d.txt' %(sne_fd, curr_cov_tag)
-            elif sne_exp in ['des', 'des_cobaya']:
+            elif sne_exp in des_exp_arr:
                 sne_cov_fname = '%s/covsys_%03d.txt' %(sne_fd, curr_cov_tag)
                 sne_cov_inv_fname = '%s/covtot_inv_%03d.txt' %(sne_fd, curr_cov_tag)
             elif sne_exp == 'test':
@@ -560,6 +579,14 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
     else:
         new_sample_inds = None
     sne_arr, z_arr, mu_arr, muerr_stat_arr, muerr_sys_arr, stretch_x1_arr, color_c_arr = sne_cat
+    if replace_data_vector_with_current_model: #20260115 - replace the fiducial data vector with the currrent cosmo model
+        assert param_dict is not None
+        mu_arr_current_model = get_distance_modulus( z_arr, param_dict, baselinecosmo = 'Flatw0waCDM', use_hsq_units = True )
+        if (0):
+            plot( z_arr, mu_arr, 'k.', ls = 'None')
+            plot( z_arr, mu_arr_current_model, 'r.', ls = 'None')
+            show(); sys.exit()
+        mu_arr = np.copy( mu_arr_current_model )
 
     if (0):##underlying_zdist_for_sampling is not None:
         tmpbinbin = np.arange(0., 2, 0.02)
@@ -601,6 +628,13 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
 
     return ret_dic
 
+def get_distance_modulus( zarr, param_dict, baselinecosmo = 'Flatw0waCDM', use_hsq_units = True ):
+    distance_modulus_arr = []
+    for zcntr, z in enumerate(zarr):
+        cosmo = set_cosmo(param_dict, baselinecosmo = baselinecosmo, use_hsq_units = use_hsq_units)
+        curr_dist_mod = cosmo.distmod(z).value
+        distance_modulus_arr.append( curr_dist_mod )
+    return distance_modulus_arr
 
 def get_distance_modulus_derivatives(zarr, param_dict, params, stretch_x1arr = None, color_carr = None, stepsize_frac = 0.01, baselinecosmo = 'Flatw0waCDM', use_hsq_units = True):
     """    

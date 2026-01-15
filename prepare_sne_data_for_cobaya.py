@@ -4,9 +4,13 @@ import sne_cmb_fisher_tools, misc
 
 zmin, zmax = -1, -1
 sample_based_on_z_from = None
+replace_data_vector_with_current_model = False
+paramfile = 'data/params_cobaya.ini'
+param_dict = misc.get_param_dict(paramfile)
+
 if (1):
-    sne_exp = 'lsst_unbinned'
-    sim_no_arr = [5] ##[1]##, 2, 3, 4, 5]
+    sne_exp = 'lsst_unbinned_moddatavector' #'lsst_unbinned'
+    sim_no_arr = [1] ##[1]##, 2, 3, 4, 5]
     if (0): #removing high-z
         zmax = 1.
     if (0): #sample based on DES
@@ -27,6 +31,9 @@ if (0): #For Rick and Ayan
 if (0):
     sne_exp = 'des'
     sim_no_arr = [0]
+
+if sne_exp.find('moddatavector')>-1:
+    replace_data_vector_with_current_model = True
 
 if sample_based_on_z_from is None:
     z_underlying = None
@@ -50,10 +57,12 @@ else:
 for sim_no in sim_no_arr:
     print('\n\nSim = %s' %(sim_no))
     add_stat_error = 0
-    sne_details_dic = sne_cmb_fisher_tools.get_sne_details(sne_exp, add_stat_error, unbinned_sne_sim_no = sim_no, obtain_covs = False, zmin = zmin, zmax = zmax, underlying_zdist_for_sampling = z_underlying, rsval = rsval)
+    sne_details_dic = sne_cmb_fisher_tools.get_sne_details(sne_exp, add_stat_error, unbinned_sne_sim_no = sim_no, obtain_covs = False, zmin = zmin, zmax = zmax, underlying_zdist_for_sampling = z_underlying, rsval = rsval, replace_data_vector_with_current_model = replace_data_vector_with_current_model, param_dict = param_dict)
     print(sne_details_dic.keys())
 
-    def modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from):
+    def modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from, replace_data_vector_with_current_model = False):
+        if replace_data_vector_with_current_model:
+            exp_dr_str = '%s_moddatavector' %(exp_dr_str)
         if zmin != -1:
             exp_dr_str = '%s_zim%g' %(exp_dr_str, zmin)
         if zmax != -1:
@@ -62,29 +71,29 @@ for sim_no in sim_no_arr:
             exp_dr_str = '%s_samplebasedonzfrom%s_rsval%s' %(exp_dr_str, sample_based_on_z_from, rsval)
         return exp_dr_str
 
-    if sne_exp == 'lsst_unbinned':
+    if sne_exp in ['lsst_unbinned', 'lsst_unbinned_moddatavector']:
         exp_dr_str = 'LSSTY3'
-        exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from)
+        exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from, replace_data_vector_with_current_model = replace_data_vector_with_current_model)
         op_fd = '%s/%s_sim%s/' %(cobaya_data_fd, exp_dr_str, sim_no)
         #opfname_suff = '%s_SN_sim%s.csv' %(exp_dr_str, sim_no)
     elif sne_exp == 'lsst_binned':
         exp_dr_str = 'LSSTY3_binned'
-        exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from)
+        exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from, replace_data_vector_with_current_model = replace_data_vector_with_current_model)
         op_fd = '%s/%s_sim%s/' %(cobaya_data_fd, exp_dr_str, sim_no)
         #opfname_suff = '%s_SN_sim%s.csv' %(exp_dr_str, sim_no)
     elif sne_exp == 'lsst_v2_unbinned':
         exp_dr_str = 'LSSTY3_v2'
-        exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from)
+        exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from, replace_data_vector_with_current_model = replace_data_vector_with_current_model)
         op_fd = '%s/%s_sim%s/' %(cobaya_data_fd, exp_dr_str, sim_no)
         #opfname_suff = '%s_SN_sim%s.csv' %(exp_dr_str, sim_no)
     elif sne_exp == 'lsst_v2_binned':
         exp_dr_str = 'LSSTY3_v2_binned'
-        exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from)
+        exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from, replace_data_vector_with_current_model = replace_data_vector_with_current_model)
         op_fd = '%s/%s_sim%s/' %(cobaya_data_fd, exp_dr_str, sim_no)
         #opfname_suff = '%s_SN_sim%s.csv' %(exp_dr_str, sim_no)
-    elif sne_exp == 'des':
+    elif sne_exp in ['des', 'des_unbinned_moddatavector']:
         exp_dr_str = 'DESY5'
-        exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from)
+        exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from, replace_data_vector_with_current_model = replace_data_vector_with_current_model)
         op_fd = '%s/%s_sim/' %(cobaya_data_fd, exp_dr_str)
         #opfname_suff = '%s_SN_sim.csv' %(exp_dr_str)
 
@@ -94,7 +103,7 @@ for sim_no in sim_no_arr:
     else:
         opfname_suff = '%s_SN_sim%s.csv' %(exp_dr_str, sim_no)
 
-    print(op_fd); ###sys.exit()
+    print(op_fd); ##sys.exit()
 
     if not os.path.exists(op_fd): os.system('mkdir -p %s' %(op_fd))
 
@@ -128,7 +137,7 @@ for sim_no in sim_no_arr:
     cov_opfname = '%s/covsys_000.txt' %(op_fd)
     print(cov_opfname); ##sys.exit()
     if (1):###not os.path.exists(cov_opfname):
-        sne_details_dic = sne_cmb_fisher_tools.get_sne_details(sne_exp, add_stat_error, unbinned_sne_sim_no = sim_no, obtain_covs = True, reqd_cov_tags = [0], zmin = zmin, zmax = zmax, underlying_zdist_for_sampling = z_underlying, rsval = rsval)
+        sne_details_dic = sne_cmb_fisher_tools.get_sne_details(sne_exp, add_stat_error, unbinned_sne_sim_no = sim_no, obtain_covs = True, reqd_cov_tags = [0], zmin = zmin, zmax = zmax, underlying_zdist_for_sampling = z_underlying, rsval = rsval, replace_data_vector_with_current_model = replace_data_vector_with_current_model, param_dict = param_dict)
         sne_cov = sne_details_dic['sne_tot_cov_dic'][0]
         print(sne_details_dic['sne_zarr'].shape, sne_cov.shape); ###sys.exit()
         op_arr = np.concatenate( ([total_sne], sne_cov.ravel()))
