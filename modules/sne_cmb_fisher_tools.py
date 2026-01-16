@@ -581,12 +581,14 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
     sne_arr, z_arr, mu_arr, muerr_stat_arr, muerr_sys_arr, stretch_x1_arr, color_c_arr = sne_cat
     if replace_data_vector_with_current_model: #20260115 - replace the fiducial data vector with the currrent cosmo model
         assert param_dict is not None
-        mu_arr_current_model = get_distance_modulus( z_arr, param_dict, baselinecosmo = 'Flatw0waCDM', use_hsq_units = True )
+        mu_arr_current_model_astropy = get_distance_modulus( z_arr, param_dict, baselinecosmo = 'Flatw0waCDM', use_hsq_units = True, camb_or_astropy = 'astropy' )
+        mu_arr_current_model_camb = get_distance_modulus( z_arr, param_dict, baselinecosmo = 'Flatw0waCDM', use_hsq_units = True, camb_or_astropy = 'camb' )
         if (0):
             plot( z_arr, mu_arr, 'k.', ls = 'None')
-            plot( z_arr, mu_arr_current_model, 'r.', ls = 'None')
+            plot( z_arr, mu_arr_current_model_astropy, 'r.', ls = 'None')
+            plot( z_arr, mu_arr_current_model_camb, 'g.', ls = 'None')
             show(); sys.exit()
-        mu_arr = np.copy( mu_arr_current_model )
+        mu_arr = np.copy( mu_arr_current_model_camb )
 
     if (0):##underlying_zdist_for_sampling is not None:
         tmpbinbin = np.arange(0., 2, 0.02)
@@ -628,12 +630,15 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
 
     return ret_dic
 
-def get_distance_modulus( zarr, param_dict, baselinecosmo = 'Flatw0waCDM', use_hsq_units = True ):
-    distance_modulus_arr = []
-    for zcntr, z in enumerate(zarr):
+def get_distance_modulus( zarr, param_dict, baselinecosmo = 'Flatw0waCDM', use_hsq_units = True, camb_or_astropy = 'camb' ):
+    if camb_or_astropy == 'camb':
+        pars, results = set_camb(param_dict, lmax = 10, WantTransfer = False)
+        angular_diameter_distance = np.asarray( [results.angular_diameter_distance(z) for z in zarr] )
+        distance_modulus_arr = (5 * np.log10((1 + zarr) * (1 + zarr) * angular_diameter_distance * 1e6 / 10.))
+    elif camb_or_astropy == 'astropy':
         cosmo = set_cosmo(param_dict, baselinecosmo = baselinecosmo, use_hsq_units = use_hsq_units)
-        curr_dist_mod = cosmo.distmod(z).value
-        distance_modulus_arr.append( curr_dist_mod )
+        distance_modulus_arr = np.asarray( [cosmo.distmod(z).value for z in zarr] )
+        
     return distance_modulus_arr
 
 def get_distance_modulus_derivatives(zarr, param_dict, params, stretch_x1arr = None, color_carr = None, stepsize_frac = 0.01, baselinecosmo = 'Flatw0waCDM', use_hsq_units = True):

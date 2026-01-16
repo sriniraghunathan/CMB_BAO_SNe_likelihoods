@@ -28,9 +28,9 @@ if (0): #For Rick and Ayan
     #sne_exp = 'lsst_v2_unbinned'
     sne_exp = 'lsst_v2_binned'
     sim_no_arr = [1]
-if (1):
-    sne_exp = 'des'
-    #sne_exp = 'des_moddatavector'  #'des'
+if (0):
+    #sne_exp = 'des'
+    sne_exp = 'des_moddatavector'  #'des'
     sim_no_arr = [0]
 
 if sne_exp.find('moddatavector')>-1:
