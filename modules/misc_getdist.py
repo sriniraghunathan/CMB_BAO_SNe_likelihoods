@@ -197,6 +197,8 @@ def make_getdist_plot(which_plot,
                      param_dict = None, param_limits_dic = None, 
                      labels = None, 
                      color_arr = ['sandybrown', 'tab:red', 'black', 'darkgreen', 'tab:blue'], 
+                     line_args = None,
+                     ls_arr = ['-'],
                      filled = True, 
                      alpha_fill = 0.8, 
                      fsval = 12, legfsval = 12, 
@@ -293,7 +295,9 @@ def make_getdist_plot(which_plot,
                        lims = [xmin, xmax, ymin, ymax], 
                        legend_labels = '',#labels,
                        colors=color_arr, 
-                       #contour_ls = ls_arr, contour_lw = lw_arr, legend_ncol = len(param_names),s
+                       #line_args = line_args, 
+                       ls = ls_arr,
+                       #contour_lw = lw_arr, legend_ncol = len(param_names),
                        )
 
             paramnames = params_or_pairs_to_plot
@@ -374,6 +378,8 @@ def make_getdist_plot(which_plot,
                         contour_colors=color_arr, 
                         framealpha = 1., 
                         legend_loc = legloc, 
+                        #ls = ls_arr, 
+                        line_args = line_args, 
                         #analysis_settings={'ignore_rows': 0.5},
                         #contour_ls = ls_arr, contour_lw = lw_arr, legend_ncol = len(param_names), param_limits = param_limits_dic, 
                         )
@@ -866,6 +872,7 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
     chain_lab = ''
     for ddd in dataset_split:
         ###print(ddd); 
+        print(ddd)
         if ddd == 'lssty3_sne_mock':
             curr_lab = 'LSST-Y3-SNe'
         elif ddd == 'lssty3_sne_mock_binned':
@@ -877,8 +884,8 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
             curr_lab = 'LSST-Y3-SNe (DES-like: %s)' %(rsval)# (Sim 1)'
         elif ddd in ['lssty3_sim1', 'lssty3_sim2', 'lssty3_sim3', 'lssty3_sim4', 'lssty3_sim5']:
             simval = int( ddd.split('_')[-1].replace('sim', '') )
-            curr_lab = 'LSST-Y3-SNe (Sim: %s)' %(simval)
-        elif ddd in ['lssty3snesim1_w0walcdm', 'lssty3snesim1_lcdm']:
+            curr_lab = 'LSST-Y3-SNe (Mock: %s)' %(simval)
+        elif ddd in ['lssty3snesim1_w0walcdm', 'lssty3snesim1_lcdm', 'lssty3snesim1_lcdm', 'lssty3_moddatavector_sim1']:
             curr_lab = 'LSST-Y3-SNe'# (Sim 1)'
         elif ddd == 'desidr2bao_mock':
             curr_lab = 'DESI-DR2-BAO'
@@ -886,8 +893,8 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
             curr_lab = 'DESI-DR3-BAO'
         elif ddd in ['desy5sne_lcdm', 'desy5sne_w0walcdm']:
             curr_lab = 'DES-Y5-SNe (Data)'
-        elif ddd in ['desy5snesim_w0walcdm', 'desy5snesim_lcdm']:
-            curr_lab = 'DES-Y5-SNe (Sim)'
+        elif ddd in ['desy5snesim_w0walcdm', 'desy5snesim_lcdm', 'desy5_moddatavector_sim0']:
+            curr_lab = 'DES-Y5-SNe (Mock)'
         else: #CMB
             cmb_exp_name, cmb_dataset = ddd.split('-')
             curr_lab = '%s-%s' %(cmb_exp_dic[cmb_exp_name], cmb_dataset)
