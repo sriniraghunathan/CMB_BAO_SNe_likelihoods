@@ -21,8 +21,9 @@ if (1):
             z_underlying = des_sne_details_dic['sne_zarr']
             rsval = 5 ##1 ##5 ##4 ##1
 
-if (0): #LSST binned
+if (1): #LSST binned
     sne_exp = 'lsst_binned'
+    sne_exp = 'lsst_binned_moddatavector'
     sim_no_arr = [1]
 if (0): #For Rick and Ayan
     #sne_exp = 'lsst_v2_unbinned'
@@ -77,7 +78,7 @@ for sim_no in sim_no_arr:
         exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from, replace_data_vector_with_current_model = replace_data_vector_with_current_model)
         op_fd = '%s/%s_sim%s/' %(cobaya_data_fd, exp_dr_str, sim_no)
         #opfname_suff = '%s_SN_sim%s.csv' %(exp_dr_str, sim_no)
-    elif sne_exp == 'lsst_binned':
+    elif sne_exp in ['lsst_binned', 'lsst_binned_moddatavector']:
         exp_dr_str = 'LSSTY3_binned'
         exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from, replace_data_vector_with_current_model = replace_data_vector_with_current_model)
         op_fd = '%s/%s_sim%s/' %(cobaya_data_fd, exp_dr_str, sim_no)

@@ -348,7 +348,7 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
                            # 8: 'Stat + sys-Cal'
                           }        
     
-    elif sne_exp in lsst_unbinned_exp_arr:
+    elif sne_exp in lsst_unbinned_exp_arr or sne_exp in lsst_binned_exp_arr:
         '''
         sne_fd = 'data/lsst_SNe_unbinned/'
         sne_details_fname = '%s/FITOPT000_MUOPT000.FITRES' %(sne_fd)
@@ -518,9 +518,9 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
             print('\t\tgetting the covariance and cov inv for tag = %s (%s)' %(curr_cov_tag, sne_cov_tag_dic[curr_cov_tag]))
 
 
-            if sne_exp in lsst_unbinned_exp_arr:
+            if sne_exp in lsst_unbinned_exp_arr or sne_exp in lsst_binned_exp_arr:
                 sne_cov_fname = '%s/covsys_%03d.txt' %(sne_fd, curr_cov_tag)
-            elif sne_exp in lsst_unbinned_exp_arr:
+            elif sne_exp in lsst_unbinned_exp_arr or sne_exp in lsst_binned_exp_arr:
                 #sne_cov_fname = '%s/covsys_%03d.txt' %(sne_fd, curr_cov_tag)
                 sne_cov_fname = '%s/covsys_%03d.txt' %(sne_fd, curr_cov_tag)
             elif sne_exp in des_exp_arr:
