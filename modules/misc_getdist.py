@@ -871,11 +871,10 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
     dataset_split = tmpchainname.split('+')
     chain_lab = ''
     for ddd in dataset_split:
-        ###print(ddd); 
-        print(ddd)
+        ###print(ddd); sys.exit()
         if ddd == 'lssty3_sne_mock':
             curr_lab = 'LSST-Y3-SNe'
-        elif ddd == 'lssty3_sne_mock_binned':
+        elif ddd in ['lssty3_sne_mock_binned', 'lssty3_binned_moddatavector_sim1']:
             curr_lab = 'LSST-Y3-SNe (Binned)'
         elif ddd in ['lssty3_zmax1_sim1']:
             curr_lab = 'LSST-Y3-SNe (zmax)'
