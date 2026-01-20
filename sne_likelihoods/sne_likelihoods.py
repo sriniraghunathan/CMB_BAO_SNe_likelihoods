@@ -85,6 +85,16 @@ class lssty3_binned_moddatavector_sim1(LSSTY3_mock):
     Likelihood for LSSTY3 type Ia supernovae sample mock binned.
     """
 
+class lssty3_moddatavector_zmax1_sim1(LSSTY3_mock):    
+    """
+    Likelihood for LSSTY3 type Ia supernovae sample mock binned.
+    """
+
+class lssty3_moddatavector_samplebasedonzfromdes_rsval1_sim1(LSSTY3_mock):    
+    """
+    Likelihood for LSSTY3 type Ia supernovae sample mock binned.
+    """
+
 class lssty3_sim2(LSSTY3_mock):    
     """
     Likelihood for LSSTY3 type Ia supernovae sample mock binned.

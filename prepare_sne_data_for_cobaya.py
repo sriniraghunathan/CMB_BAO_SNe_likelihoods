@@ -13,15 +13,15 @@ if (1):
     sim_no_arr = [1] ##[1]##, 2, 3, 4, 5]
     if (0): #removing high-z
         zmax = 1.
-    if (0): #sample based on DES
+    if (1): #sample based on DES
         sample_based_on_z_from = 'des'
 
         if sample_based_on_z_from == 'des':
             des_sne_details_dic = sne_cmb_fisher_tools.get_sne_details('des', 0, unbinned_sne_sim_no = 0, obtain_covs = False)
             z_underlying = des_sne_details_dic['sne_zarr']
-            rsval = 5 ##1 ##5 ##4 ##1
+            rsval = 1 ###5 ##1 ##5 ##4 ##1
 
-if (1): #LSST binned
+if (0): #LSST binned
     sne_exp = 'lsst_binned'
     sne_exp = 'lsst_binned_moddatavector'
     sim_no_arr = [1]
