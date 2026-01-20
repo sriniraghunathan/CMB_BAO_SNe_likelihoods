@@ -871,16 +871,18 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
     dataset_split = tmpchainname.split('+')
     chain_lab = ''
     for ddd in dataset_split:
-        ###print(ddd); sys.exit()
+        ddd = ddd.replace('_moddatavector', '')
+        print(ddd); ###sys.exit()
         if ddd == 'lssty3_sne_mock':
             curr_lab = 'LSST-Y3-SNe'
         elif ddd in ['lssty3_sne_mock_binned', 'lssty3_binned_moddatavector_sim1']:
             curr_lab = 'LSST-Y3-SNe (Binned)'
-        elif ddd in ['lssty3_zmax1_sim1']:
+        elif ddd in ['lssty3_zmax1_sim1', 'lssty3_zmax1_sim1']:
             curr_lab = 'LSST-Y3-SNe (zmax)'
         elif ddd in ['lssty3_samplebasedonzfromdes_rsval1_sim1', 'lssty3_samplebasedonzfromdes_rsval2_sim1', 'lssty3_samplebasedonzfromdes_rsval3_sim1', 'lssty3_samplebasedonzfromdes_rsval4_sim1', 'lssty3_samplebasedonzfromdes_rsval5_sim1']:
             rsval = int( ddd.split('_')[2].replace('rsval', '') )
-            curr_lab = 'LSST-Y3-SNe (DES-like: %s)' %(rsval)# (Sim 1)'
+            ###curr_lab = 'LSST-Y3-SNe (DES-like: %s)' %(rsval)# (Sim 1)'
+            curr_lab = 'LSST-Y3-SNe (DES-like)'
         elif ddd in ['lssty3_sim1', 'lssty3_sim2', 'lssty3_sim3', 'lssty3_sim4', 'lssty3_sim5']:
             simval = int( ddd.split('_')[-1].replace('sim', '') )
             curr_lab = 'LSST-Y3-SNe (Mock: %s)' %(simval)
@@ -892,7 +894,7 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
             curr_lab = 'DESI-DR3-BAO'
         elif ddd in ['desy5sne_lcdm', 'desy5sne_w0walcdm']:
             curr_lab = 'DES-Y5-SNe (Data)'
-        elif ddd in ['desy5snesim_w0walcdm', 'desy5snesim_lcdm', 'desy5_moddatavector_sim0']:
+        elif ddd in ['desy5snesim_w0walcdm', 'desy5snesim_lcdm', 'desy5_moddatavector_sim0', 'desy5_sim0']:
             curr_lab = 'DES-Y5-SNe (Mock)'
         else: #CMB
             cmb_exp_name, cmb_dataset = ddd.split('-')
