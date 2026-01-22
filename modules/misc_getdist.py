@@ -875,7 +875,7 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
         print(ddd); ###sys.exit()
         if ddd == 'lssty3_sne_mock':
             curr_lab = 'LSST-Y3-SNe'
-        elif ddd in ['lssty3_sne_mock_binned', 'lssty3_binned_moddatavector_sim1']:
+        elif ddd in ['lssty3_sne_mock_binned', 'lssty3_binned_moddatavector_sim1', 'lssty3_binned_sim1']:
             curr_lab = 'LSST-Y3-SNe (Binned)'
         elif ddd in ['lssty3_zmax1_sim1', 'lssty3_zmax1_sim1']:
             curr_lab = 'LSST-Y3-SNe (zmax)'
@@ -885,7 +885,8 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
             curr_lab = 'LSST-Y3-SNe (DES-like)'
         elif ddd in ['lssty3_sim1', 'lssty3_sim2', 'lssty3_sim3', 'lssty3_sim4', 'lssty3_sim5']:
             simval = int( ddd.split('_')[-1].replace('sim', '') )
-            curr_lab = 'LSST-Y3-SNe (Mock: %s)' %(simval)
+            #curr_lab = 'LSST-Y3-SNe (Mock: %s)' %(simval)
+            curr_lab = 'LSST-Y3-SNe'
         elif ddd in ['lssty3snesim1_w0walcdm', 'lssty3snesim1_lcdm', 'lssty3snesim1_lcdm', 'lssty3_moddatavector_sim1']:
             curr_lab = 'LSST-Y3-SNe'# (Sim 1)'
         elif ddd == 'desidr2bao_mock':
