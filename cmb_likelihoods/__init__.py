@@ -6,6 +6,6 @@ from .cmb_likelihoods import spt3g_summer_TTEETE, spt3g_summer_TTEETEPP
 from .cmb_likelihoods import spt3g_summer2y_TTEETE, spt3g_summer2y_TTEETEPP
 from .cmb_likelihoods import spt3g_wide_TTEETE, spt3g_wide_TTEETEPP
 from .cmb_likelihoods import spt3gpluswide_plus_spt3gwide_TTEETE, spt3gpluswide_plus_spt3gwide_TTEETEPP
-from .cmb_likelihoods import s4_wide_TTEETE, s4_wide_TTEETEPP, s4_wide_TTEETE_deltael50, s4_wide_TTEETE_deltael200
+from .cmb_likelihoods import s4_wide_TTEETE, s4_wide_TTEETEPP, s4_wide_TTEETE_deltael50, s4_wide_TTEETE_deltael200, s4_wide_TTEETE_cobaya_tester
 from .cmb_likelihoods import advanced_so_baseline_TTEETE, advanced_so_baseline_TTEETEPP
 from .cmb_likelihoods import advanced_so_goal_TTEETE, advanced_so_goal_TTEETEPP

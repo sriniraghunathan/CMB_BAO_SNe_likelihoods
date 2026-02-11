@@ -23,7 +23,7 @@ sampler:
     #covmat_params: ['H0', 'mapTCal', 'mapPCal']
     covmat: auto #data/so_baseline/so_baseline_proposal_covariance_lcdm.txt
 timing: true
-output: chains/for_paper//so_baseline-TTEETE-lcdm/
+output: chains/for_paper//so_baseline-TTEETE-lcdm//so_baseline-TTEETE-lcdm
 params:
   logA:
     prior:

@@ -997,6 +997,14 @@ def get_camb_cl(param_dict, which_spectra, raw_cl = True, thetastar_or_cosmomcth
     if 'Tphi' in required_spectra: cl_dic['Tphi'] = cl_tphi
     if 'Ephi' in required_spectra: cl_dic['Ephi'] = cl_ephi
 
+    if (1): #20260211 - pick from cobaya generated file
+        tmp_cl_dic_fname = '/Users/sraghunathan/Research/SPTpol/analysis/git/CMB_BAO_SNe_likelihoods/data/cl_cmb_dic_cobaya_camb_fiducial.npy'
+        tmp_cl_dic = np.load(tmp_cl_dic_fname, allow_pickle = True).item()
+        tmpels = np.arange( len(tmp_cl_dic['TT']) )
+        cl_dic['TT'] = np.interp(els, tmpels, tmp_cl_dic['TT'])
+        cl_dic['EE'] = np.interp(els, tmpels, tmp_cl_dic['EE'])
+        cl_dic['TE'] = np.interp(els, tmpels, tmp_cl_dic['TE'])
+
     #binning
     if delta_l > 1:
         cl_dic_binned = {}

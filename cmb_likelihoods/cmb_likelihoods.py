@@ -17,7 +17,7 @@ from cobaya.theory import Theory
 
 from . import tools
 
-_do_plot = False #True #False ###True ##False ##True
+_do_plot = False ###sTrue #False #True #False ###True ##False ##True
 if _do_plot:
     from pylab import *
 
@@ -163,7 +163,7 @@ class CMBmocks(InstallableLikelihood):
         else:
             self.ilc_weights_dic = None
 
-        if _do_plot:
+        if (0):##_do_plot:
             total_bins = len( self.leff )
             cl_err = np.diag( self.cov )**0.5
             cl_tt_err, cl_ee_err, cl_te_err = cl_err[:total_bins], cl_err[total_bins: 2*total_bins], cl_err[2*total_bins: 3*total_bins]
@@ -172,7 +172,7 @@ class CMBmocks(InstallableLikelihood):
             errorbar( self.leff, dl_fac * self.bandpowers_mat[0],  yerr = dl_fac * cl_tt_err, marker = '.', ls = 'None', capsize = 1.)
             errorbar( self.leff, dl_fac * self.bandpowers_mat[1],  yerr = dl_fac * cl_ee_err, marker = '.', ls = 'None', capsize = 1.)
             errorbar( self.leff, dl_fac * abs(self.bandpowers_mat[2]),  yerr = dl_fac * cl_te_err, marker = '.', ls = 'None', capsize = 1.)
-            xlim(0, 5010); ylim(0., 1e4)
+            xlim(0, 5010); ylim(0.1, 1e4)
             show()
             quit()     
 
@@ -315,7 +315,9 @@ class CMBmocks(InstallableLikelihood):
         
         # Take the difference to the measured bandpower
         cbs_or_dbs = np.asarray( cbs_or_dbs )
-        ###print(cbs_or_dbs); quit()
+        ##from IPython import embed; embed()
+        ##print(cbs_or_dbs); 
+        ##quit()
         
         if _do_plot:
             total_bins = len( self.leff )
@@ -339,13 +341,13 @@ class CMBmocks(InstallableLikelihood):
             if 'PP' in self.spectra_to_use:
                 cl_pp_theory = cbs_or_dbs[3*total_bins:]
 
-            plot( self.leff, dl_fac * cl_tt_theory, color = 'black')
+            plot( self.leff, dl_fac * cl_tt_theory, color = 'black', ls = '--')
             if 'EE' in self.spectra_to_use:
                 plot( self.leff, dl_fac * cl_ee_theory, color = 'orangered')
             if 'TE' in self.spectra_to_use:
                 plot( self.leff, dl_fac * abs(cl_te_theory), color = 'darkgreen')
 
-            xlim(0, 5010); #ylim(0.1, 1e4)
+            xlim(lmin_cut-50, lmax_cut+50); #ylim(1., 1e4)
             show(); close()
 
             print(self.spectra_to_use)
@@ -440,7 +442,8 @@ class CMBmocks(InstallableLikelihood):
             else:
                 cl_cmb_dic['PP'] = cl_cmb_specs.get("pp")
 
-        if _do_plot:
+        if (0):##_do_plot:
+            np.save('data/cl_cmb_dic_cobaya_camb_fiducial.npy', cl_cmb_dic); quit()
             total_bins = len( self.leff )
             cl_err = np.diag( self.cov )**0.5
             cl_tt_err, cl_ee_err, cl_te_err, cl_pp_err = cl_err[:total_bins], cl_err[total_bins: 2*total_bins], cl_err[2*total_bins: 3*total_bins], cl_err[3*total_bins:]
@@ -455,11 +458,12 @@ class CMBmocks(InstallableLikelihood):
             #theory now
             el_ = cl_cmb_specs.get('ell')
             dl_fac = el_ * (el_+1)/2/np.pi
+            print(cl_cmb_dic['TT'])
             plot( el_, dl_fac * cl_cmb_dic['TT'], color = 'black')
             plot( el_, dl_fac * cl_cmb_dic['EE'], color = 'orangered')
             plot( el_, dl_fac * abs(cl_cmb_dic['TE']), color = 'darkgreen')
 
-            xlim(0, 5010); ylim(0., 1e4)
+            xlim(0, 5010); ylim(1., 1e4)
             show()
             close()
 
@@ -477,7 +481,7 @@ class CMBmocks(InstallableLikelihood):
             show()
             close()            
             quit()                   
-        if _do_plot:
+        if (0):##_do_plot:
             total_bins = len( self.leff )
             cl_err = np.diag( self.cov )**0.5
             cl_tt_err, cl_ee_err, cl_te_err = cl_err[:total_bins], cl_err[total_bins: 2*total_bins], cl_err[2*total_bins: 3*total_bins]
@@ -495,7 +499,7 @@ class CMBmocks(InstallableLikelihood):
             plot( el_, dl_fac * cl_cmb_dic['EE'], color = 'orangered')
             plot( el_, dl_fac * abs(cl_cmb_dic['TE']), color = 'darkgreen')
 
-            xlim(0, 5010); ylim(0., 1e4)
+            xlim(0, 5010); ylim(1., 1e4)
             show()
             close()
             quit()     
@@ -585,6 +589,11 @@ class so_goal_TTEETEPP(CMBmocks):
     """
 
 class s4_wide_TTEETE(CMBmocks):
+    """
+    Likelihood for S4-Wide ILC.
+    """
+
+class s4_wide_TTEETE_cobaya_tester(CMBmocks):
     """
     Likelihood for S4-Wide ILC.
     """
