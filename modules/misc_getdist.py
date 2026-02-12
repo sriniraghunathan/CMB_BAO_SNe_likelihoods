@@ -271,7 +271,9 @@ def make_getdist_plot(which_plot,
     if which_plot.find('multiple_2d')>-1:
         g = plots.get_single_plotter(width_inch=figsize)
     else:
-        g = plots.get_subplot_plotter(width_inch=figsize)
+        pass
+        #g = plots.get_subplot_plotter(width_inch=figsize)
+        g = plots.get_subplot_plotter()
     g.settings.num_plot_contours = num_plot_contours
     g.settings.subplot_size_ratio = subplot_size_ratio
     g.settings.scaling = scaling

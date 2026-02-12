@@ -315,6 +315,7 @@ class CMBmocks(InstallableLikelihood):
         
         # Take the difference to the measured bandpower
         cbs_or_dbs = np.asarray( cbs_or_dbs )
+        ###print(cbs_or_dbs)
         ##from IPython import embed; embed()
         ##print(cbs_or_dbs); 
         ##quit()
@@ -420,7 +421,7 @@ class CMBmocks(InstallableLikelihood):
         return spectra[0]        
 
     def logp(self, **data_params):
-        ###print(self.provider.get_param('ombh2'))
+        """
         if (0): #debug
             fix_cosmo_param_dic_debug = {'ombh2': 0.02237,
                                          'omch2': 0.1200, 
@@ -429,9 +430,12 @@ class CMBmocks(InstallableLikelihood):
                                          'tau': 0.0544, 
                                          'ns': 0.9649, }
             self.provider.set_current_input_params(fix_cosmo_param_dic_debug)
-            #from IPython import embed; embed();
+            from IPython import embed; embed();
             #quit()
+        """
         cl_cmb_specs = self.provider.get_Cl(ell_factor=False)
+        ##from IPython import embed; embed();
+        ##print(cl_cmb_specs); quit()
         cl_cmb_dic = {'TT': cl_cmb_specs.get("tt"), 'EE': cl_cmb_specs.get("ee"), 'TE': cl_cmb_specs.get("te")}
         if 'PP' in self.spectra_to_use:
             if self.add_dl_fac_for_lensing:
