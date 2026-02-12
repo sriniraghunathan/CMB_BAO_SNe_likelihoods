@@ -17,7 +17,7 @@ from cobaya.theory import Theory
 
 from . import tools
 
-_do_plot = False ###sTrue #False #True #False ###True ##False ##True
+_do_plot = False #True #False ###True ##False ##True
 if _do_plot:
     from pylab import *
 
@@ -315,10 +315,7 @@ class CMBmocks(InstallableLikelihood):
         
         # Take the difference to the measured bandpower
         cbs_or_dbs = np.asarray( cbs_or_dbs )
-        ###print(cbs_or_dbs)
-        ##from IPython import embed; embed()
-        ##print(cbs_or_dbs); 
-        ##quit()
+        ###print(cbs_or_dbs); quit()
         
         if _do_plot:
             total_bins = len( self.leff )
@@ -423,6 +420,7 @@ class CMBmocks(InstallableLikelihood):
     def logp(self, **data_params):
         """
         if (0): #debug
+            ###print(self.provider.get_param('ombh2'))
             fix_cosmo_param_dic_debug = {'ombh2': 0.02237,
                                          'omch2': 0.1200, 
                                          'H0': 67.36, 
