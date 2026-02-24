@@ -33,7 +33,6 @@ if (0):
     #sne_exp = 'des'
     sne_exp = 'des_moddatavector'  #'des'
     sim_no_arr = [0]
-
 if (1): #DES cosmo
     sne_exp = 'des_descosmo_moddatavector'  #'des'
     sim_no_arr = [0]
@@ -100,10 +99,14 @@ for sim_no in sim_no_arr:
         op_fd = '%s/%s_sim%s/' %(cobaya_data_fd, exp_dr_str, sim_no)
         #opfname_suff = '%s_SN_sim%s.csv' %(exp_dr_str, sim_no)
     elif sne_exp in ['des', 'des_moddatavector', 'des_descosmo_moddatavector']:
-        exp_dr_str = 'DESY5'
+        if sne_exp == 'des_descosmo_moddatavector':
+            exp_dr_str = 'DESY5_descosmo'
+        else:
+            exp_dr_str = 'DESY5'
         exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from, replace_data_vector_with_current_model = replace_data_vector_with_current_model)
         #op_fd = '%s/%s_sim/' %(cobaya_data_fd, exp_dr_str)
         op_fd = '%s/%s_sim%s/' %(cobaya_data_fd, exp_dr_str, sim_no)
+        ###print(op_fd); sys.exit()
         #opfname_suff = '%s_SN_sim.csv' %(exp_dr_str)
 
 
