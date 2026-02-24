@@ -8,7 +8,7 @@ replace_data_vector_with_current_model = False
 paramfile = 'data/params_cobaya.ini'
 param_dict = misc.get_param_dict(paramfile)
 
-if (1):
+if (0):
     sne_exp = 'lsst_unbinned_moddatavector' #'lsst_unbinned'
     sim_no_arr = [1] ##[1]##, 2, 3, 4, 5]
     if (0): #removing high-z
@@ -33,6 +33,12 @@ if (0):
     #sne_exp = 'des'
     sne_exp = 'des_moddatavector'  #'des'
     sim_no_arr = [0]
+
+if (1): #DES cosmo
+    sne_exp = 'des_descosmo_moddatavector'  #'des'
+    sim_no_arr = [0]
+    paramfile = 'data/params_cobaya.ini'
+    param_dict = misc.get_param_dict(paramfile)
 
 if sne_exp.find('moddatavector')>-1:
     replace_data_vector_with_current_model = True
@@ -93,7 +99,7 @@ for sim_no in sim_no_arr:
         exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from, replace_data_vector_with_current_model = replace_data_vector_with_current_model)
         op_fd = '%s/%s_sim%s/' %(cobaya_data_fd, exp_dr_str, sim_no)
         #opfname_suff = '%s_SN_sim%s.csv' %(exp_dr_str, sim_no)
-    elif sne_exp in ['des', 'des_moddatavector']:
+    elif sne_exp in ['des', 'des_moddatavector', 'des_descosmo_moddatavector']:
         exp_dr_str = 'DESY5'
         exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from, replace_data_vector_with_current_model = replace_data_vector_with_current_model)
         #op_fd = '%s/%s_sim/' %(cobaya_data_fd, exp_dr_str)

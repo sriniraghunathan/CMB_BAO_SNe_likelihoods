@@ -301,7 +301,7 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
 
     assert z_binning_kind in ['cumulative', 'individual']
     
-    possible_sne_exp_arr = ['lsst_binned', 'lsst_unbinned', 'lsst_v2_unbinned', 'lsst_v2_binned', 'des', 'des_cobaya', 'test', 'roman']
+    possible_sne_exp_arr = ['lsst_binned', 'lsst_unbinned', 'lsst_v2_unbinned', 'lsst_v2_binned', 'des', 'des_cobaya', 'test', 'roman', 'des_descosmo']
     possible_sne_exp_arr = get_moddatavector_expnames(possible_sne_exp_arr)
 
     lsst_binned_exp_arr = ['lsst_binned', 'lsst_v2_binned']
@@ -310,7 +310,7 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
     lsst_unbinned_exp_arr = ['lsst_unbinned', 'lsst_v2_unbinned']
     lsst_unbinned_exp_arr = get_moddatavector_expnames(lsst_unbinned_exp_arr)
 
-    des_exp_arr = ['des', 'des_cobaya', 'des_moddatavector', 'des_cobaya_moddatavector']
+    des_exp_arr = ['des', 'des_cobaya', 'des_moddatavector', 'des_cobaya_moddatavector', 'des_descosmo_moddatavector']
     des_exp_arr = get_moddatavector_expnames(des_exp_arr)
 
     assert sne_exp in possible_sne_exp_arr
@@ -414,7 +414,7 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
             sne_cov_tag_dic = {0: 'Stat + sys-All'}
 
     elif sne_exp in des_exp_arr:
-        if sne_exp in ['des', 'des_moddatavector']:
+        if sne_exp in ['des', 'des_moddatavector', 'des_descosmo_moddatavector']:
             sne_fd = 'data/DES_SNIa/'
             sne_details_fname = '%s/hubble_diagram.txt' %(sne_fd)
             sne_arr, z_arr, mu_arr, muerr_stat_arr, muerr_vpec_arr, muerr_sys_arr = np.loadtxt(sne_details_fname, skiprows = 9, usecols = [1, 4, 5, 6, 7, 8], unpack = True)
