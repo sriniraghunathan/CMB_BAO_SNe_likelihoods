@@ -124,3 +124,8 @@ class desy5_moddatavector_sim0(LSSTY3_mock):
     """
     Likelihood for LSSTY3 type Ia supernovae sample mock binned.
     """        
+
+class desy5_descosmo_moddatavector_sim0(LSSTY3_mock):    
+    """
+    Likelihood for LSSTY3 type Ia supernovae sample mock binned.
+    """            
