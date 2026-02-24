@@ -897,6 +897,8 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
             curr_lab = 'DES-Y5-SNe (Data)'
         elif ddd in ['desy5snesim_w0walcdm', 'desy5snesim_lcdm', 'desy5_moddatavector_sim0', 'desy5_sim0']:
             curr_lab = 'DES-Y5-SNe (Mock)'
+        elif ddd in ['desy5_descosmo_moddatavector_sim0', 'desy5_descosmo_sim0']:
+            curr_lab = 'DES-Y5-SNe (Mock: DES Cosmo)'
         else: #CMB
             cmb_exp_name, cmb_dataset = ddd.split('-')
             curr_lab = '%s-%s' %(cmb_exp_dic[cmb_exp_name], cmb_dataset)
