@@ -107,7 +107,7 @@ for sim_no in sim_no_arr:
         if sne_exp == 'des_descosmo_moddatavector':
             exp_dr_str = 'DESY5_descosmo'
         elif sne_exp == 'des_desdovekiecosmo_moddatavector':
-            exp_dr_str = 'DESY5_des_desdovekiecosmo'
+            exp_dr_str = 'DESY5_desdovekiecosmo'
         else:
             exp_dr_str = 'DESY5'
         exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from, replace_data_vector_with_current_model = replace_data_vector_with_current_model)
