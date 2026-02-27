@@ -906,8 +906,7 @@ def set_camb(param_dict, thetastar_or_cosmomctheta_or_h = 'h', lmax = None, Want
     
     return pars, results
 
-def get_camb_cl(param_dict, which_spectra, raw_cl = True, thetastar_or_cosmomctheta_or_h = 'h', delta_l = 1, required_spectra = ['TT', 'EE', 'TE', 'BB', 'PP', 'Tphi', 'Ephi'], return_dl = False, lmin_dic = None, lmax_dic = None):
-
+def get_camb_cl(param_dict, which_spectra, raw_cl = True, thetastar_or_cosmomctheta_or_h = 'h', delta_l = 1, required_spectra = ['TT', 'EE', 'TE', 'BB', 'PP', 'Tphi', 'Ephi'], return_dl = False, lmin_dic = None, lmax_dic = None, use_cobaya_based_setup = True):
 
     """
     set CAMB cosmology and get power spectra in uK^2 units
@@ -915,77 +914,122 @@ def get_camb_cl(param_dict, which_spectra, raw_cl = True, thetastar_or_cosmomcth
 
     print('set CAMB cosmology and get power spectra in uK^2 units')
 
-    import camb, copy
-    from camb.dark_energy import DarkEnergyPPF, DarkEnergyFluid
-    assert thetastar_or_cosmomctheta_or_h in ['thetastar', 'cosmomc_theta', 'h']
+    if use_cobaya_based_setup:
+        params_for_camb = ['ombh2', 'omch2', 'H0', 'tau', 'As', 'ns', 'mnu', 'nnu']
+        fiducial_params = {}
+        for ppp in params_for_camb:
+            if ppp == 'As':
+                fiducial_params[ppp] = np.exp( param_dict[ppp] ) / 1e10
+            elif ppp == 'nnu':
+                fiducial_params[ppp] = param_dict['neff']
+            else:
+                fiducial_params[ppp] = param_dict[ppp]
 
-    pars = camb.CAMBparams(max_l_tensor = param_dict['max_l_tensor'], max_eta_k_tensor = param_dict['max_eta_k_tensor'])
-    #20200623 - setting accuracy/lmax seprately
-    pars.set_accuracy(AccuracyBoost = param_dict['AccuracyBoost'], lAccuracyBoost = param_dict['lAccuracyBoost'], lSampleBoost = param_dict['lSampleBoost'],\
-        DoLateRadTruncation = param_dict['do_late_rad_truncation'])
-    ###pars.set_for_lmax(int(param_dict['max_l_limit']), lens_potential_accuracy=param_dict['lens_potential_accuracy'])
 
-    #pars.set_dark_energy(param_dict['ws'])#, wa=param_dict['wa'])
-    pars.DarkEnergy = DarkEnergyPPF(w=param_dict['ws'], wa=param_dict['wa'])
-    ###pars.InitPower.set_params(ns=param_dict['ns'], r=param_dict['r'], As = param_dict['As'])
-    if thetastar_or_cosmomctheta_or_h == 'thetastar':
-        pars.set_cosmology(thetastar=param_dict['thetastar'], ombh2=param_dict['ombh2'], omch2=param_dict['omch2'], nnu = param_dict['neff'], mnu=param_dict['mnu'], \
-            omk=param_dict['omk'], tau=param_dict['tau'], YHe = param_dict['YHe'], Alens = param_dict['Alens'], \
-            num_massive_neutrinos = param_dict['num_nu_massive'])
-        #pars.set_cosmology(cosmomc_theta=param_dict['thetastar'], ombh2=param_dict['ombh2'], omch2=param_dict['omch2'], nnu = param_dict['neff'], mnu=param_dict['mnu'], omk=param_dict['omk'], tau=param_dict['tau'], YHe = param_dict['YHe'], Alens = param_dict['Alens'], num_massive_neutrinos = param_dict['num_nu_massive'])
-    elif thetastar_or_cosmomctheta_or_h == 'cosmomc_theta':
-        pars.set_cosmology(cosmomc_theta=param_dict['cosmomc_theta'], ombh2=param_dict['ombh2'], omch2=param_dict['omch2'], nnu = param_dict['neff'], mnu=param_dict['mnu'], \
-            omk=param_dict['omk'], tau=param_dict['tau'], YHe = param_dict['YHe'], Alens = param_dict['Alens'], \
-            num_massive_neutrinos = param_dict['num_nu_massive'])
-        #pars.set_cosmology(cosmomc_theta=param_dict['thetastar'], ombh2=param_dict['ombh2'], omch2=param_dict['omch2'], nnu = param_dict['neff'], mnu=param_dict['mnu'], omk=param_dict['omk'], tau=param_dict['tau'], YHe = param_dict['YHe'], Alens = param_dict['Alens'], num_massive_neutrinos = param_dict['num_nu_massive'])
-    elif thetastar_or_cosmomctheta_or_h == 'h':
-        pars.set_cosmology(H0=param_dict['h']*100., ombh2=param_dict['ombh2'], omch2=param_dict['omch2'], nnu = param_dict['neff'], mnu=param_dict['mnu'], \
-            omk=param_dict['omk'], tau=param_dict['tau'], YHe = param_dict['YHe'], Alens = param_dict['Alens'], \
-            num_massive_neutrinos = param_dict['num_nu_massive'])
-    #20200619
-    #print('\n\tswitching order on 20200619 following https://camb.readthedocs.io/en/latest/camb.html\n')
-    #pars.set_for_lmax(int(param_dict['max_l_limit']), lens_potential_accuracy=param_dict['lens_potential_accuracy'])
-    pars.set_for_lmax(int(param_dict['max_l_limit']), lens_potential_accuracy=param_dict['lens_potential_accuracy'],\
-        max_eta_k = param_dict['max_eta_k'],\
-        #lens_k_eta_reference = param_dict['max_eta_k'],\
-        )
+        info_fiducial = {
+            "params": fiducial_params,
+            "likelihood": {"one": None},
+            "theory": {"camb": {"extra_args": {"num_massive_neutrinos": 1}}},
+            ###"packages_path": packages_path,
+        }
 
-    if param_dict['As']>3.:
-        pars.InitPower.set_params(ns=param_dict['ns'], r=param_dict['r'], As = np.exp(param_dict['As'])/1e10, nrun = param_dict['nrun'])
+        from cobaya.model import get_model
+
+        model_fiducial = get_model(info_fiducial)
+
+        # Declare our desired theory product
+        # (there is no cosmological likelihood doing it for us)
+        l_max = int(param_dict['max_l_limit'])
+        model_fiducial.add_requirements({"Cl": {"tt": l_max, "ee": l_max, "te": l_max, "pp": l_max, "bb": l_max, "tphi": l_max, "ephi": l_max}})
+
+        # Compute and extract the CMB power spectrum
+        # (In muK^-2, without l(l+1)/(2pi) factor)
+        # notice the empty dictionary below: all parameters are fixed
+        model_fiducial.logposterior({})
+        cl_cmb_specs = model_fiducial.provider.get_Cl(ell_factor=False, units="muK2")
+
+        cl_tt = cl_cmb_specs.get("tt")
+        cl_ee = cl_cmb_specs.get("ee")
+        cl_te = cl_cmb_specs.get("te")
+        cl_bb = cl_cmb_specs.get("bb")
+        cl_pp = cl_cmb_specs.get("pp")
+        cl_tphi = cl_cmb_specs.get("tphi")
+        cl_ephi = cl_cmb_specs.get("ephi")
+        els = np.arange(len(cl_tt))
+
     else:
-        pars.InitPower.set_params(ns=param_dict['ns'], r=param_dict['r'], As = param_dict['As'], nrun = param_dict['nrun'])
+
+        import camb, copy
+        from camb.dark_energy import DarkEnergyPPF, DarkEnergyFluid
+        assert thetastar_or_cosmomctheta_or_h in ['thetastar', 'cosmomc_theta', 'h']
+
+        pars = camb.CAMBparams(max_l_tensor = param_dict['max_l_tensor'], max_eta_k_tensor = param_dict['max_eta_k_tensor'])
+        #20200623 - setting accuracy/lmax seprately
+        pars.set_accuracy(AccuracyBoost = param_dict['AccuracyBoost'], lAccuracyBoost = param_dict['lAccuracyBoost'], lSampleBoost = param_dict['lSampleBoost'],\
+            DoLateRadTruncation = param_dict['do_late_rad_truncation'])
+        ###pars.set_for_lmax(int(param_dict['max_l_limit']), lens_potential_accuracy=param_dict['lens_potential_accuracy'])
+
+        #pars.set_dark_energy(param_dict['ws'])#, wa=param_dict['wa'])
+        pars.DarkEnergy = DarkEnergyPPF(w=param_dict['ws'], wa=param_dict['wa'])
+        ###pars.InitPower.set_params(ns=param_dict['ns'], r=param_dict['r'], As = param_dict['As'])
+        if thetastar_or_cosmomctheta_or_h == 'thetastar':
+            pars.set_cosmology(thetastar=param_dict['thetastar'], ombh2=param_dict['ombh2'], omch2=param_dict['omch2'], nnu = param_dict['neff'], mnu=param_dict['mnu'], \
+                omk=param_dict['omk'], tau=param_dict['tau'], YHe = param_dict['YHe'], Alens = param_dict['Alens'], \
+                num_massive_neutrinos = param_dict['num_nu_massive'])
+            #pars.set_cosmology(cosmomc_theta=param_dict['thetastar'], ombh2=param_dict['ombh2'], omch2=param_dict['omch2'], nnu = param_dict['neff'], mnu=param_dict['mnu'], omk=param_dict['omk'], tau=param_dict['tau'], YHe = param_dict['YHe'], Alens = param_dict['Alens'], num_massive_neutrinos = param_dict['num_nu_massive'])
+        elif thetastar_or_cosmomctheta_or_h == 'cosmomc_theta':
+            pars.set_cosmology(cosmomc_theta=param_dict['cosmomc_theta'], ombh2=param_dict['ombh2'], omch2=param_dict['omch2'], nnu = param_dict['neff'], mnu=param_dict['mnu'], \
+                omk=param_dict['omk'], tau=param_dict['tau'], YHe = param_dict['YHe'], Alens = param_dict['Alens'], \
+                num_massive_neutrinos = param_dict['num_nu_massive'])
+            #pars.set_cosmology(cosmomc_theta=param_dict['thetastar'], ombh2=param_dict['ombh2'], omch2=param_dict['omch2'], nnu = param_dict['neff'], mnu=param_dict['mnu'], omk=param_dict['omk'], tau=param_dict['tau'], YHe = param_dict['YHe'], Alens = param_dict['Alens'], num_massive_neutrinos = param_dict['num_nu_massive'])
+        elif thetastar_or_cosmomctheta_or_h == 'h':
+            pars.set_cosmology(H0=param_dict['h']*100., ombh2=param_dict['ombh2'], omch2=param_dict['omch2'], nnu = param_dict['neff'], mnu=param_dict['mnu'], \
+                omk=param_dict['omk'], tau=param_dict['tau'], YHe = param_dict['YHe'], Alens = param_dict['Alens'], \
+                num_massive_neutrinos = param_dict['num_nu_massive'])
+        #20200619
+        #print('\n\tswitching order on 20200619 following https://camb.readthedocs.io/en/latest/camb.html\n')
+        #pars.set_for_lmax(int(param_dict['max_l_limit']), lens_potential_accuracy=param_dict['lens_potential_accuracy'])
+        pars.set_for_lmax(int(param_dict['max_l_limit']), lens_potential_accuracy=param_dict['lens_potential_accuracy'],\
+            max_eta_k = param_dict['max_eta_k'],\
+            #lens_k_eta_reference = param_dict['max_eta_k'],\
+            )
+
+        if param_dict['As']>3.:
+            pars.InitPower.set_params(ns=param_dict['ns'], r=param_dict['r'], As = np.exp(param_dict['As'])/1e10, nrun = param_dict['nrun'])
+        else:
+            pars.InitPower.set_params(ns=param_dict['ns'], r=param_dict['r'], As = param_dict['As'], nrun = param_dict['nrun'])
 
 
-    els = np.arange(param_dict['min_l_limit'], param_dict['max_l_limit']+1)
+        els = np.arange(param_dict['min_l_limit'], param_dict['max_l_limit']+1)
 
-    results = camb.get_results(pars)
+        results = camb.get_results(pars)
 
-    #get dictionary of CAMb power spectra
-    powers = results.get_cmb_power_spectra(pars, lmax = param_dict['max_l_limit'], raw_cl = raw_cl)#, spectra = [which_spectra])#, CMb_unit=None, raw_cl=False)
+        #get dictionary of CAMb power spectra
+        powers = results.get_cmb_power_spectra(pars, lmax = param_dict['max_l_limit'], raw_cl = raw_cl)#, spectra = [which_spectra])#, CMb_unit=None, raw_cl=False)
 
-    #get only the required ell range since powerspectra start from ell=0 by default
-    for keyname in powers:
-        powers[keyname] = powers[keyname][param_dict['min_l_limit']:, :]
+        #get only the required ell range since powerspectra start from ell=0 by default
+        for keyname in powers:
+            powers[keyname] = powers[keyname][param_dict['min_l_limit']:, :]
 
-    if not raw_cl: #20200529: also valid for lensing (see https://camb.readthedocs.io/en/latest/_modules/camb/results.html#CAMbdata.get_lens_potential_cls)
-        powers[which_spectra] = powers[which_spectra] * 2 * np.pi / (els[:,None] * (els[:,None] + 1 ))
+        if not raw_cl: #20200529: also valid for lensing (see https://camb.readthedocs.io/en/latest/_modules/camb/results.html#CAMbdata.get_lens_potential_cls)
+            powers[which_spectra] = powers[which_spectra] * 2 * np.pi / (els[:,None] * (els[:,None] + 1 ))
 
 
-    #tcmb factor
-    if pars.OutputNormalization == 1:
-        powers[which_spectra] = param_dict['tcmb']**2. *  powers[which_spectra]
+        #tcmb factor
+        if pars.OutputNormalization == 1:
+            powers[which_spectra] = param_dict['tcmb']**2. *  powers[which_spectra]
 
-    #uK
-    powers[which_spectra] *= 1e12
-    cl_tt, cl_ee, cl_bb, cl_te = powers[which_spectra].T
+        #uK
+        powers[which_spectra] *= 1e12
+        cl_tt, cl_ee, cl_bb, cl_te = powers[which_spectra].T
 
-    #lensing
-    cl_phiphi, cl_tphi, cl_ephi = powers['lens_potential'].T
-    #cl_tphi *= 1e6
-    #cl_ephi *= 1e6
-    cl_phiphi = cl_phiphi# * (els * (els+1))**2. /(2. * np.pi)
-    cl_tphi = cl_tphi# * (els * (els+1))**1.5 /(2. * np.pi)
-    cl_ephi = cl_ephi# * (els * (els+1))**1.5 /(2. * np.pi)
+        #lensing
+        cl_phiphi, cl_tphi, cl_ephi = powers['lens_potential'].T
+        #cl_tphi *= 1e6
+        #cl_ephi *= 1e6
+        cl_phiphi = cl_phiphi# * (els * (els+1))**2. /(2. * np.pi)
+        cl_tphi = cl_tphi# * (els * (els+1))**1.5 /(2. * np.pi)
+        cl_ephi = cl_ephi# * (els * (els+1))**1.5 /(2. * np.pi)
 
     cl_dic = {}
     cl_dic['els'] = els
@@ -1025,15 +1069,15 @@ def get_camb_cl(param_dict, which_spectra, raw_cl = True, thetastar_or_cosmomcth
         cl_dic = cl_dic_binned
 
 
-    if (0):
-        #from IPython import embed; embed()  
-        ax = subplot(111, yscale = 'log');
-        dls_fac = (els * (els+1)) /(2. * np.pi)
-        plot(cl_tt * dls_fac, 'k-'); 
-        plot(cl_ee * dls_fac, 'r-'); plot(cl_te * dls_fac, 'g-'); 
-        plot(cl_bb * dls_fac, 'b-'); 
-        show()
-        sys.exit()
+        if (0):
+            #from IPython import embed; embed()  
+            ax = subplot(111, yscale = 'log');
+            dls_fac = (els * (els+1)) /(2. * np.pi)
+            plot(cl_tt * dls_fac, 'k-'); 
+            plot(cl_ee * dls_fac, 'r-'); plot(cl_te * dls_fac, 'g-'); 
+            plot(cl_bb * dls_fac, 'b-'); 
+            show()
+            sys.exit()
 
     return pars, cl_dic
 
