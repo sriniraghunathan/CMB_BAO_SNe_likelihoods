@@ -940,23 +940,33 @@ def get_camb_cl(param_dict, which_spectra, raw_cl = True, thetastar_or_cosmomcth
         # Declare our desired theory product
         # (there is no cosmological likelihood doing it for us)
         l_max = int(param_dict['max_l_limit'])
-        model_fiducial.add_requirements({"Cl": {"tt": l_max, "ee": l_max, "te": l_max, "pp": l_max, "bb": l_max, "tphi": l_max, "ephi": l_max}})
+        if which_spectra == 'lensed_scalar':
+            model_fiducial.add_requirements({"Cl": {"tt": l_max, "ee": l_max, "te": l_max, "pp": l_max, "bb": l_max, "tphi": l_max, "ephi": l_max}})
+        elif which_spectra == 'unlensed_scalar':
+            model_fiducial.add_requirements({"Cl": {"tt": l_max, "ee": l_max, "te": l_max, "bb": l_max}})
 
         # Compute and extract the CMB power spectrum
         # (In muK^-2, without l(l+1)/(2pi) factor)
         # notice the empty dictionary below: all parameters are fixed
         model_fiducial.logposterior({})
-        cl_cmb_specs = model_fiducial.provider.get_Cl(ell_factor=False, units="muK2")
+        if which_spectra == 'lensed_scalar':
+            cl_cmb_specs = model_fiducial.provider.get_Cl(ell_factor=False, units="muK2")
+        elif which_spectra == 'unlensed_scalar':
+            cl_cmb_specs = model_fiducial.provider.unlensed_Cl(ell_factor=False, units="muK2")
 
         cl_tt = cl_cmb_specs.get("tt")
         cl_ee = cl_cmb_specs.get("ee")
         cl_te = cl_cmb_specs.get("te")
         cl_bb = cl_cmb_specs.get("bb")
-        cl_pp = cl_cmb_specs.get("pp")
-        cl_tphi = cl_cmb_specs.get("tphi")
-        cl_ephi = cl_cmb_specs.get("ephi")
+        if which_spectra == 'lensed_scalar':
+            cl_pp = cl_cmb_specs.get("pp")
+            cl_tphi = cl_cmb_specs.get("tphi")
+            cl_ephi = cl_cmb_specs.get("ephi")
+        elif which_spectra == 'unlensed_scalar':
+            cl_pp = np.zeros( len(cl_tt) )
+            cl_tphi = np.zeros( len(cl_tt) )
+            cl_ephi = np.zeros( len(cl_tt) )
         els = np.arange(len(cl_tt))
-
     else:
 
         import camb, copy

@@ -191,6 +191,7 @@ if add_lensing:
     required_spectra.append('PP')
     lmin_lmax_str = '%s_lminphi%s_lmaxphi%s' %(lmin_lmax_str, lmin_phi, lmax_phi)
 required_spectra_str = ''.join(required_spectra)
+use_cobaya_based_setup = True
 
 fsky_dic = {'spt3g_winter': 0.036,
             'spt3g_summer': 2650./41253.,
@@ -232,8 +233,8 @@ if get_cov_from_sims:
 #--------------------------------------------
 #get CMB spectra
 if get_cov_from_sims:
-    pars, fid_cl_dic_unbinned = sne_cmb_fisher_tools.get_camb_cl(param_dict, which_spectra, raw_cl = True, required_spectra = required_spectra, return_dl = return_dl, lmin_dic = lmin_dic, lmax_dic = lmax_dic)
-pars, fid_cl_dic = sne_cmb_fisher_tools.get_camb_cl(param_dict, which_spectra, raw_cl = True, delta_l = delta_l, required_spectra = required_spectra, return_dl = return_dl, lmin_dic = lmin_dic, lmax_dic = lmax_dic)
+    pars, fid_cl_dic_unbinned = sne_cmb_fisher_tools.get_camb_cl(param_dict, which_spectra, raw_cl = True, required_spectra = required_spectra, return_dl = return_dl, lmin_dic = lmin_dic, lmax_dic = lmax_dic, use_cobaya_based_setup = use_cobaya_based_setup)
+pars, fid_cl_dic = sne_cmb_fisher_tools.get_camb_cl(param_dict, which_spectra, raw_cl = True, delta_l = delta_l, required_spectra = required_spectra, return_dl = return_dl, lmin_dic = lmin_dic, lmax_dic = lmax_dic, use_cobaya_based_setup = use_cobaya_based_setup)
 binned_el = fid_cl_dic['els']
 #--------------------------------------------
 
@@ -241,6 +242,7 @@ print('\nloop through different experiments now\n')
 for cmb_experiment in cmb_experiment_arr:
     print( cmb_experiment )
     data_fd = '%s/%s/' %(parent_data_fd, cmb_experiment)
+    print(data_fd); sys.exit()
     if not os.path.exists( data_fd ): os.system('mkdir -p %s' %(data_fd))
     
 
