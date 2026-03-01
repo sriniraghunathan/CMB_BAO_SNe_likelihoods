@@ -774,13 +774,29 @@ def get_bpwf(pbl, qlb, mll, bl = None, fl = None):
 
     return bpwf, kbb, kbb_inv
 
-def get_ell_bin(el_unbinned, delta_el):
+"""
+def get_ell_bin_v1(el_unbinned, delta_el):
     el_binned = np.arange(1, max(el_unbinned)+delta_el, delta_el)
     ell_bins = [(b-delta_el/2, b+delta_el/2) for b in el_binned]
 
     return el_binned, ell_bins
+"""
 
-def perform_binning(el_unbinned, cl_unbinned, delta_el = 100, return_dl = False, bl = None, fl = None, lmin = 30, lmax = 5000, epsilon_for_diag = 1e-8, debug = False):
+def get_ell_bin(el_unbinned, delta_el, lmin = None, lmax = None):
+    if lmin is None: lmin = min(el_unbinned)
+    if lmax is None: lmax = max(el_unbinned)
+    el_binned = np.arange(lmin+delta_el/2, lmax+delta_el/2, delta_el)
+    ell_bins = [(b-delta_el/2, b+delta_el/2) for b in el_binned]
+    
+    ##el_binned = np.arange(lmin, lmax+delta_el, delta_el)
+    ##ell_bins = [(b-delta_el/2, b+delta_el/2) for b in el_binned]
+    ##ell_bins = [(b, b+delta_el) for b in el_binned]
+    ##print(ell_bins); sys.exit()
+    
+    return el_binned, ell_bins
+
+"""
+def perform_binning_v1(el_unbinned, cl_unbinned, delta_el = 100, return_dl = False, bl = None, fl = None, lmin = 30, lmax = 5000, epsilon_for_diag = 1e-8, debug = False):
     #ell_bins = [(b, b+delta_el) for b in el_binned]
     el_binned, ell_bins = get_ell_bin(el_unbinned, delta_el)
 
@@ -822,6 +838,64 @@ def perform_binning(el_unbinned, cl_unbinned, delta_el = 100, return_dl = False,
         for b in range(len(bpwf)):
             plot( el_unbinned, bpwf[b], color = color_arr[b])
         show()
+
+    ##from IPython import embed; embed();
+    
+    return el_binned, pspec_binned, bpwf
+"""
+
+def perform_binning(el_unbinned, cl_unbinned, delta_el = 100, return_dl = False, bl = None, fl = None, lmin = 30, lmax = 5000, debug = False):
+    #ell_bins = [(b, b+delta_el) for b in el_binned]
+    el_binned, ell_bins = get_ell_bin(el_unbinned, delta_el, lmin = lmin, lmax = lmax)
+    ###print(el_unbinned, el_binned, ell_bins); sys.exit()
+
+    reclen_binned = len( el_binned )
+    reclen_unbinned = len( el_unbinned )
+    ell_weights = np.ones( reclen_unbinned )
+    pbl, qlb = get_binning_operators(el_unbinned, ell_bins, ell_weights = ell_weights, use_dl_for_binning_operators = return_dl)
+    mll = np.diag( np.ones( reclen_unbinned ) )
+    ###print(el_binned.shape)
+    ###print(pbl.shape, pbl)
+    ###print(qlb.shape, qlb); sys.exit()
+    ##print(ell_weights, mll.shape); sys.exit()
+
+    """
+    #lmin/lmax cuts
+    unbinned_inds_to_cut = np.where( (el_unbinned<lmin) & (el_unbinned>lmax) )
+    binned_inds_to_cut = np.where( (el_binned<lmin) & (el_binned>lmax))
+    cl_unbinned[(el_unbinned<lmin) | (el_unbinned>lmax)] = 0. #lmin/lmax cut
+    
+    epsilon_diag_mat = np.eye( reclen_unbinned )
+    mll[(el_unbinned<lmin) | (el_unbinned>lmax)] = 0. #adding a lmin/lmax cut.
+    """
+
+    bpwf, kbb, kbb_inv = get_bpwf(pbl, qlb, mll, bl = bl, fl = fl)
+
+    thresh = 1e-8
+    #bpwf[bpwf>thresh] = 1/501
+    bpwf[bpwf<thresh] = 0.
+    #print(np.sum(cl_unbinned[:501]))
+    #print(bpwf[0, :502]); sys.exit()
+    pspec_binned = np.dot(bpwf, cl_unbinned) 
+    ##print(pspec_binned.shape); sys.exit()
+
+    ##pspec_binned = np.dot(kbb_inv, np.dot(pbl, cl_unbinned) ) #Eq. (26) of https://arxiv.org/pdf/astro-ph/0105302.pdf. Note that there is no noise bias here.
+    ###print(pspec_binned); sys.exit()
+    ##pspec_binned[(el_binned<lmin) | (el_binned>lmax)] = 0. #lmin/lmax cut
+    ##print( el_binned, lmin, lmax, pspec_binned ); ##sys.exit()
+
+    ###from IPython import embed; embed()
+
+    if debug:
+        ax = subplot(111, yscale = 'log')
+        plot( el_unbinned, cl_unbinned, color = 'black' )
+        plot( el_binned, pspec_binned, color = 'orangered' )
+        show()
+        color_arr = [cm.jet(int(d)) for d in np.linspace(0., 255, len(bpwf))]
+
+        for b in range(len(bpwf)):
+            plot( el_unbinned, bpwf[b], color = color_arr[b])
+        show(); sys.exit()
 
     ##from IPython import embed; embed();
     
@@ -918,9 +992,7 @@ def get_camb_cl(param_dict, which_spectra, raw_cl = True, thetastar_or_cosmomcth
         params_for_camb = ['ombh2', 'omch2', 'H0', 'tau', 'As', 'ns', 'mnu', 'nnu']
         fiducial_params = {}
         for ppp in params_for_camb:
-            if ppp == 'As':
-                fiducial_params[ppp] = np.exp( param_dict[ppp] ) / 1e10
-            elif ppp == 'nnu':
+            if ppp == 'nnu':
                 fiducial_params[ppp] = param_dict['neff']
             else:
                 fiducial_params[ppp] = param_dict[ppp]
@@ -967,6 +1039,7 @@ def get_camb_cl(param_dict, which_spectra, raw_cl = True, thetastar_or_cosmomcth
             cl_tphi = np.zeros( len(cl_tt) )
             cl_ephi = np.zeros( len(cl_tt) )
         els = np.arange(len(cl_tt))
+        pars = None
     else:
 
         import camb, copy
@@ -1051,14 +1124,24 @@ def get_camb_cl(param_dict, which_spectra, raw_cl = True, thetastar_or_cosmomcth
     if 'Tphi' in required_spectra: cl_dic['Tphi'] = cl_tphi
     if 'Ephi' in required_spectra: cl_dic['Ephi'] = cl_ephi
 
-    if (1): #20260211 - pick from cobaya generated file
+    """
+    if (0): #20260211 - pick from cobaya generated file
         tmp_cl_dic_fname = '/Users/sraghunathan/Research/SPTpol/analysis/git/CMB_BAO_SNe_likelihoods/data/cl_cmb_dic_cobaya_camb_fiducial.npy'
         tmp_cl_dic = np.load(tmp_cl_dic_fname, allow_pickle = True).item()
         tmpels = np.arange( len(tmp_cl_dic['TT']) )
+        els = tmpels
+        from IPython import embed; embed(); sys.exit()
+        if (1):
+            dl_fac = els * (els+1)/2/np.pi
+            ax = subplot(111, yscale='log')
+            plot(els, dl_fac * cl_dic['TT'])
+            plot(els, dl_fac * tmp_cl_dic['TT'])
+            xlim(0., 5000); ylim(1., 7e3)
+            show(); sys.exit()
         cl_dic['TT'] = np.interp(els, tmpels, tmp_cl_dic['TT'])
         cl_dic['EE'] = np.interp(els, tmpels, tmp_cl_dic['EE'])
         cl_dic['TE'] = np.interp(els, tmpels, tmp_cl_dic['TE'])
-
+    """
     #binning
     if delta_l > 1:
         cl_dic_binned = {}
@@ -1074,10 +1157,12 @@ def get_camb_cl(param_dict, which_spectra, raw_cl = True, thetastar_or_cosmomcth
                 lmax = param_dict['max_l_limit']
             #binned_el, binned_cl = perform_cl_binning(els, cl_dic[XX], delta_l = delta_l)
             binned_el, binned_cl, bpwf = perform_binning(els, cl_dic[XX], delta_el = delta_l, return_dl = return_dl, lmin = lmin, lmax = lmax)
+            print(binned_el.shape, binned_cl.shape)
+            ##print(XX, lmin, lmax)
             cl_dic_binned[XX] = binned_cl
         els = binned_el
         cl_dic = cl_dic_binned
-
+        cl_dic['els'] = binned_el #20260228 - after changes to the perform_binning code
 
         if (0):
             #from IPython import embed; embed()  

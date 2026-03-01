@@ -164,10 +164,12 @@ add_lensing = 0 ##1 ###0 ##1 ##0 ##1 ##0 ##1 ###0 ##1 ##0
 cmb_experiment_arr = ['so_baseline', 'so_goal', 'spt3g_winter', 'spt3g_summer', 'spt3g_wide', 's4_wide', 'advanced_so_baseline', 'advanced_so_goal']#, 'spt3g']#, 's4_wide']
 ##cmb_experiment_arr = ['s4_wide']
 cmb_experiment_arr = ['advanced_so_baseline', 'advanced_so_goal']
-cmb_experiment_arr = ['s4_wide_cobaya_tester']
+#cmb_experiment_arr = ['s4_wide_cobaya_tester']
+cmb_experiment_arr = ['s4_wide']
 ##cmb_experiment_arr = ['spt3g_winter']
 ##cmb_experiment_arr = ['spt3g+wide_plus_spt3gwide']
 ##cmb_experiment_arr = ['spt3g_winter2y', 'spt3g_summer2y']
+also_generate_foregrounds = True
 
 '''
 #different delta_el
@@ -207,12 +209,17 @@ fsky_dic = {'spt3g_winter': 0.036,
 
 #parent_fd = 'cobaya_likelihoods_and_sampling'
 #parent_fd = '/Users/sraghunathan/Research/SPTpol/analysis/git/CMB_cobaya_likelihoods_and_sampling'
-parent_fd = '/Users/sraghunathan/Research/SPTpol/analysis/git/CMB_BAO_SNe_likelihoods'
+parent_fd = '/Users/sraghunathan/Research/SPTpol/analysis/git/CMB_BAO_SNe_likelihoods/data/cmb_data/'
+"""
+if also_generate_foregrounds:
+    parent_fd = '%s/with_foregrounds/' %(parent_fd)
+"""
+
 if delta_l == 1:
-    parent_data_fd = '%s/data/cmb_data/unbinned_%s/' %(parent_fd, lmin_lmax_str)
+    parent_data_fd = '%s/unbinned_%s/' %(parent_fd, lmin_lmax_str)
 else:
     #parent_data_fd = '%s/data/binned_with_delta_l_%s/' %(parent_fd, delta_l)
-    parent_data_fd = '%s/data/cmb_data/binned_%s_deltal%s/' %(parent_fd, lmin_lmax_str, delta_l)
+    parent_data_fd = '%s/binned_%s_deltal%s/' %(parent_fd, lmin_lmax_str, delta_l)
 ##parent_likelihood_fd = '%s/cmb_likelihoods/' %(parent_fd)
 
 get_cov_from_sims = False ##True ##False #True
@@ -242,7 +249,7 @@ print('\nloop through different experiments now\n')
 for cmb_experiment in cmb_experiment_arr:
     print( cmb_experiment )
     data_fd = '%s/%s/' %(parent_data_fd, cmb_experiment)
-    print(data_fd); sys.exit()
+    print(data_fd); ###sys.exit()
     if not os.path.exists( data_fd ): os.system('mkdir -p %s' %(data_fd))
     
 
@@ -286,6 +293,7 @@ for cmb_experiment in cmb_experiment_arr:
     #--------------------
     #ilc weights
     ilc_weights_opfname = '%s/%s_ilc_weights.npy' %(data_fd, cmb_experiment)
+    ##print(ilc_weights_opfname, save_files); sys.exit()
     if save_files:
         np.save( ilc_weights_opfname, exp_details_dic['weights_dic'])
     #--------------------
@@ -295,6 +303,7 @@ for cmb_experiment in cmb_experiment_arr:
     bp_opfname = '%s/%s_bandpowers_%s.txt' %(data_fd, cmb_experiment, required_spectra_str)
     print(bp_opfname)
     op_arr = binned_el
+    ##print(op_arr.shape, fid_cl_dic['TT'].shape); sys.exit()
     header = 'ell'
     if 'TT' in required_spectra:
         op_arr = np.column_stack( (op_arr, fid_cl_dic['TT']))
@@ -359,7 +368,7 @@ for cmb_experiment in cmb_experiment_arr:
     else:
         pass #unbinned
 
-    if (0): #plot
+    if (1): #plot
         from pylab import *
         binned_cl_err = np.sqrt( np.diag( cov_mat ) )
         binned_cl_err_tt = binned_cl_err[:total_ell_bins]
@@ -377,48 +386,49 @@ for cmb_experiment in cmb_experiment_arr:
         show()
 
 
-        clf()
-        binned_dl_fac = (binned_el * (binned_el+1))**2./2/np.pi
-        cl_kk_dic = {'PP': fid_cl_dic['PP']}
-        nl_kk_dic = {'PP': real(lensing_nl_mv)}
-        binned_cl_err_knox = sne_cmb_fisher_tools.get_knox_errors_parent(binned_el, cl_kk_dic, nl_kk_dic, fsky_dic[cmb_experiment], delta_el = delta_l)
+        if add_lensing:
+            clf()
+            binned_dl_fac = (binned_el * (binned_el+1))**2./2/np.pi
+            cl_kk_dic = {'PP': fid_cl_dic['PP']}
+            nl_kk_dic = {'PP': real(lensing_nl_mv)}
+            binned_cl_err_knox = sne_cmb_fisher_tools.get_knox_errors_parent(binned_el, cl_kk_dic, nl_kk_dic, fsky_dic[cmb_experiment], delta_el = delta_l)
 
-        cl_kk_dic = {'PP': real(exp_details_dic['lensing_cl_kk'])}
-        nl_kk_dic = {'PP': real(exp_details_dic['lensing_nl_mv'])}
-        unbinned_cl_err_knox = sne_cmb_fisher_tools.get_knox_errors_parent(els, cl_kk_dic, nl_kk_dic, fsky_dic[cmb_experiment], delta_el = 1)
+            cl_kk_dic = {'PP': real(exp_details_dic['lensing_cl_kk'])}
+            nl_kk_dic = {'PP': real(exp_details_dic['lensing_nl_mv'])}
+            unbinned_cl_err_knox = sne_cmb_fisher_tools.get_knox_errors_parent(els, cl_kk_dic, nl_kk_dic, fsky_dic[cmb_experiment], delta_el = 1)
 
-        tmpeldeltael10, tmpcl, tmpbpwf = sne_cmb_fisher_tools.perform_binning(els, real(exp_details_dic['lensing_cl_kk']) + real(exp_details_dic['lensing_nl_mv']), delta_el = 10, return_dl = return_dl, lmin = 1)
-        cl_kk_dic = {'PP': real(tmpcl)}
-        nl_kk_dic = {'PP': real(tmpcl)*0.}
-        cl_err_knox_deltael10 = sne_cmb_fisher_tools.get_knox_errors_parent(tmpeldeltael10, cl_kk_dic, nl_kk_dic, fsky_dic[cmb_experiment], delta_el = 10)
+            tmpeldeltael10, tmpcl, tmpbpwf = sne_cmb_fisher_tools.perform_binning(els, real(exp_details_dic['lensing_cl_kk']) + real(exp_details_dic['lensing_nl_mv']), delta_el = 10, return_dl = return_dl, lmin = 1)
+            cl_kk_dic = {'PP': real(tmpcl)}
+            nl_kk_dic = {'PP': real(tmpcl)*0.}
+            cl_err_knox_deltael10 = sne_cmb_fisher_tools.get_knox_errors_parent(tmpeldeltael10, cl_kk_dic, nl_kk_dic, fsky_dic[cmb_experiment], delta_el = 10)
 
-        tmpeldeltael50, tmpcl, tmpbpwf = sne_cmb_fisher_tools.perform_binning(els, real(exp_details_dic['lensing_cl_kk']) + real(exp_details_dic['lensing_nl_mv']), delta_el = 50, return_dl = return_dl, lmin = 1)
-        cl_kk_dic = {'PP': real(tmpcl)}
-        nl_kk_dic = {'PP': real(tmpcl)*0.}
-        cl_err_knox_deltael50 = sne_cmb_fisher_tools.get_knox_errors_parent(tmpeldeltael50, cl_kk_dic, nl_kk_dic, fsky_dic[cmb_experiment], delta_el = 50)
+            tmpeldeltael50, tmpcl, tmpbpwf = sne_cmb_fisher_tools.perform_binning(els, real(exp_details_dic['lensing_cl_kk']) + real(exp_details_dic['lensing_nl_mv']), delta_el = 50, return_dl = return_dl, lmin = 1)
+            cl_kk_dic = {'PP': real(tmpcl)}
+            nl_kk_dic = {'PP': real(tmpcl)*0.}
+            cl_err_knox_deltael50 = sne_cmb_fisher_tools.get_knox_errors_parent(tmpeldeltael50, cl_kk_dic, nl_kk_dic, fsky_dic[cmb_experiment], delta_el = 50)
 
-        cl_kk_dic = {'PP': real(cl_pp_final)}
-        nl_kk_dic = {'PP': cl_pp_final*0.}
-        binned_cl_err_knox_v2 = sne_cmb_fisher_tools.get_knox_errors_parent(binned_el, cl_kk_dic, nl_kk_dic, fsky_dic[cmb_experiment], delta_el = delta_l)
+            cl_kk_dic = {'PP': real(cl_pp_final)}
+            nl_kk_dic = {'PP': cl_pp_final*0.}
+            binned_cl_err_knox_v2 = sne_cmb_fisher_tools.get_knox_errors_parent(binned_el, cl_kk_dic, nl_kk_dic, fsky_dic[cmb_experiment], delta_el = delta_l)
 
-        dl_fac = (els * (els+1))**2./2/np.pi
-        dl_fac_deltael10 = (tmpeldeltael10 * (tmpeldeltael10+1))**2./2/np.pi
-        dl_fac_deltael50 = (tmpeldeltael50 * (tmpeldeltael50+1))**2./2/np.pi
+            dl_fac = (els * (els+1))**2./2/np.pi
+            dl_fac_deltael10 = (tmpeldeltael10 * (tmpeldeltael10+1))**2./2/np.pi
+            dl_fac_deltael50 = (tmpeldeltael50 * (tmpeldeltael50+1))**2./2/np.pi
 
-        ax = subplot(111, yscale = 'log')#, xscale='log')
-        #binned_dl_fac = 1.
-        #plot( binned_el, binned_dl_fac * fid_cl_dic['PP'], color = 'black', ls = 'None')
-        errorbar( binned_el, binned_dl_fac * fid_cl_dic['PP'], yerr = binned_dl_fac * binned_cl_err_pp, capsize = 1., color = 'black', marker = '.', ls = 'None' )
-        #errorbar( binned_el-20, binned_dl_fac * fid_cl_dic['PP'], yerr = binned_dl_fac * binned_cl_err_knox['PP'], capsize = 1., color = 'goldenrod', marker = '.', ls = 'None' )
-        errorbar( binned_el+20, binned_dl_fac * fid_cl_dic['PP'], yerr = binned_dl_fac * binned_cl_err_knox_v2['PP'], capsize = 1., color = 'tab:green', marker = '.', ls = 'None' )
-        plot( els, dl_fac * exp_details_dic['lensing_nl_mv'], color = 'orangered', label = r'N0' )
-        plot( els, dl_fac * unbinned_cl_err_knox['PP'], color = 'navy', label = r'Bandpower error: Unbinned' )
-        plot( tmpeldeltael10, dl_fac_deltael10 * cl_err_knox_deltael10['PP'], color = 'green', label = r'Bandpower error: deltael = 10' )
-        plot( tmpeldeltael50, dl_fac_deltael50 * cl_err_knox_deltael50['PP'], color = 'goldenrod', label = r'Bandpower error: deltael = 50' )
-        plot( binned_el, binned_dl_fac * binned_cl_err_pp, color = 'darkred', label = r'Bandpower error: deltael = 100')
-        legend(loc = 1)
-        xlim(10., lmax+10); ylim(1e-10, 5e-7)#5e3)
-        show(); sys.exit()
+            ax = subplot(111, yscale = 'log')#, xscale='log')
+            #binned_dl_fac = 1.
+            #plot( binned_el, binned_dl_fac * fid_cl_dic['PP'], color = 'black', ls = 'None')
+            errorbar( binned_el, binned_dl_fac * fid_cl_dic['PP'], yerr = binned_dl_fac * binned_cl_err_pp, capsize = 1., color = 'black', marker = '.', ls = 'None' )
+            #errorbar( binned_el-20, binned_dl_fac * fid_cl_dic['PP'], yerr = binned_dl_fac * binned_cl_err_knox['PP'], capsize = 1., color = 'goldenrod', marker = '.', ls = 'None' )
+            errorbar( binned_el+20, binned_dl_fac * fid_cl_dic['PP'], yerr = binned_dl_fac * binned_cl_err_knox_v2['PP'], capsize = 1., color = 'tab:green', marker = '.', ls = 'None' )
+            plot( els, dl_fac * exp_details_dic['lensing_nl_mv'], color = 'orangered', label = r'N0' )
+            plot( els, dl_fac * unbinned_cl_err_knox['PP'], color = 'navy', label = r'Bandpower error: Unbinned' )
+            plot( tmpeldeltael10, dl_fac_deltael10 * cl_err_knox_deltael10['PP'], color = 'green', label = r'Bandpower error: deltael = 10' )
+            plot( tmpeldeltael50, dl_fac_deltael50 * cl_err_knox_deltael50['PP'], color = 'goldenrod', label = r'Bandpower error: deltael = 50' )
+            plot( binned_el, binned_dl_fac * binned_cl_err_pp, color = 'darkred', label = r'Bandpower error: deltael = 100')
+            legend(loc = 1)
+            xlim(10., lmax+10); ylim(1e-10, 5e-7)#5e3)
+            show(); sys.exit()
 
 
     if (0): #plot
