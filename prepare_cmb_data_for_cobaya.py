@@ -169,7 +169,7 @@ cmb_experiment_arr = ['s4_wide']
 ##cmb_experiment_arr = ['spt3g_winter']
 ##cmb_experiment_arr = ['spt3g+wide_plus_spt3gwide']
 ##cmb_experiment_arr = ['spt3g_winter2y', 'spt3g_summer2y']
-also_generate_foregrounds = True
+also_generate_foregrounds = True #in this case bin agora and store.
 
 '''
 #different delta_el
@@ -243,6 +243,7 @@ if get_cov_from_sims:
     pars, fid_cl_dic_unbinned = sne_cmb_fisher_tools.get_camb_cl(param_dict, which_spectra, raw_cl = True, required_spectra = required_spectra, return_dl = return_dl, lmin_dic = lmin_dic, lmax_dic = lmax_dic, use_cobaya_based_setup = use_cobaya_based_setup)
 pars, fid_cl_dic = sne_cmb_fisher_tools.get_camb_cl(param_dict, which_spectra, raw_cl = True, delta_l = delta_l, required_spectra = required_spectra, return_dl = return_dl, lmin_dic = lmin_dic, lmax_dic = lmax_dic, use_cobaya_based_setup = use_cobaya_based_setup)
 binned_el = fid_cl_dic['els']
+
 #--------------------------------------------
 
 print('\nloop through different experiments now\n')
@@ -255,6 +256,11 @@ for cmb_experiment in cmb_experiment_arr:
 
     exp_details_dic = get_exp_details_using_ilc(els, cmb_experiment)
     #print(exp_details_dic['nu_arr'])
+
+    #get foregrounds
+    if also_generate_foregrounds:
+        pars, fg_cl_dic = sne_cmb_fisher_tools.get_and_bin_foregrounds(els, exp_details_dic['nu_arr'], delta_l = delta_l, required_spectra = required_spectra, lmin_dic = lmin_dic, lmax_dic = lmax_dic)
+
 
     #get the covariance based on ILC residuals
     curr_ilc_dic = exp_details_dic['ilc_dic']
@@ -368,7 +374,7 @@ for cmb_experiment in cmb_experiment_arr:
     else:
         pass #unbinned
 
-    if (1): #plot
+    if (0): #plot
         from pylab import *
         binned_cl_err = np.sqrt( np.diag( cov_mat ) )
         binned_cl_err_tt = binned_cl_err[:total_ell_bins]

@@ -1176,6 +1176,71 @@ def get_camb_cl(param_dict, which_spectra, raw_cl = True, thetastar_or_cosmomcth
 
     return pars, cl_dic
 
+def get_and_bin_foregrounds(els, nuarr, fg_fname = None, delta_l = 1, required_spectra = ['TT', 'EE', 'TE', 'BB', 'PP', 'Tphi', 'Ephi'], lmin_dic = None, lmax_dic = None, fg_arr = ['tsz', 'cib', 'radio', 'ksz'], min_nu = 90, dl_ksz_amp = 3.):
+    if fg_fname is None:
+        fg_fname = 'data/agora/cl_alms_cibmasked3.0mjy_radiomasked3.0mjy.npy'
+    fg_rec_dic = np.load(fg_fname, allow_pickle=True).item()
+
+    def nu_mapper(nu):
+        nu_mapper_dic = {27: 27, 39: 39, 93: 95, 145: 150, 225: 220, 278: 285}
+        return nu_mapper_dic[nu]
+
+    dl_fac = els * (els+1)/2/np.pi
+    fg_cl_dic = {}
+    for nu1 in nuarr:
+        for nu2 in nuarr:
+            if nu1>nu2: continue
+            nu1_, nu2_ = nu_mapper(nu1), nu_mapper(nu2)
+            fg_cl_dic[(nu1, nu2)] = {}
+            fg_cl_dic[(nu1, nu2)]['all'] = np.zeros( len(els) )
+            for fg in fg_arr:
+                if nu1<min_nu or nu2<min_nu: #zero the foregrounds here
+                    curr_cl_fg = np.zeros( len(els) )
+                else:
+                    if fg == 'ksz':
+                        dl_ksz = np.tile( dl_ksz_amp, len(els))
+                        curr_cl_fg = dl_ksz/dl_fac
+                    else:
+                        ###from IPython import embed; embed()
+                        if (nu1_, nu2_) in fg_rec_dic[fg]:
+                            curr_cl_fg = fg_rec_dic[fg][(nu1_, nu2_)]
+                        else:
+                            curr_cl_fg = fg_rec_dic[fg][(nu2_, nu1_)]
+                        curr_cl_fg = np.interp(els, np.arange(len(curr_cl_fg)), curr_cl_fg)
+
+                fg_cl_dic[(nu1, nu2)][fg] = curr_cl_fg
+                fg_cl_dic[(nu1, nu2)]['all'] += curr_cl_fg
+
+    if (0): #plot
+        """
+        for nu1nu2 in fg_cl_dic:
+            nu1, nu2 = nu1nu2
+            if nu1 != nu2: continue
+            if nu1<min_nu or nu2<min_nu: continue                
+            clf()
+            subplot(111, yscale = 'log')
+            for fg in fg_cl_dic[nu1nu2]:
+                curr_cl_fg = fg_cl_dic[nu1nu2][fg]
+                print(nu1nu2, fg, curr_cl_fg)
+                plot(els, dl_fac * curr_cl_fg)
+            xlim(0., 5000); ylim(0.1, 1e3)
+            show(); sys.exit()
+        """
+        clf()
+        subplot(111, yscale = 'log')
+        for nu1nu2 in fg_cl_dic:
+            nu1, nu2 = nu1nu2
+            ###if nu1 != nu2: continue
+            if nu1<min_nu or nu2<min_nu: continue                
+            curr_cl_fg = fg_cl_dic[nu1nu2]['all']
+            print(nu1nu2, dl_fac * curr_cl_fg)
+            plot(els, dl_fac * curr_cl_fg, label = r'%s x %s' %(nu1, nu2))
+        xlim(0., 5000); ylim(0.1, 1e3)
+        legend(loc = 'best')
+        show(); sys.exit()
+
+
+
 
 def get_camb_cl_and_derivatives(params, param_dict, param_steps_dict = None, stepsize_frac = 0.01, which_spectra = 'lensed_scalar', delta_l = 1., thetastar_or_cosmomctheta_or_h = 'h', get_derivatives = True):
 
