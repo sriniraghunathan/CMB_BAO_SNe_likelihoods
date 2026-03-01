@@ -259,7 +259,7 @@ for cmb_experiment in cmb_experiment_arr:
 
     #get foregrounds
     if also_generate_foregrounds:
-        pars, fg_cl_dic = sne_cmb_fisher_tools.get_and_bin_foregrounds(els, exp_details_dic['nu_arr'], delta_l = delta_l, required_spectra = required_spectra, lmin_dic = lmin_dic, lmax_dic = lmax_dic)
+        fg_cl_dic = sne_cmb_fisher_tools.get_and_bin_foregrounds(els, exp_details_dic['nu_arr'], delta_l = delta_l, required_spectra = required_spectra, lmin_dic = lmin_dic, lmax_dic = lmax_dic)
 
 
     #get the covariance based on ILC residuals
@@ -328,6 +328,31 @@ for cmb_experiment in cmb_experiment_arr:
         header = '%s PP' %(header)
         np.savetxt( bp_opfname, op_arr, header = header, fmt = '%g %g %g %g %g')
     ###sys.exit()
+    #--------------------
+    #--------------------
+    if also_generate_foregrounds: #foreground bandpowers in each band
+        for nu1nu2 in fg_cl_dic:
+            nu1,nu2 = nu1nu2
+            fg_to_store = 'all'
+            fg_bp_opfname = '%s/%s_fg_bandpowers_%sx%s.txt' %(data_fd, cmb_experiment, nu1, nu2)
+            print(fg_bp_opfname); ###sys.exit()
+            op_arr = binned_el
+            dummy_arr = np.zeros( len(binned_el) )
+            header = 'ell'
+            if 'TT' in required_spectra:
+                op_arr = np.column_stack( (op_arr, fg_cl_dic[nu1nu2][fg_to_store]))
+                header = '%s TT' %(header)
+                np.savetxt( fg_bp_opfname, op_arr, header = header, fmt = '%g %g')
+            if 'EE' in required_spectra:
+                op_arr = np.column_stack( (op_arr, dummy_arr))
+                header = '%s EE' %(header)
+                np.savetxt( fg_bp_opfname, op_arr, header = header, fmt = '%g %g %g')
+            if 'TE' in required_spectra:
+                op_arr = np.column_stack( (op_arr, dummy_arr))
+                header = '%s TE' %(header)
+                np.savetxt( fg_bp_opfname, op_arr, header = header, fmt = '%g %g %g %g')
+            ###sys.exit()        
+
     #--------------------
     #bandpower window function
     bpwf_opfname = '%s/%s_bpwf_%s.npy' %(data_fd, cmb_experiment, required_spectra_str)

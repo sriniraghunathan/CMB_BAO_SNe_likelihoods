@@ -1157,7 +1157,7 @@ def get_camb_cl(param_dict, which_spectra, raw_cl = True, thetastar_or_cosmomcth
                 lmax = param_dict['max_l_limit']
             #binned_el, binned_cl = perform_cl_binning(els, cl_dic[XX], delta_l = delta_l)
             binned_el, binned_cl, bpwf = perform_binning(els, cl_dic[XX], delta_el = delta_l, return_dl = return_dl, lmin = lmin, lmax = lmax)
-            print(binned_el.shape, binned_cl.shape)
+            ###print(binned_el.shape, binned_cl.shape)
             ##print(XX, lmin, lmax)
             cl_dic_binned[XX] = binned_cl
         els = binned_el
@@ -1176,7 +1176,7 @@ def get_camb_cl(param_dict, which_spectra, raw_cl = True, thetastar_or_cosmomcth
 
     return pars, cl_dic
 
-def get_and_bin_foregrounds(els, nuarr, fg_fname = None, delta_l = 1, required_spectra = ['TT', 'EE', 'TE', 'BB', 'PP', 'Tphi', 'Ephi'], lmin_dic = None, lmax_dic = None, fg_arr = ['tsz', 'cib', 'radio', 'ksz'], min_nu = 90, dl_ksz_amp = 3.):
+def get_and_bin_foregrounds(els, nuarr, fg_fname = None, delta_l = 1, required_spectra = ['TT', 'EE', 'TE', 'BB', 'PP', 'Tphi', 'Ephi'], lmin_dic = None, lmax_dic = None, fg_arr = ['tsz', 'cib', 'tsz_cib', 'radio', 'ksz'], min_nu = 90, dl_ksz_amp = 3.):
     if fg_fname is None:
         fg_fname = 'data/agora/cl_alms_cibmasked3.0mjy_radiomasked3.0mjy.npy'
     fg_rec_dic = np.load(fg_fname, allow_pickle=True).item()
@@ -1189,7 +1189,6 @@ def get_and_bin_foregrounds(els, nuarr, fg_fname = None, delta_l = 1, required_s
     fg_cl_dic = {}
     for nu1 in nuarr:
         for nu2 in nuarr:
-            if nu1>nu2: continue
             nu1_, nu2_ = nu_mapper(nu1), nu_mapper(nu2)
             fg_cl_dic[(nu1, nu2)] = {}
             fg_cl_dic[(nu1, nu2)]['all'] = np.zeros( len(els) )
@@ -1207,11 +1206,35 @@ def get_and_bin_foregrounds(els, nuarr, fg_fname = None, delta_l = 1, required_s
                         else:
                             curr_cl_fg = fg_rec_dic[fg][(nu2_, nu1_)]
                         curr_cl_fg = np.interp(els, np.arange(len(curr_cl_fg)), curr_cl_fg)
+                        if (0):###fg == 'tsz_cib':
+                            print(curr_cl_fg)
+                            sys.exit()
 
                 fg_cl_dic[(nu1, nu2)][fg] = curr_cl_fg
                 fg_cl_dic[(nu1, nu2)]['all'] += curr_cl_fg
 
+    #binning
+    if delta_l > 1:
+        fg_cl_dic_binned = {}
+        for nu1nu2 in fg_cl_dic:
+            fg_cl_dic_binned[nu1nu2] = {}
+            for fg in fg_cl_dic[nu1nu2]:
+                if lmin_dic is not None:
+                    lmin = lmin_dic['TT']
+                else:
+                    lmin = param_dict['min_l_limit']
+                if lmax_dic is not None:
+                    lmax = lmax_dic['TT']
+                else:
+                    lmax = param_dict['max_l_limit']
+                binned_el, binned_cl, bpwf = perform_binning(els, fg_cl_dic[nu1nu2][fg], delta_el = delta_l, lmin = lmin, lmax = lmax)
+                ##print(binned_el.shape, binned_cl.shape); sys.exit()
+                fg_cl_dic_binned[nu1nu2][fg] = binned_cl
+        fg_cl_dic = fg_cl_dic_binned
+        els = binned_el
+
     if (0): #plot
+        ###from IPython import embed; embed()
         """
         for nu1nu2 in fg_cl_dic:
             nu1, nu2 = nu1nu2
@@ -1226,6 +1249,7 @@ def get_and_bin_foregrounds(els, nuarr, fg_fname = None, delta_l = 1, required_s
             xlim(0., 5000); ylim(0.1, 1e3)
             show(); sys.exit()
         """
+        dl_fac = els * (els+1)/2/np.pi
         clf()
         subplot(111, yscale = 'log')
         for nu1nu2 in fg_cl_dic:
@@ -1235,12 +1259,12 @@ def get_and_bin_foregrounds(els, nuarr, fg_fname = None, delta_l = 1, required_s
             curr_cl_fg = fg_cl_dic[nu1nu2]['all']
             print(nu1nu2, dl_fac * curr_cl_fg)
             plot(els, dl_fac * curr_cl_fg, label = r'%s x %s' %(nu1, nu2))
+            plot(els, dl_fac * -curr_cl_fg, ls = '--')
         xlim(0., 5000); ylim(0.1, 1e3)
         legend(loc = 'best')
         show(); sys.exit()
 
-
-
+    return fg_cl_dic
 
 def get_camb_cl_and_derivatives(params, param_dict, param_steps_dict = None, stepsize_frac = 0.01, which_spectra = 'lensed_scalar', delta_l = 1., thetastar_or_cosmomctheta_or_h = 'h', get_derivatives = True):
 
