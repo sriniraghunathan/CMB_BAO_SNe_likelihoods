@@ -16,6 +16,7 @@ from cobaya.log import LoggedError
 from cobaya.theory import Theory
 
 from . import tools
+from . import foregrounds as fg
 
 _do_plot = False #True #False ###True ##False ##True
 if _do_plot:
@@ -41,6 +42,7 @@ class CMBmocks(InstallableLikelihood):
     lmax_t: Optional[int] = 3500
     lmax_p: Optional[int] = 3500 #4000
     lmax_pp: Optional[int] = 3500 #4000
+    include_fg: Optional[int] = 1
     """
     use_cosmopower: Optional[bool] = True
     cosmopowe_trained_dataset_fd: Optional[str] = 'data/SPT3G_2018_TTTEEE_cosmopower_trained_model_v1'
@@ -96,6 +98,10 @@ class CMBmocks(InstallableLikelihood):
         self.leff = np.loadtxt(self.bp_file, unpack=True)[0] #\ell_eff
         self.bandpowers_mat = np.loadtxt(self.bp_file, unpack=True)[1:] #TT, EE, TE
 
+        if self.include_fg: #include ILCed foregrounds to TT
+            self.bp_file_foregrounds = '%s/%s_fg_bandpowers_ilc.txt' %(self.data_folder, self.cmb_experiment_name)
+            self.bandpowers_mat_foregrounds = np.loadtxt(self.bp_file_foregrounds, unpack=True)[1:] #TT, EE, TE
+
         #20250609 - set bandpower outside of the range to zero.
         bandpowers_mat_mod = []
         for speccntr, curr_bandpowers in enumerate( self.bandpowers_mat ):
@@ -116,6 +122,8 @@ class CMBmocks(InstallableLikelihood):
             bandpowers_mat_mod.append( curr_bandpowers )
         self.bandpowers_mat = bandpowers_mat_mod
 
+        if self.include_fg: #include ILCed foregrounds to TT
+            self.bandpowers_mat = self.bandpowers_mat + self.bandpowers_mat_foregrounds
 
         if len(self.spectra_to_use) == 1:
             self.bandpowers = self.bandpowers_mat
@@ -239,6 +247,13 @@ class CMBmocks(InstallableLikelihood):
                         cl_dic_for_ilc = tools.create_copies_of_cl_in_multiple_bands(curr_cl_or_dl, self.freq_list, keyname = curr_spec)
                         cl_dic_for_ilc = tools.apply_TPcal_to_cmb_spec_dic(cl_dic_for_ilc, curr_spec, self.freq_list, map_cal_arr = map_cal_arr)
                         curr_cl_or_dl_mod = tools.get_ilc_residual_using_weights(cl_dic_for_ilc, curr_ilc_weights, self.freq_list, el = ells)
+                        if self.include_fg and curr_spec == 'TT': #include foregrounds
+                            #from IPython import embed; embed()
+                            cl_fg_dic_for_ilc = fg.get_foregrounds(ells, self.freq_list, params_values)
+                            curr_cl_fg = tools.get_ilc_residual_using_weights(cl_fg_dic_for_ilc, curr_ilc_weights, self.freq_list, el = ells)
+                            curr_cl_or_dl_mod = curr_cl_or_dl_mod + curr_cl_fg
+                            ###print(cl_fg_dic_for_ilc); quit()
+                            
                     elif curr_spec == 'TE':                        
                         ##from IPython import embed; embed()
                         curr_ilc_weights_T = self.ilc_weights_dic['TT']
@@ -633,6 +648,11 @@ class advanced_so_goal_TTEETE(CMBmocks):
 class advanced_so_goal_TTEETEPP(CMBmocks):
     """
     Likelihood for Advanced-SO-Goal ILC with lensing.
+    """
+
+class s4_wide_TTEETE_fg(CMBmocks):
+    """
+    Likelihood for S4-Wide ILC with foregrounds.
     """
 
 ''' #in the works

@@ -259,8 +259,7 @@ for cmb_experiment in cmb_experiment_arr:
 
     #get foregrounds
     if also_generate_foregrounds:
-        fg_cl_dic = sne_cmb_fisher_tools.get_and_bin_foregrounds(els, exp_details_dic['nu_arr'], delta_l = delta_l, required_spectra = required_spectra, lmin_dic = lmin_dic, lmax_dic = lmax_dic)
-
+        fg_cl_dic, fg_cl_dic_ilced = sne_cmb_fisher_tools.get_and_bin_foregrounds(els, exp_details_dic['nu_arr'], delta_l = delta_l, required_spectra = required_spectra, lmin_dic = lmin_dic, lmax_dic = lmax_dic, ilc_weights_for_bands = exp_details_dic['weights_dic']['TT'])
 
     #get the covariance based on ILC residuals
     curr_ilc_dic = exp_details_dic['ilc_dic']
@@ -331,6 +330,28 @@ for cmb_experiment in cmb_experiment_arr:
     #--------------------
     #--------------------
     if also_generate_foregrounds: #foreground bandpowers in each band
+
+        #ICLed
+        fg_to_store = 'all'
+        fg_bp_opfname = '%s/%s_fg_bandpowers_ilc.txt' %(data_fd, cmb_experiment)
+        print(fg_bp_opfname); ###sys.exit()
+        op_arr = binned_el
+        dummy_arr = np.zeros( len(binned_el) )
+        header = 'ell'
+        if 'TT' in required_spectra:
+            op_arr = np.column_stack( (op_arr, fg_cl_dic_ilced[fg_to_store]))
+            header = '%s TT' %(header)
+            np.savetxt( fg_bp_opfname, op_arr, header = header, fmt = '%g %g')
+        if 'EE' in required_spectra:
+            op_arr = np.column_stack( (op_arr, dummy_arr))
+            header = '%s EE' %(header)
+            np.savetxt( fg_bp_opfname, op_arr, header = header, fmt = '%g %g %g')
+        if 'TE' in required_spectra:
+            op_arr = np.column_stack( (op_arr, dummy_arr))
+            header = '%s TE' %(header)
+            np.savetxt( fg_bp_opfname, op_arr, header = header, fmt = '%g %g %g %g')
+            ###sys.exit()                
+
         for nu1nu2 in fg_cl_dic:
             nu1,nu2 = nu1nu2
             fg_to_store = 'all'
@@ -413,6 +434,13 @@ for cmb_experiment in cmb_experiment_arr:
         errorbar( binned_el-20, binned_dl_fac * fid_cl_dic['TT'], yerr = binned_dl_fac * binned_cl_err_tt, capsize = 1., color = 'black', marker = '.', ls = 'None' )
         errorbar( binned_el-20, binned_dl_fac * fid_cl_dic['EE'], yerr = binned_dl_fac * binned_cl_err_ee, capsize = 1., color = 'orangered', marker = '.', ls = 'None' )
         errorbar( binned_el-20, binned_dl_fac * abs(fid_cl_dic['TE']), yerr = binned_dl_fac * abs(binned_cl_err_te), capsize = 1., color = 'darkgreen', marker = '.', ls = 'None' )
+
+        #ILCed Agora foregorunds
+        plot( binned_el, binned_dl_fac * fg_cl_dic_ilced['all'], color = 'green')
+
+        #ILCed analytic foregorunds
+        plot( binned_el, binned_dl_fac * curr_ilc_dic_binned['TT'], color = 'purple')
+
         xlim(10., lmax+10); ylim(0.1, 5e3)
         show()
 
