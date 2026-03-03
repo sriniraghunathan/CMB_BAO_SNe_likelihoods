@@ -240,6 +240,7 @@ class CMBmocks(InstallableLikelihood):
                 if self.ilc_weights_fname is not None:
                     total_bands = len(self.freq_list)
                     if self.include_fg and curr_spec == 'TT': #include foregrounds
+                        curr_ilc_weights = self.ilc_weights_dic[curr_spec]
                         #from IPython import embed; embed()
                         cl_fg_dic_for_ilc = fg.get_foregrounds(ells, self.freq_list, params_values)
                         curr_cl_fg = tools.get_ilc_residual_using_weights(cl_fg_dic_for_ilc, curr_ilc_weights, self.freq_list, el = ells)
