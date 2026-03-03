@@ -42,7 +42,7 @@ class CMBmocks(InstallableLikelihood):
     lmax_t: Optional[int] = 3500
     lmax_p: Optional[int] = 3500 #4000
     lmax_pp: Optional[int] = 3500 #4000
-    include_fg: Optional[int] = 1
+    include_fg: Optional[int] = 0
     """
     use_cosmopower: Optional[bool] = True
     cosmopowe_trained_dataset_fd: Optional[str] = 'data/SPT3G_2018_TTTEEE_cosmopower_trained_model_v1'
@@ -239,6 +239,12 @@ class CMBmocks(InstallableLikelihood):
 
                 if self.ilc_weights_fname is not None:
                     total_bands = len(self.freq_list)
+                    if self.include_fg and curr_spec == 'TT': #include foregrounds
+                        #from IPython import embed; embed()
+                        cl_fg_dic_for_ilc = fg.get_foregrounds(ells, self.freq_list, params_values)
+                        curr_cl_fg = tools.get_ilc_residual_using_weights(cl_fg_dic_for_ilc, curr_ilc_weights, self.freq_list, el = ells)
+                        curr_cl_or_dl_mod = curr_cl_or_dl_mod + curr_cl_fg
+                        ###print(cl_fg_dic_for_ilc); quit()
                     if curr_spec in ['TT', 'EE']:
                         curr_ilc_weights = self.ilc_weights_dic[curr_spec]
                         assert len(curr_ilc_weights) == total_bands
@@ -247,12 +253,6 @@ class CMBmocks(InstallableLikelihood):
                         cl_dic_for_ilc = tools.create_copies_of_cl_in_multiple_bands(curr_cl_or_dl, self.freq_list, keyname = curr_spec)
                         cl_dic_for_ilc = tools.apply_TPcal_to_cmb_spec_dic(cl_dic_for_ilc, curr_spec, self.freq_list, map_cal_arr = map_cal_arr)
                         curr_cl_or_dl_mod = tools.get_ilc_residual_using_weights(cl_dic_for_ilc, curr_ilc_weights, self.freq_list, el = ells)
-                        if self.include_fg and curr_spec == 'TT': #include foregrounds
-                            #from IPython import embed; embed()
-                            cl_fg_dic_for_ilc = fg.get_foregrounds(ells, self.freq_list, params_values)
-                            curr_cl_fg = tools.get_ilc_residual_using_weights(cl_fg_dic_for_ilc, curr_ilc_weights, self.freq_list, el = ells)
-                            curr_cl_or_dl_mod = curr_cl_or_dl_mod + curr_cl_fg
-                            ###print(cl_fg_dic_for_ilc); quit()
                             
                     elif curr_spec == 'TE':                        
                         ##from IPython import embed; embed()
