@@ -1,0 +1,179 @@
+path: null
+
+cmb_experiment_name: 's4_wide'
+parent_data_folder: 'data/cmb_data/'
+analytic_or_simbased_cov: 'analytic' #'simbased'
+spectra_to_use: ['TT', 'EE', 'TE'] ##['TT'] ##
+freq_list: [30, 40, 90, 150, 220, 280]
+cl_or_dl: 'cl'
+use_cosmopower: false #true
+cosmopowe_trained_dataset_fd: 'data/SPT3G_2018_TTTEEE_cosmopower_trained_model_v1'
+delta_l: 100 #\ell binning
+lmin_t: 300
+lmin_p: 300
+include_fg: 1
+
+params:
+  mapTCal1:
+    prior:
+      min: 0.5
+      max: 2.0
+    ref: 1.0
+    proposal: 0.001
+    latex: T_{\mathrm cal^\mathrm{30}}
+  mapTCal2:
+    prior:
+      min: 0.5
+      max: 2.0
+    ref: 1.0
+    proposal: 0.001
+    latex: T_{\mathrm cal^\mathrm{40}}
+  mapTCal3:
+    prior:
+      min: 0.5
+      max: 2.0
+    ref: 1.0
+    proposal: 0.001
+    latex: T_{\mathrm cal^\mathrm{90}}
+  mapTCal4:
+    prior:
+      min: 0.5
+      max: 2.0
+    ref: 1.0
+    proposal: 0.001
+    latex: T_{\mathrm cal^\mathrm{150}}
+  mapTCal5:
+    prior:
+      min: 0.5
+      max: 2.0
+    ref: 1.0
+    proposal: 0.001
+    latex: T_{\mathrm cal^\mathrm{220}}
+  mapTCal6:
+    prior:
+      min: 0.5
+      max: 2.0
+    ref: 1.0
+    proposal: 0.001
+    latex: T_{\mathrm cal^\mathrm{280}}
+  mapPCal1:
+    prior:
+      min: 0.5
+      max: 2.0
+    ref: 1.0
+    proposal: 0.001
+    latex: P_{\mathrm cal^\mathrm{30}}
+  mapPCal2:
+    prior:
+      min: 0.5
+      max: 2.0
+    ref: 1.0
+    proposal: 0.001
+    latex: P_{\mathrm cal^\mathrm{40}}
+  mapPCal3:
+    prior:
+      min: 0.5
+      max: 2.0
+    ref: 1.0
+    proposal: 0.001
+    latex: P_{\mathrm cal^\mathrm{90}}
+  mapPCal4:
+    prior:
+      min: 0.5
+      max: 2.0
+    ref: 1.0
+    proposal: 0.001
+    latex: P_{\mathrm cal^\mathrm{150}}
+  mapPCal5:
+    prior:
+      min: 0.5
+      max: 2.0
+    ref: 1.0
+    proposal: 0.001
+    latex: P_{\mathrm cal^\mathrm{220}}
+  mapPCal6:
+    prior:
+      min: 0.5
+      max: 2.0
+    ref: 1.0
+    proposal: 0.001
+    latex: P_{\mathrm cal^\mathrm{280}}
+  Atsz:
+    prior:
+      min: 0
+      max: 10
+    ref: 0.
+    proposal: 0.05
+    latex: A_\mathrm{tSZ}
+  alphatsz:
+    prior:
+      min: -2.
+      max: 0.
+    ref: -2.
+    proposal: 0.05
+    latex: \alpha_\mathrm{tSZ}  
+  Acibpo:
+    prior:
+      min: 0
+      max: 10
+    ref: 0.
+    proposal: 0.05
+    latex: A_\mathrm{CIB-Poi}
+  betacibpo:
+    prior:
+      min: 0.5
+      max: 3.5
+    ref: 1.6
+    proposal: 0.05
+    latex: \beta_\mathrm{CIB-Poi}
+  Tcibpo:
+    value: 20
+    latex: T_\mathrm{CIB-Poi}
+  Acibclus:
+    prior:
+      min: 0
+      max: 10
+    ref: 0.
+    proposal: 0.05
+    latex: A_\mathrm{CIB-Clus}
+  alphacibclus:
+    value: 0.8
+    latex: \alpha_\mathrm{CIB-Clus}  
+  betacibclus:
+    prior:
+      min: 0.5
+      max: 3.5
+    ref: 2.5
+    proposal: 0.05
+    latex: \beta_\mathrm{CIB-Clus}
+  Tcibclus:
+    value: 20
+    latex: T_\mathrm{CIB-Clus}
+  rhotszcib:
+    prior:
+      min: 0.
+      max: 1.
+    ref: 0.2
+    proposal: 0.05
+    latex: \rho_\mathrm{tSZ-CIB}
+  Aradio:
+    prior:
+      min: 0
+      max: 10
+    ref: 0.
+    proposal: 0.05
+    latex: A_\mathrm{Radio}
+  alpharadio:
+    prior:
+      min: -2
+      max: 0.
+    ref: -0.76
+    proposal: 0.05
+    latex: \alpha_\mathrm{Radio}
+  Aksz:
+    prior:
+      min: 0.
+      max: 10.
+    ref: 0.
+    proposal: 0.05
+    latex: A_\mathrm{kSZ}
