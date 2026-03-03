@@ -154,6 +154,10 @@ lmin_dic = {'TT': lmin_t, 'EE': lmin_p, 'TE': min(lmin_t, lmin_p), 'PP': lmin_ph
 #lmax
 lmax_t = param_dict['lmax_t']
 lmax_p = param_dict['lmax_p']
+if (1):
+    lmax_t = 4500
+    lmax_p = 4500
+
 lmax_phi = param_dict['lmax_phi']
 lmax_dic = {'TT': lmax_t, 'EE': lmax_p, 'TE': lmax_p, 'PP': lmax_phi}
 
@@ -187,7 +191,7 @@ if (1):
 
 which_spectra = 'lensed_scalar'
 return_dl = False
-required_spectra = ['TT', 'EE', 'TE']
+required_spectra = ['TT']#, 'EE', 'TE']
 lmin_lmax_str = 'lmint%s_lmaxt%s_lminp%s_lmaxp%s' %(lmin_t, lmax_t, lmin_p, lmax_p)
 if add_lensing:
     required_spectra.append('PP')
