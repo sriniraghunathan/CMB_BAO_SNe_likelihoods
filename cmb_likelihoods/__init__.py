@@ -11,4 +11,4 @@ from .cmb_likelihoods import advanced_so_baseline_TTEETE, advanced_so_baseline_T
 from .cmb_likelihoods import advanced_so_goal_TTEETE, advanced_so_goal_TTEETEPP
 
 #foergrounds
-from .cmb_likelihoods import s4_wide_TTEETE_fg
+from .cmb_likelihoods import s4_wide_TT_fg, s4_wide_TTEETE_fg

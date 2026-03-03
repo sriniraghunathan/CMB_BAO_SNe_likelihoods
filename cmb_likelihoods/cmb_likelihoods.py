@@ -655,6 +655,11 @@ class s4_wide_TTEETE_fg(CMBmocks):
     Likelihood for S4-Wide ILC with foregrounds.
     """
 
+class s4_wide_TT_fg(CMBmocks):
+    """
+    Likelihood for S4-Wide ILC with foregrounds.
+    """
+
 ''' #in the works
 class cosmopoweremulator(Theory):
 
