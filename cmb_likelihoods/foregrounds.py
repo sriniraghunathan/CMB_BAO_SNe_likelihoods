@@ -34,7 +34,7 @@ def get_foregrounds(els, freqarr, params_values):
             alphacibclus = eval( 'params_values.get(f"alphacibclus")' )
             betacibclus = eval( 'params_values.get(f"betacibclus")' )
             Tcibclus = eval( 'params_values.get(f"Tcibclus")' )
-            cl_cib = get_cl_cib(els, Acibpo, betacibpo, Acibclus, alphacibclus, betacibclus, freq1, freq2, Tcibpo = Tcibpo, Tcibclus = Tcibclus)
+            cl_cib = get_cl_cib(els, Acibpo, betacibpo, Acibclus, betacibclus, freq1, freq2, alphacibclus = alphacibclus, Tcibpo = Tcibpo, Tcibclus = Tcibclus)
 
             cl_fg_all = cl_tsz + cl_ksz + cl_radio + cl_cib
             cl_dic_fg['TT'][(freq1, freq2)] = cl_fg_all
@@ -178,6 +178,8 @@ def get_cl_cib(els, Acibpo, betacibpo, Acibclus, betacibclus, freq1, freq2, alph
 
     dl_dg_po = Acibpo * epsilon_nu1_nu2 * (1.*etanu1_dg_po * etanu2_dg_po/etanu0_dg_po/etanu0_dg_po) * (els*1./el_norm)**2
     dl_dg_clus = Acibclus * epsilon_nu1_nu2 * (1.*etanu1_dg_clus * etanu2_dg_clus/etanu0_dg_clus/etanu0_dg_clus) * (els*1./el_norm)**alphacibclus
+
+    ###from IPython import embed; embed()
 
     cl_dg_po = dl_dg_po / dl_fac
     cl_dg_clus = dl_dg_clus / dl_fac

@@ -334,6 +334,7 @@ class CMBmocks(InstallableLikelihood):
         ###print(cbs_or_dbs); quit()
         
         if _do_plot:
+            from IPython import embed; embed()
             total_bins = len( self.leff )
             cl_err = np.diag( self.cov )**0.5
             cl_tt_err, cl_ee_err, cl_te_err = cl_err[:total_bins], cl_err[total_bins: 2*total_bins], cl_err[2*total_bins: 3*total_bins]
