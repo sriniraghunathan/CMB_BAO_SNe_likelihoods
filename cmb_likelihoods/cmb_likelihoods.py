@@ -244,7 +244,7 @@ class CMBmocks(InstallableLikelihood):
                         #from IPython import embed; embed()
                         cl_fg_dic_for_ilc = fg.get_foregrounds(ells, self.freq_list, params_values)
                         curr_cl_fg = tools.get_ilc_residual_using_weights(cl_fg_dic_for_ilc, curr_ilc_weights, self.freq_list, el = ells)
-                        curr_cl_or_dl_mod = curr_cl_or_dl_mod + curr_cl_fg
+                        curr_cl_or_dl = curr_cl_or_dl + curr_cl_fg
                         ###print(cl_fg_dic_for_ilc); quit()
                     if curr_spec in ['TT', 'EE']:
                         curr_ilc_weights = self.ilc_weights_dic[curr_spec]
