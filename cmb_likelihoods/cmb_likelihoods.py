@@ -99,7 +99,7 @@ class CMBmocks(InstallableLikelihood):
         self.bandpowers_mat = np.loadtxt(self.bp_file, unpack=True)[1:] #TT, EE, TE
 
         if self.include_fg: #include ILCed foregrounds to TT
-            self.bp_file_foregrounds = '%s/%s_fg_bandpowers_ilc.txt' %(self.data_folder, self.cmb_experiment_name)
+            self.bp_file_foregrounds = '%s/%s_fg_bandpowers_ilc_%s.txt' %(self.data_folder, self.cmb_experiment_name, self.spectra_to_use_str)
             self.bandpowers_mat_foregrounds = np.loadtxt(self.bp_file_foregrounds, unpack=True)[1:] #TT, EE, TE
 
         #20250609 - set bandpower outside of the range to zero.
