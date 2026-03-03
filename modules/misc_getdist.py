@@ -901,6 +901,14 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
             curr_lab = 'Mock (DES Cosmo)'
         elif ddd in ['desy5_desdovekiecosmo_moddatavector_sim0', 'desy5_desdovekiecosmo_sim0']:
             curr_lab = 'Mock (DES Dovekie Cosmo)'
+        elif ddd == 'desibaoplusdesy5sneplusplanckcmb_w0walcdm':
+            curr_lab = 'Data: DES-Y5-SNe + DESI-DR2 BAO + {\it Planck} CMB'
+        elif ddd == 'desy5sne_w0walcdm':
+            curr_lab = 'Data: DES-Y5-SNe'
+        elif ddd == 'desibaoplusdesy5sne_w0walcdm':
+            curr_lab = 'Data: DES-Y5-SNe + DESI-DR2 BAO'
+        elif ddd == 'desibao_w0walcdm':
+            curr_lab = 'Data: DESI-DR2 BAO'
         else: #CMB
             cmb_exp_name, cmb_dataset = ddd.split('-')
             curr_lab = '%s-%s' %(cmb_exp_dic[cmb_exp_name], cmb_dataset)

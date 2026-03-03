@@ -333,7 +333,7 @@ for cmb_experiment in cmb_experiment_arr:
 
         #ICLed
         fg_to_store = 'all'
-        fg_bp_opfname = '%s/%s_fg_bandpowers_ilc.txt' %(data_fd, cmb_experiment)
+        fg_bp_opfname = '%s/%s_fg_bandpowers_ilc_%s.txt' %(data_fd, cmb_experiment, required_spectra_str)
         print(fg_bp_opfname); ###sys.exit()
         op_arr = binned_el
         dummy_arr = np.zeros( len(binned_el) )
@@ -355,7 +355,7 @@ for cmb_experiment in cmb_experiment_arr:
         for nu1nu2 in fg_cl_dic:
             nu1,nu2 = nu1nu2
             fg_to_store = 'all'
-            fg_bp_opfname = '%s/%s_fg_bandpowers_%sx%s.txt' %(data_fd, cmb_experiment, nu1, nu2)
+            fg_bp_opfname = '%s/%s_fg_bandpowers_%sx%s_%s.txt' %(data_fd, cmb_experiment, nu1, nu2, required_spectra_str)
             print(fg_bp_opfname); ###sys.exit()
             op_arr = binned_el
             dummy_arr = np.zeros( len(binned_el) )
