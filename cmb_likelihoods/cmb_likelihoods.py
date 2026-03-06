@@ -19,7 +19,7 @@ from . import tools
 from . import foregrounds as fg
 
 _do_plot = False #True #False ###True ##False ##True
-if (1):#_do_plot:
+if _do_plot:
     from pylab import *
 
 class CMBmocks(InstallableLikelihood):
