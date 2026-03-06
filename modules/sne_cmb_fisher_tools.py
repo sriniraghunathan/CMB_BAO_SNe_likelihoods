@@ -1185,7 +1185,7 @@ def get_and_bin_foregrounds(els, nuarr, fg_fname = None, delta_l = 1, required_s
     fg_rec_dic = np.load(fg_fname, allow_pickle=True).item()
 
     def nu_mapper(nu):
-        nu_mapper_dic = {27: 27, 39: 39, 93: 95, 145: 150, 225: 220, 278: 285}
+        nu_mapper_dic = {27: 27, 39: 39, 90: 95, 93: 95, 145: 150, 150: 150, 220: 220, 225: 220, 278: 285}
         return nu_mapper_dic[nu]
 
     dl_fac = els * (els+1)/2/np.pi

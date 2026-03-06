@@ -138,7 +138,17 @@ if os.path.exists('/data/spt/')>=-1:
 
 #--------------------------------------------
 #specs
-paramfile = 'data/params_cobaya.ini'
+#which_cosmo = 'fiducial'
+which_cosmo = 'descosmo'
+#which_cosmo = 'desdovekiecosmo'
+
+if which_cosmo == 'fiducial':
+    paramfile = 'data/params_cobaya.ini'
+elif which_cosmo == 'descosmo':
+    paramfile = 'data/params_cobaya_desdovekiecosmo.ini'
+elif which_cosmo == 'desdovekiecosmo':
+    paramfile = 'data/params_cobaya_descosmo.ini'
+
 param_dict = misc.get_param_dict(paramfile)
 save_files = 1 ##0 ##1
 
@@ -154,7 +164,7 @@ lmin_dic = {'TT': lmin_t, 'EE': lmin_p, 'TE': min(lmin_t, lmin_p), 'PP': lmin_ph
 #lmax
 lmax_t = param_dict['lmax_t']
 lmax_p = param_dict['lmax_p']
-if (1):
+if (0):
     lmax_t = 4500
     lmax_p = 4500
 
@@ -169,8 +179,8 @@ cmb_experiment_arr = ['so_baseline', 'so_goal', 'spt3g_winter', 'spt3g_summer', 
 ##cmb_experiment_arr = ['s4_wide']
 cmb_experiment_arr = ['advanced_so_baseline', 'advanced_so_goal']
 #cmb_experiment_arr = ['s4_wide_cobaya_tester']
-cmb_experiment_arr = ['s4_wide']
-##cmb_experiment_arr = ['spt3g_winter']
+#cmb_experiment_arr = ['s4_wide']
+cmb_experiment_arr = ['spt3g_winter', 'spt3g_summer', 'spt3g_wide', 's4_wide']
 ##cmb_experiment_arr = ['spt3g+wide_plus_spt3gwide']
 ##cmb_experiment_arr = ['spt3g_winter2y', 'spt3g_summer2y']
 also_generate_foregrounds = True #in this case bin agora and store.
@@ -191,7 +201,7 @@ if (1):
 
 which_spectra = 'lensed_scalar'
 return_dl = False
-required_spectra = ['TT']#, 'EE', 'TE']
+required_spectra = ['TT', 'EE', 'TE']
 lmin_lmax_str = 'lmint%s_lmaxt%s_lminp%s_lmaxp%s' %(lmin_t, lmax_t, lmin_p, lmax_p)
 if add_lensing:
     required_spectra.append('PP')
@@ -253,7 +263,11 @@ binned_el = fid_cl_dic['els']
 print('\nloop through different experiments now\n')
 for cmb_experiment in cmb_experiment_arr:
     print( cmb_experiment )
-    data_fd = '%s/%s/' %(parent_data_fd, cmb_experiment)
+    if which_cosmo == 'fiducial':
+        data_fd = '%s/%s/' %(parent_data_fd, cmb_experiment)
+    else:
+        data_fd = '%s/%s_%s' %(parent_data_fd, cmb_experiment, which_cosmo)
+
     print(data_fd); ###sys.exit()
     if not os.path.exists( data_fd ): os.system('mkdir -p %s' %(data_fd))
     

@@ -1,3 +1,7 @@
 from .bao_likelihoods import desidr2bao_mock
 from .bao_likelihoods import desidr3bao_lowz_mock
 from .bao_likelihoods import desidr3bao_highz_mock
+
+#different cosmo
+from .bao_likelihoods import desidr3bao_lowz_mock_descosmo, desidr3bao_highz_mock_descosmo
+from .bao_likelihoods import desidr3bao_lowz_mock_desdovekiecosmo, desidr3bao_highz_mock_desdovekiecosmo

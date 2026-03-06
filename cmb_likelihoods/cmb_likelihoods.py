@@ -19,7 +19,7 @@ from . import tools
 from . import foregrounds as fg
 
 _do_plot = False #True #False ###True ##False ##True
-if _do_plot:
+if (1):#_do_plot:
     from pylab import *
 
 class CMBmocks(InstallableLikelihood):
@@ -334,7 +334,7 @@ class CMBmocks(InstallableLikelihood):
         ###print(cbs_or_dbs); quit()
         
         if _do_plot:
-            from IPython import embed; embed()
+            ###from IPython import embed; embed()
             total_bins = len( self.leff )
             cl_err = np.diag( self.cov )**0.5
             cl_tt_err, cl_ee_err, cl_te_err = cl_err[:total_bins], cl_err[total_bins: 2*total_bins], cl_err[2*total_bins: 3*total_bins]
@@ -658,6 +658,39 @@ class s4_wide_TTEETE_fg(CMBmocks):
     """
 
 class s4_wide_TT_fg(CMBmocks):
+    """
+    Likelihood for S4-Wide ILC with foregrounds.
+    """
+
+class spt3g_winter_TTEETEPP_descosmo(CMBmocks):
+    """
+    Likelihood for S4-Wide ILC with foregrounds.
+    """
+class spt3g_winter_TTEETEPP_desdovekiecosmo(CMBmocks):
+    """
+    Likelihood for S4-Wide ILC with foregrounds.
+    """
+class spt3g_summer_TTEETEPP_descosmo(CMBmocks):
+    """
+    Likelihood for S4-Wide ILC with foregrounds.
+    """
+class spt3g_summer_TTEETEPP_desdovekiecosmo(CMBmocks):
+    """
+    Likelihood for S4-Wide ILC with foregrounds.
+    """
+class spt3g_wide_TTEETEPP_descosmo(CMBmocks):
+    """
+    Likelihood for S4-Wide ILC with foregrounds.
+    """
+class spt3g_wide_TTEETEPP_desdovekiecosmo(CMBmocks):
+    """
+    Likelihood for S4-Wide ILC with foregrounds.
+    """
+class s4_wide_TTEETEPP_descosmo(CMBmocks):
+    """
+    Likelihood for S4-Wide ILC with foregrounds.
+    """
+class s4_wide_TTEETEPP_desdovekiecosmo(CMBmocks):
     """
     Likelihood for S4-Wide ILC with foregrounds.
     """

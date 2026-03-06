@@ -23,3 +23,24 @@ class desidr3bao_highz_mock(desi_2024_base):
     r"""
     DESI BAO likelihood for all tracers.
     """
+
+#different cosmos
+class desidr3bao_lowz_mock_descosmo(desi_2024_base):
+    r"""
+    DESI BAO likelihood for all tracers.
+    """
+
+class desidr3bao_highz_mock_descosmo(desi_2024_base):
+    r"""
+    DESI BAO likelihood for all tracers.
+    """
+
+class desidr3bao_lowz_mock_desdovekiecosmo(desi_2024_base):
+    r"""
+    DESI BAO likelihood for all tracers.
+    """
+
+class desidr3bao_highz_mock_desdovekiecosmo(desi_2024_base):
+    r"""
+    DESI BAO likelihood for all tracers.
+    """
