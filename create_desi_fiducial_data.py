@@ -8,16 +8,28 @@ from astropy import units as u
 #which_bao_data = 'desi_dr2'
 #which_bao_data = 'desi_dr3'
 #which_bao_data = 'desi_dr3_lowz'
-which_bao_data = 'desi_dr3_highz'
+#which_bao_data = 'desi_dr3_highz'
+
+if (1): #descosmo
+    which_bao_data = 'desi_dr3_lowz_descomso'
+    #which_bao_data = 'desi_dr3_highz_descomso'
+
+if (0): #desdovekiecosmo
+    #which_bao_data = 'desi_dr3_lowz_desdovekiecomso'
+    which_bao_data = 'desi_dr3_highz_desdovekiecomso'
 
 ignore_first_entry_for_dr3_highz = True ##False ##True
-if which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
+if which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz', 'desi_dr3_lowz_descomso', 'desi_dr3_highz_descomso', 'desi_dr3_lowz_desdovekiecomso', 'desi_dr3_highz_desdovekiecomso']:
     camb_or_astropy = 'camb'
 else:
     camb_or_astropy = 'camb'
     #camb_or_astropy = 'astropy'
 
 paramfile = 'data/params_cobaya.ini'
+if which_bao_data in ['desi_dr3_lowz_desdovekiecomso', 'desi_dr3_highz_desdovekiecomso']:
+    paramfile = 'data/params_cobaya_desdovekiecosmo.ini'
+if which_bao_data in ['desi_dr3_lowz_descomso', 'desi_dr3_highz_descomso']:
+    paramfile = 'data/params_cobaya_descosmo.ini'
 param_dict = misc.get_param_dict(paramfile)
 if (0):
     param_dict['ws'] = -0.888
@@ -41,16 +53,26 @@ if which_bao_data == 'desi_dr2':
     bao_data_fname = '%s/desi_gaussian_bao_ALL_GCcomb_mean.txt' %(bao_data_fd)
     bao_data_cov_fname = '%s/bao_data/desi_gaussian_bao_ALL_GCcomb_cov.txt' %(bao_data_fd)
     bao_data_opfd = 'data/bao_data/desi_bao_dr2'
-elif which_bao_data == 'desi_dr3_highz':
+elif which_bao_data in ['desi_dr3_highz', 'desi_dr3_highz_descomso', 'desi_dr3_highz_desdovekiecomso']:
     bao_data_fd = 'data/bao_data/desi_bao_dr3_stuffs/'
     bao_data_fname = '%s/Tab7_data_vector_bao_lya_zbin_1p9_3p7.ecsv' %(bao_data_fd)
     bao_data_cov_fname = '%s/Tab7_covariance_matrix_bao_lya_zbin_1p9_3p7.ecsv' %(bao_data_fd)
-    bao_data_opfd = 'data/bao_data/desi_bao_dr3_mock'
-elif which_bao_data == 'desi_dr3_lowz':
+    if which_bao_data == 'desi_dr3_highz':
+        bao_data_opfd = 'data/bao_data/desi_bao_dr3_mock'
+    elif which_bao_data == 'desi_dr3_highz_descomso':
+        bao_data_opfd = 'data/bao_data/desi_bao_dr3_mock_descosmo'
+    elif which_bao_data =='desi_dr3_highz_desdovekiecomso':
+        bao_data_opfd = 'data/bao_data/desi_bao_dr3_mock_desdovekiecosmo'
+elif which_bao_data in ['desi_dr3_lowz', 'desi_dr3_lowz_descomso', 'desi_dr3_lowz_desdovekiecomso']:
     bao_data_fd = 'data/bao_data/desi_bao_dr3_stuffs/'
     bao_data_fname = '%s/Tab7_data_vector_baorsd_zbin_0p0_2p1.ecsv' %(bao_data_fd)
     bao_data_cov_fname = '%s/Tab7_covariance_matrix_baorsd_zbin_0p0_2p1.ecsv' %(bao_data_fd)
-    bao_data_opfd = 'data/bao_data/desi_bao_dr3_mock'
+    if which_bao_data == 'desi_dr3_lowz':
+        bao_data_opfd = 'data/bao_data/desi_bao_dr3_mock'
+    elif which_bao_data == 'desi_dr3_lowz_descomso':
+        bao_data_opfd = 'data/bao_data/desi_bao_dr3_mock_descosmo'
+    elif which_bao_data =='desi_dr3_lowz_desdovekiecomso':
+        bao_data_opfd = 'data/bao_data/desi_bao_dr3_mock_desdovekiecosmo'
 bao_data_cov_fname_op = bao_data_cov_fname.replace( bao_data_fd, bao_data_opfd )
 
 def bao_model(param_dict, z_arr, observable_arr, cosmo = None, camb_results = None):
@@ -153,25 +175,25 @@ if which_bao_data == 'desi_dr2':
         #op_arr.append( [curr_z, curr_model_val, curr_obs] )
         opline = '%s %s %s' %(curr_z, curr_model_val, curr_obs)
         opf.writelines( '%s\n' %(opline) )
-elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
+elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz', 'desi_dr3_lowz_descomso', 'desi_dr3_highz_descomso', 'desi_dr3_lowz_desdovekiecomso', 'desi_dr3_highz_desdovekiecomso']:
     opf = open( opfname, 'w' )
     opline = '# [z] [value at z] [quantity]'
     opf.writelines( '%s\n' %(opline) )
     for recntr, curr_rec in enumerate( bao_rec ):
         curr_rec = list( curr_rec )
-        if which_bao_data  == 'desi_dr3_highz':
+        if which_bao_data  in ['desi_dr3_highz', 'desi_dr3_highz_descomso', 'desi_dr3_highz_desdovekiecomso']:
             curr_z, curr_val1, curr_val2 = curr_rec
             curr_z = curr_z.decode("utf-8")
             curr_val1 = curr_val1.decode("utf-8")
             curr_val2 = curr_val2.decode("utf-8")
-        elif which_bao_data  == 'desi_dr3_lowz':
+        elif which_bao_data in ['desi_dr3_lowz', 'desi_dr3_lowz_descomso', 'desi_dr3_lowz_desdovekiecomso']:
             curr_z, curr_val1, curr_val2, curr_val3 = curr_rec
             curr_z = curr_z.decode("utf-8")
             curr_val1 = curr_val1.decode("utf-8")
             curr_val2 = curr_val2.decode("utf-8")
             curr_val3 = curr_val3.decode("utf-8")
 
-        if which_bao_data  == 'desi_dr3_highz' and ignore_first_entry_for_dr3_highz and recntr == 1:
+        if which_bao_data  in ['desi_dr3_highz', 'desi_dr3_highz_descomso', 'desi_dr3_highz_desdovekiecomso'] and ignore_first_entry_for_dr3_highz and recntr == 1:
             print(curr_rec, 'hi')
             continue
 
@@ -180,16 +202,16 @@ elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
         curr_val1 = float( curr_val1 )
         curr_val2 = float( curr_val2 )
         curr_val_arr = [curr_val1, curr_val2]
-        if which_bao_data  == 'desi_dr3_lowz':
+        if which_bao_data  in ['desi_dr3_lowz', 'desi_dr3_lowz_descomso', 'desi_dr3_lowz_desdovekiecomso']: ##== 'desi_dr3_lowz':
             curr_val3 = float( curr_val3 )
             curr_val_arr = [curr_val1, curr_val2, curr_val3]
 
-        if which_bao_data  == 'desi_dr3_highz':
+        if which_bao_data in ['desi_dr3_highz', 'desi_dr3_highz_descomso', 'desi_dr3_highz_desdovekiecomso']:
             curr_obs_arr = ['DA_over_rs', 'Hz_rs']
-        elif which_bao_data  == 'desi_dr3_lowz':
+        elif which_bao_data  in ['desi_dr3_lowz', 'desi_dr3_lowz_descomso', 'desi_dr3_lowz_desdovekiecomso']:
             curr_obs_arr = ['f_sigma8', 'DA_over_rs', 'Hz_rs']
 
-        if which_bao_data  == 'desi_dr3_highz': #swap indices now.
+        if which_bao_data in ['desi_dr3_highz', 'desi_dr3_highz_descomso', 'desi_dr3_highz_desdovekiecomso']: #swap indices now.
             curr_obs_arr = curr_obs_arr[::-1]
             curr_val_arr = curr_val_arr[::-1]
             ###print( curr_obs_arr, curr_val_arr )
@@ -209,7 +231,7 @@ elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
 if which_bao_data == 'desi_dr2':
     cmd = 'cp %s %s' %(bao_data_cov_fname, bao_data_cov_fname_op)
     os.system( cmd )
-elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz']:
+elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz', 'desi_dr3_lowz_descomso', 'desi_dr3_highz_descomso', 'desi_dr3_lowz_desdovekiecomso', 'desi_dr3_highz_desdovekiecomso']:
     f = open(bao_data_cov_fname, 'r');
     cov_arr = []
     for lcntr, line in enumerate( f ):
