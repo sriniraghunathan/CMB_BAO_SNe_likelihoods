@@ -14,7 +14,4 @@ from .cmb_likelihoods import advanced_so_goal_TTEETE, advanced_so_goal_TTEETEPP
 from .cmb_likelihoods import s4_wide_TT_fg, s4_wide_TTEETE_fg
 
 #different cosmologies
-from .cmb_likelihoods import spt3g_winter_TTEETEPP_descosmo, spt3g_winter_TTEETEPP_desdovekiecosmo
-from .cmb_likelihoods import spt3g_summer_TTEETEPP_descosmo, spt3g_summer_TTEETEPP_desdovekiecosmo
-from .cmb_likelihoods import spt3g_wide_TTEETEPP_descosmo, spt3g_wide_TTEETEPP_desdovekiecosmo
-from .cmb_likelihoods import s4_wide_TTEETEPP_descosmo, s4_wide_TTEETEPP_desdovekiecosmo
+from .cmb_likelihoods import s4_wide_TTEETE_descosmo, s4_wide_TTEETE_desdovekiecosmo

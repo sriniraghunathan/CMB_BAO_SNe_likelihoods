@@ -662,35 +662,12 @@ class s4_wide_TT_fg(CMBmocks):
     Likelihood for S4-Wide ILC with foregrounds.
     """
 
-class spt3g_winter_TTEETEPP_descosmo(CMBmocks):
+#different cosmo
+class s4_wide_TTEETE_descosmo(CMBmocks):
     """
     Likelihood for S4-Wide ILC with foregrounds.
     """
-class spt3g_winter_TTEETEPP_desdovekiecosmo(CMBmocks):
-    """
-    Likelihood for S4-Wide ILC with foregrounds.
-    """
-class spt3g_summer_TTEETEPP_descosmo(CMBmocks):
-    """
-    Likelihood for S4-Wide ILC with foregrounds.
-    """
-class spt3g_summer_TTEETEPP_desdovekiecosmo(CMBmocks):
-    """
-    Likelihood for S4-Wide ILC with foregrounds.
-    """
-class spt3g_wide_TTEETEPP_descosmo(CMBmocks):
-    """
-    Likelihood for S4-Wide ILC with foregrounds.
-    """
-class spt3g_wide_TTEETEPP_desdovekiecosmo(CMBmocks):
-    """
-    Likelihood for S4-Wide ILC with foregrounds.
-    """
-class s4_wide_TTEETEPP_descosmo(CMBmocks):
-    """
-    Likelihood for S4-Wide ILC with foregrounds.
-    """
-class s4_wide_TTEETEPP_desdovekiecosmo(CMBmocks):
+class s4_wide_TTEETE_desdovekiecosmo(CMBmocks):
     """
     Likelihood for S4-Wide ILC with foregrounds.
     """

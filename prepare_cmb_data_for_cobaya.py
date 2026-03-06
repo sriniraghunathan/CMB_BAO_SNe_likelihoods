@@ -139,8 +139,8 @@ if os.path.exists('/data/spt/')>=-1:
 #--------------------------------------------
 #specs
 #which_cosmo = 'fiducial'
-#which_cosmo = 'descosmo'
-which_cosmo = 'desdovekiecosmo'
+which_cosmo = 'descosmo'
+#which_cosmo = 'desdovekiecosmo'
 
 if which_cosmo == 'fiducial':
     paramfile = 'data/params_cobaya.ini'
@@ -174,7 +174,7 @@ lmax_dic = {'TT': lmax_t, 'EE': lmax_p, 'TE': lmax_p, 'PP': lmax_phi}
 param_dict['lmax'] = param_dict['max_l_limit'] = lmax
 els = np.arange( lmin, lmax+1 )
 delta_l = 100 #100
-add_lensing = 0 ##1 ###0 ##1 ##0 ##1 ##0 ##1 ###0 ##1 ##0
+add_lensing = 1 ##0 ##1 ###0 ##1 ##0 ##1 ##0 ##1 ###0 ##1 ##0
 cmb_experiment_arr = ['so_baseline', 'so_goal', 'spt3g_winter', 'spt3g_summer', 'spt3g_wide', 's4_wide', 'advanced_so_baseline', 'advanced_so_goal']#, 'spt3g']#, 's4_wide']
 ##cmb_experiment_arr = ['s4_wide']
 cmb_experiment_arr = ['advanced_so_baseline', 'advanced_so_goal']

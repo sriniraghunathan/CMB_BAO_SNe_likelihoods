@@ -1034,11 +1034,11 @@ def get_camb_cl(param_dict, which_spectra, raw_cl = True, thetastar_or_cosmomcth
         cl_te = cl_cmb_specs.get("te")
         cl_bb = cl_cmb_specs.get("bb")
         if which_spectra == 'lensed_scalar':
-            cl_pp = cl_cmb_specs.get("pp")
+            cl_phiphi = cl_cmb_specs.get("pp")
             cl_tphi = cl_cmb_specs.get("tphi")
             cl_ephi = cl_cmb_specs.get("ephi")
         elif which_spectra == 'unlensed_scalar':
-            cl_pp = np.zeros( len(cl_tt) )
+            cl_phiphi = np.zeros( len(cl_tt) )
             cl_tphi = np.zeros( len(cl_tt) )
             cl_ephi = np.zeros( len(cl_tt) )
         els = np.arange(len(cl_tt))
