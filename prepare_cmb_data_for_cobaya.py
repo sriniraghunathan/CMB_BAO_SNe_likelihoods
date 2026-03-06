@@ -139,8 +139,8 @@ if os.path.exists('/data/spt/')>=-1:
 #--------------------------------------------
 #specs
 #which_cosmo = 'fiducial'
-which_cosmo = 'descosmo'
-#which_cosmo = 'desdovekiecosmo'
+#which_cosmo = 'descosmo'
+which_cosmo = 'desdovekiecosmo'
 
 if which_cosmo == 'fiducial':
     paramfile = 'data/params_cobaya.ini'
@@ -180,10 +180,11 @@ cmb_experiment_arr = ['so_baseline', 'so_goal', 'spt3g_winter', 'spt3g_summer', 
 cmb_experiment_arr = ['advanced_so_baseline', 'advanced_so_goal']
 #cmb_experiment_arr = ['s4_wide_cobaya_tester']
 #cmb_experiment_arr = ['s4_wide']
-cmb_experiment_arr = ['spt3g_winter', 'spt3g_summer', 'spt3g_wide', 's4_wide']
+#cmb_experiment_arr = ['spt3g_winter', 'spt3g_summer', 'spt3g_wide', 's4_wide']
+cmb_experiment_arr = ['s4_wide']
 ##cmb_experiment_arr = ['spt3g+wide_plus_spt3gwide']
 ##cmb_experiment_arr = ['spt3g_winter2y', 'spt3g_summer2y']
-also_generate_foregrounds = True #in this case bin agora and store.
+also_generate_foregrounds = False #True #in this case bin agora and store.
 
 '''
 #different delta_el
@@ -315,7 +316,10 @@ for cmb_experiment in cmb_experiment_arr:
 
     #--------------------
     #ilc weights
-    ilc_weights_opfname = '%s/%s_ilc_weights.npy' %(data_fd, cmb_experiment)
+    if which_cosmo == 'fiducial':
+        ilc_weights_opfname = '%s/%s_ilc_weights.npy' %(data_fd, cmb_experiment)
+    else:
+        ilc_weights_opfname = '%s/%s_%s_ilc_weights.npy' %(data_fd, cmb_experiment, which_cosmo)
     ##print(ilc_weights_opfname, save_files); sys.exit()
     if save_files:
         np.save( ilc_weights_opfname, exp_details_dic['weights_dic'])
@@ -323,7 +327,10 @@ for cmb_experiment in cmb_experiment_arr:
 
     #--------------------
     #bandpowers
-    bp_opfname = '%s/%s_bandpowers_%s.txt' %(data_fd, cmb_experiment, required_spectra_str)
+    if which_cosmo == 'fiducial':
+        bp_opfname = '%s/%s_bandpowers_%s.txt' %(data_fd, cmb_experiment, required_spectra_str)
+    else:
+        bp_opfname = '%s/%s_%s_bandpowers_%s.txt' %(data_fd, cmb_experiment, which_cosmo, required_spectra_str)
     print(bp_opfname)
     op_arr = binned_el
     ##print(op_arr.shape, fid_cl_dic['TT'].shape); sys.exit()
@@ -351,7 +358,10 @@ for cmb_experiment in cmb_experiment_arr:
 
         #ICLed
         fg_to_store = 'all'
-        fg_bp_opfname = '%s/%s_fg_bandpowers_ilc_%s.txt' %(data_fd, cmb_experiment, required_spectra_str)
+        if which_cosmo == 'fiducial':
+            fg_bp_opfname = '%s/%s_fg_bandpowers_ilc_%s.txt' %(data_fd, cmb_experiment, required_spectra_str)
+        else:
+            fg_bp_opfname = '%s/%s_%s_fg_bandpowers_ilc_%s.txt' %(data_fd, cmb_experiment, which_cosmo, required_spectra_str)
         print(fg_bp_opfname); ###sys.exit()
         op_arr = binned_el
         dummy_arr = np.zeros( len(binned_el) )
@@ -373,7 +383,10 @@ for cmb_experiment in cmb_experiment_arr:
         for nu1nu2 in fg_cl_dic:
             nu1,nu2 = nu1nu2
             fg_to_store = 'all'
-            fg_bp_opfname = '%s/%s_fg_bandpowers_%sx%s_%s.txt' %(data_fd, cmb_experiment, nu1, nu2, required_spectra_str)
+            if which_cosmo == 'fiducial':
+                fg_bp_opfname = '%s/%s_fg_bandpowers_%sx%s_%s.txt' %(data_fd, cmb_experiment, nu1, nu2, required_spectra_str)
+            else:
+                fg_bp_opfname = '%s/%s_%s_fg_bandpowers_%sx%s_%s.txt' %(data_fd, cmb_experiment, which_cosmo, nu1, nu2, required_spectra_str)
             print(fg_bp_opfname); ###sys.exit()
             op_arr = binned_el
             dummy_arr = np.zeros( len(binned_el) )
@@ -394,7 +407,10 @@ for cmb_experiment in cmb_experiment_arr:
 
     #--------------------
     #bandpower window function
-    bpwf_opfname = '%s/%s_bpwf_%s.npy' %(data_fd, cmb_experiment, required_spectra_str)
+    if which_cosmo == 'fiducial':
+        bpwf_opfname = '%s/%s_bpwf_%s.npy' %(data_fd, cmb_experiment, required_spectra_str)
+    else:
+        bpwf_opfname = '%s/%s_%s_bpwf_%s.npy' %(data_fd, cmb_experiment, which_cosmo, required_spectra_str)
     if save_files:
         np.save( bpwf_opfname, bpwf_dic)
 
@@ -429,8 +445,12 @@ for cmb_experiment in cmb_experiment_arr:
                     #print(b, spec_arr[s1], spec_arr[s1], i, j)
         cov_mat_inv = np.linalg.inv( cov_mat )
 
-        cov_opfname = '%s/%s_covariance_%s.txt' %(data_fd, cmb_experiment, required_spectra_str)
-        cov_inv_opfname = '%s/%s_covariance_inv_%s.txt' %(data_fd, cmb_experiment, required_spectra_str)
+        if which_cosmo == 'fiducial':
+            cov_opfname = '%s/%s_covariance_%s.txt' %(data_fd, cmb_experiment, required_spectra_str)
+            cov_inv_opfname = '%s/%s_covariance_inv_%s.txt' %(data_fd, cmb_experiment, required_spectra_str)
+        else:
+            cov_opfname = '%s/%s_%s_covariance_%s.txt' %(data_fd, cmb_experiment, which_cosmo, required_spectra_str)
+            cov_inv_opfname = '%s/%s_%s_covariance_inv_%s.txt' %(data_fd, cmb_experiment, which_cosmo, required_spectra_str)
         if save_files:
             np.savetxt( cov_opfname, cov_mat )
             np.savetxt( cov_inv_opfname, cov_mat_inv )
