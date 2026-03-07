@@ -10,11 +10,11 @@ from astropy import units as u
 #which_bao_data = 'desi_dr3_lowz'
 #which_bao_data = 'desi_dr3_highz'
 
-if (1): #descosmo
-    which_bao_data = 'desi_dr3_lowz_descomso'
-    #which_bao_data = 'desi_dr3_highz_descomso'
+if (0): #descosmo
+    #which_bao_data = 'desi_dr3_lowz_descomso'
+    which_bao_data = 'desi_dr3_highz_descomso'
 
-if (0): #desdovekiecosmo
+if (1): #desdovekiecosmo
     #which_bao_data = 'desi_dr3_lowz_desdovekiecomso'
     which_bao_data = 'desi_dr3_highz_desdovekiecomso'
 
@@ -193,7 +193,7 @@ elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz', 'desi_dr3
             curr_val2 = curr_val2.decode("utf-8")
             curr_val3 = curr_val3.decode("utf-8")
 
-        if which_bao_data  in ['desi_dr3_highz', 'desi_dr3_highz_descomso', 'desi_dr3_highz_desdovekiecomso'] and ignore_first_entry_for_dr3_highz and recntr == 1:
+        if which_bao_data in ['desi_dr3_highz', 'desi_dr3_highz_descomso', 'desi_dr3_highz_desdovekiecomso'] and ignore_first_entry_for_dr3_highz and recntr == 1:
             print(curr_rec, 'hi')
             continue
 
@@ -279,7 +279,7 @@ elif which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz', 'desi_dr3
     '''
 
 
-    if which_bao_data  == 'desi_dr3_highz' and ignore_first_entry_for_dr3_highz:
+    if which_bao_data in ['desi_dr3_highz', 'desi_dr3_highz_descomso', 'desi_dr3_highz_desdovekiecomso'] and ignore_first_entry_for_dr3_highz:
         cov_arr = cov_arr[2:, 2:]
         #print(cov_arr.shape)
 
