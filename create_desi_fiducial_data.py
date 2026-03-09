@@ -10,13 +10,13 @@ from astropy import units as u
 #which_bao_data = 'desi_dr3_lowz'
 #which_bao_data = 'desi_dr3_highz'
 
-if (0): #descosmo
-    #which_bao_data = 'desi_dr3_lowz_descomso'
-    which_bao_data = 'desi_dr3_highz_descomso'
+if (1): #descosmo
+    which_bao_data = 'desi_dr3_lowz_descomso'
+    #which_bao_data = 'desi_dr3_highz_descomso'
 
-if (1): #desdovekiecosmo
-    #which_bao_data = 'desi_dr3_lowz_desdovekiecomso'
-    which_bao_data = 'desi_dr3_highz_desdovekiecomso'
+if (0): #desdovekiecosmo
+    which_bao_data = 'desi_dr3_lowz_desdovekiecomso'
+    #which_bao_data = 'desi_dr3_highz_desdovekiecomso'
 
 ignore_first_entry_for_dr3_highz = True ##False ##True
 if which_bao_data in ['desi_dr3', 'desi_dr3_lowz', 'desi_dr3_highz', 'desi_dr3_lowz_descomso', 'desi_dr3_highz_descomso', 'desi_dr3_lowz_desdovekiecomso', 'desi_dr3_highz_desdovekiecomso']:
@@ -125,7 +125,8 @@ def bao_model(param_dict, z_arr, observable_arr, cosmo = None, camb_results = No
 
         #sound drag - Eq. (2) of https://arxiv.org/pdf/2503.14738
         curr_rd = 147.05 * (ombh2/0.02236)**-0.13 * (ommh2/0.1432)**-0.23 * (neff/3.04)**-0.1
-        curr_rd = 147.0330237648529
+        if paramfile == 'data/params_cobaya.ini':
+            curr_rd = 147.0330237648529
         
         #Iso BAO distance: Below Eq.(12) of https://arxiv.org/pdf/2503.14738
         curr_Dv = (z * curr_DH * curr_DM**2. )**(1/3.) 
