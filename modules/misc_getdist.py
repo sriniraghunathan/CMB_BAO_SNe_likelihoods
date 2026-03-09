@@ -871,8 +871,8 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
     dataset_split = tmpchainname.split('+')
     chain_lab = ''
     for ddd in dataset_split:
-        ddd = ddd.replace('_moddatavector', '')
-        ###print(ddd); ###sys.exit()
+        ddd = ddd.replace('_moddatavector', '').replace('_descosmo', '').replace('_desdovekiecosmo', '')
+        ##print(ddd); sys.exit()
         if ddd == 'lssty3_sne_mock':
             curr_lab = 'LSST-Y3-SNe'
         elif ddd in ['lssty3_sne_mock_binned', 'lssty3_binned_moddatavector_sim1', 'lssty3_binned_sim1']:

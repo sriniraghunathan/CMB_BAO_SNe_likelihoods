@@ -7,10 +7,10 @@ from astropy import units as u
 
 #which_bao_data = 'desi_dr2'
 #which_bao_data = 'desi_dr3'
-#which_bao_data = 'desi_dr3_lowz'
+which_bao_data = 'desi_dr3_lowz'
 #which_bao_data = 'desi_dr3_highz'
 
-if (1): #descosmo
+if (0): #descosmo
     which_bao_data = 'desi_dr3_lowz_descomso'
     #which_bao_data = 'desi_dr3_highz_descomso'
 
@@ -125,6 +125,7 @@ def bao_model(param_dict, z_arr, observable_arr, cosmo = None, camb_results = No
 
         #sound drag - Eq. (2) of https://arxiv.org/pdf/2503.14738
         curr_rd = 147.05 * (ombh2/0.02236)**-0.13 * (ommh2/0.1432)**-0.23 * (neff/3.04)**-0.1
+        ###print(curr_rd); sys.exit()
         if paramfile == 'data/params_cobaya.ini':
             curr_rd = 147.0330237648529
         
