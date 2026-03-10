@@ -1,25 +1,28 @@
-# CMB mock likelihoods for cobaya
+# Cobaya-based mock likelihoods for joint analyses of CMB, Type Ia Supernova, and BAO datasets.
 ## Paper:
 * Raghunathan S., LSST-DESC 2026; arXiv:[2603.xxxxx](https://arxiv.org/abs/2603.xxxxx). 
 
 ## Overview
-* ### Mock CMB likelihoods for SPT-3G, SO-Baseline, SO-Goal and CMB-S4.
-  * ### Also supports SNe likelihoods (specifically LSST SNe sample) using the same style as DES likelihoods implemented in `cobaya`.
+* ### Mock CMB likelihoods:
+  * ### Available for SPT-3G, Advanced SO-Baseline, ASO-Goal and CMB-S4.
   * ##### Inspired and based on `cobaya`-based likelihood codes written by Jesus *Torrado*, Antony *Lewis*, Matthieu *Tristram* and Lennart *Balkenhol*.
+  * ### Also supports the following:
+   * #### SNe likelihoods (specifically DES and LSST SNe samples) using the same style as DES likelihoods implemented in `cobaya`.
+   * #### BAO likelihoods (specifically DESI-DR2 and DESI-DR3 measurements) using the same style as DESI likelihoods implemented in `cobaya`.
+     
 ---
 ## Data
 * ### CMB data:
-  * Path: [data/cmb_data/binned_with_delta_l_100](https://github.com/sriniraghunathan/CMB_cobaya_likelihoods_and_sampling/data/cmb_data/binned_with_delta_l_100/)
+  * Path: [data/cmb_data/binned_with_delta_l_100](https://github.com/sriniraghunathan/CMB_BAO_SNe_likelihoods/tree/main/data/cmb_data/binned_lmint300_lmaxt3500_lminp300_lmaxp3500_deltal100)
   * Mock bandpowers along with the bandpower covariance matrix and bandpower window function are included.
     * These use the internal linear combination datasets.
     * ILC weights for different freqeuency bands are included.
 * ### SNe data:
   * Currently private.
 * ### BAO data:
-  * Path: [data/bao_data/desi_bao_dr2/desi_bao_dr2_mock](https://github.com/sriniraghunathan/CMB_cobaya_likelihoods_and_sampling/data/bao_data/desi_bao_dr2/desi_bao_dr2_mock))
-  * Same as the ones released by DESI DR2 [link](https://github.com/CobayaSampler/bao_data/desi_bao_dr2)
-  * But also including $\sum_{m_{\nu}} + w_{0} + w_{a} + \Lambda {\rm CDM}$ expectation. This can be found [here](https://github.com/sriniraghunathan/CMB_cobaya_likelihoods_and_sampling/data/bao_data/desi_bao_dr2/desi_bao_dr2_mock/desi_gaussian_bao_ALL_GCcomb_mean_camb.txt)
-    * Input cosmology is {\it Planck}-2018 $TT,TE,EE+lowE+lensing$ from Table-2 of [1807.06209](https://arxiv.org/pdf/1807.06209) but with $w_{0}=-1$ and $w_{a}=0$.
+  * Path: [data/bao_data](https://github.com/sriniraghunathan/CMB_BAO_SNe_likelihoods/tree/main/data/bao_data)
+  * 
+* Input cosmology is {\it Planck}-2018 $TT,TE,EE+lowE+lensing$ from Table-2 of [1807.06209](https://arxiv.org/pdf/1807.06209) but with $w_{0}=-1$ and $w_{a}=0$.
     * This could be useful in generating combined mock-likelihoods for BAO, and also for other datasets.
 ---
 ## Installation
