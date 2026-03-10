@@ -5,13 +5,14 @@
 ## Overview
 * ### Mock CMB likelihoods:
   * ### Available for SPT-3G, Advanced SO-Baseline, ASO-Goal and CMB-S4.
-  * ##### Inspired and based on `cobaya`-based likelihood codes written by Jesus *Torrado*, Antony *Lewis*, Matthieu *Tristram* and Lennart *Balkenhol*.
+    * ###### Inspired and based on `cobaya`-based likelihood codes written by Jesus *Torrado*, Antony *Lewis*, Matthieu *Tristram* and Lennart *Balkenhol*.
   * ### Also supports the following:
-   * #### SNe likelihoods (specifically DES and LSST SNe samples) using the same style as DES likelihoods implemented in `cobaya`.
-   * #### BAO likelihoods (specifically DESI-DR2 and DESI-DR3 measurements) using the same style as DESI likelihoods implemented in `cobaya`.
+    * #### SNe likelihoods (specifically DES and LSST SNe samples) using the same style as DES likelihoods implemented in `cobaya`.
+    * #### BAO likelihoods (specifically DESI-DR2 and DESI-DR3 measurements) using the same style as DESI likelihoods implemented in `cobaya`.
      
 ---
 ## Data
+* Input cosmology is $\Lambda {\rm CDM}$ based on Planck-2018 measurements $TT,TE,EE+lowE+lensing$ from Table-2 of [1807.06209](https://arxiv.org/pdf/1807.06209) but with $w_{0}=-1$ and $w_{a}=0$.
 * ### CMB data:
   * Path: [data/cmb_data/binned_with_delta_l_100](https://github.com/sriniraghunathan/CMB_BAO_SNe_likelihoods/tree/main/data/cmb_data/binned_lmint300_lmaxt3500_lminp300_lmaxp3500_deltal100)
   * Mock bandpowers along with the bandpower covariance matrix and bandpower window function are included.
@@ -21,9 +22,7 @@
   * Currently private.
 * ### BAO data:
   * Path: [data/bao_data](https://github.com/sriniraghunathan/CMB_BAO_SNe_likelihoods/tree/main/data/bao_data)
-  * 
-* Input cosmology is {\it Planck}-2018 $TT,TE,EE+lowE+lensing$ from Table-2 of [1807.06209](https://arxiv.org/pdf/1807.06209) but with $w_{0}=-1$ and $w_{a}=0$.
-    * This could be useful in generating combined mock-likelihoods for BAO, and also for other datasets.
+  * Contains DR2 and DR3.
 ---
 ## Installation
 * #### `pip install .`
