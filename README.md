@@ -27,7 +27,7 @@
 ## Installation
 * #### `pip install .`
 * To clean and reinstall:
-  * `pip uninstall cmb_sne_likelihoods` and then `pip install .`
+  * `pip uninstall cmb_bao_sne_likelihoods` and then `pip install .`
 ---
 ## Requirements
 * Should get automatically installed on doing `pip install .`. 
