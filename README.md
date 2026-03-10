@@ -1,4 +1,6 @@
 # CMB mock likelihoods for cobaya
+## Paper:
+* Raghunathan S., LSST-DESC 2026; arXiv:[2603.xxxxx](https://arxiv.org/abs/2603.xxxxx). 
 
 ## Overview
 * ### Mock CMB likelihoods for SPT-3G, SO-Baseline, SO-Goal and CMB-S4.
