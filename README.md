@@ -19,7 +19,8 @@
     * These use the internal linear combination datasets.
     * ILC weights for different freqeuency bands are included.
 * ### SNe data:
-  * Currently private.
+  * Path: [data/sn_data.tar.gz](https://github.com/sriniraghunathan/CMB_BAO_SNe_likelihoods/blob/main/data/sn_data.tar.gz)
+  * Contains LSST-Y3 mock data along with the covariances.
 * ### BAO data:
   * Path: [data/bao_data](https://github.com/sriniraghunathan/CMB_BAO_SNe_likelihoods/tree/main/data/bao_data)
   * Contains DR2 and DR3.
