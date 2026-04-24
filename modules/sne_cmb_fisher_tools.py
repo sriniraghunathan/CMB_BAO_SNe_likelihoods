@@ -1000,11 +1000,28 @@ def get_camb_cl(param_dict, which_spectra, raw_cl = True, thetastar_or_cosmomcth
             else:
                 fiducial_params[ppp] = param_dict[ppp]
 
+        if 'halofit_version' not in param_dict:
+            param_dict['halofit_version'] = 'mead2020'
+        if 'HMCode_logT_AGN' not in param_dict:
+            param_dict['HMCode_logT_AGN'] = 7.8
+        if 'neutrino_hierarchy' not in param_dict:
+            param_dict['neutrino_hierarchy'] = 'degenerate'
+        if 'nonlinear' not in param_dict:
+            param_dict['nonlinear'] = None
+
 
         info_fiducial = {
             "params": fiducial_params,
             "likelihood": {"one": None},
-            "theory": {"camb": {"extra_args": {"num_massive_neutrinos": 1}}},
+            #"theory": {"camb": {"extra_args": {"num_massive_neutrinos": 1}}},
+            "theory": {"camb": {"extra_args": {"num_massive_neutrinos": param_dict['num_nu_massive'], 
+                                                "halofit_version": param_dict['halofit_version'],
+                                                "HMCode_logT_AGN": param_dict['HMCode_logT_AGN'],
+                                                "neutrino_hierarchy": param_dict['neutrino_hierarchy'],
+                                                "nonlinear": param_dict['nonlinear'],
+                                                }
+                                }
+                    },
             ###"packages_path": packages_path,
         }
 

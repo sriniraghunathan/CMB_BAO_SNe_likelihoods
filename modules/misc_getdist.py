@@ -567,6 +567,8 @@ def make_getdist_plot(which_plot,
             if show_table:
 
                 constraints_dic, constraints_table, colors_table, col_labels = get_constraints_table(curr_param_pairs_to_plot, curr_samples_to_plot, curr_colors)
+                if (0):##axcntr == 0:
+                    constraints_table[3][1] = r'$<$ 0.0799' + '\n' + r'(95\% C.L.)'
 
                 tx, ty = curr_table_locs
                 ###print(curr_table_width); sys.exit()
