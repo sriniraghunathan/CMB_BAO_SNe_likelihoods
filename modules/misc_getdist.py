@@ -149,22 +149,26 @@ def get_constraints_table(params_to_plot, sample_arr_to_plot, color_arr = None, 
         for sind, (s, c) in enumerate( zip( sample_arr_to_plot, color_arr) ):
             ###print( ppp, s.getLatex(ppp) )
             #tmp = s.getLatex(ppp)
-            tmp = s.getInlineLatex(ppp)#, limit = 1, err_sig_figs = 3)
-            if tmp.find('<')>-1: #increase to 95% C.L>
-                tmp = s.getInlineLatex(ppp, limit = 2)#, err_sig_figs = 3)
-                if tmp.find('--')>-1:
-                    tmp = tmp.replace('---', '-')
-                else:
-                    tmp = r'%s\ ({\rm 95\%% C.L.})' %(tmp)
+            if ppp not in s.getParamNames().list():
+                constraints_table[sind, pind] = r'N/A'
+                constraints_dic[ppp][sind] = r'N/A'
             else:
-                if ppp in rounding_dic:
-                    errval = float(tmp.split('pm')[1])
-                    errval_rounded = round(errval, rounding_dic[ppp])
-                    tmp = tmp.replace('%g' %(errval), '%s' %(errval_rounded))
-            param_label, curr_val = strip_getdist_latex_str(tmp)
-            constraints_table[sind, pind] = r'$%s$' %(curr_val)
+                tmp = s.getInlineLatex(ppp)#, limit = 1, err_sig_figs = 3)
+                if tmp.find('<')>-1: #increase to 95% C.L>
+                    tmp = s.getInlineLatex(ppp, limit = 2)#, err_sig_figs = 3)
+                    if tmp.find('--')>-1:
+                        tmp = tmp.replace('---', '-')
+                    else:
+                        tmp = r'%s\ ({\rm 95\%% C.L.})' %(tmp)
+                else:
+                    if ppp in rounding_dic:
+                        errval = float(tmp.split('pm')[1])
+                        errval_rounded = round(errval, rounding_dic[ppp])
+                        tmp = tmp.replace('%g' %(errval), '%s' %(errval_rounded))
+                param_label, curr_val = strip_getdist_latex_str(tmp)
+                constraints_table[sind, pind] = r'$%s$' %(curr_val)
+                constraints_dic[ppp][sind] = r'$%s$' %(curr_val)
             colors_table[sind, pind] = c
-            constraints_dic[ppp][sind] = r'$%s$' %(curr_val)
         col_labels.append( r'$\sigma(%s)$' %(param_label) )
     return constraints_dic, constraints_table, colors_table, col_labels
 
@@ -186,7 +190,11 @@ def write_errors_in_diagonal_posteriors(g, params_to_plot, color_arr, constraint
                 ax.plot([], [], color = color_arr[sampleind], label = curr_val)
             
             handles, labels = ax.get_legend_handles_labels()
-            leg=ax.legend(handles[sampleind+1:], labels[sampleind+1:], loc = legloc_arr[c], fontsize = legfsval, handlelength = handlelength, handletextpad = handletextpad, ncol = ncol, frameon=frameon)
+            if len(handles) == sampleind+2:
+                leg=ax.legend(handles[1:], labels[1:], loc = legloc_arr[c], fontsize = legfsval, handlelength = handlelength, handletextpad = handletextpad, ncol = ncol, frameon=frameon)
+            else:
+                leg=ax.legend(handles[sampleind+1:], labels[sampleind+1:], loc = legloc_arr[c], fontsize = legfsval, handlelength = handlelength, handletextpad = handletextpad, ncol = ncol, frameon=frameon)
+                
             leg.get_frame().set_linewidth(0.0)
             #ax.legend(loc = 4, fontsize = legfsval)
     return g   
@@ -386,7 +394,6 @@ def make_getdist_plot(which_plot,
 
         if write_errors_on_diagonal: #get constraints
             constraints_dic, constraints_table, colors_table, col_labels = get_constraints_table(params_or_pairs_to_plot, samples_to_plot, color_arr)        
-            ##print(constraints_table); sys.exit()
             g = write_errors_in_diagonal_posteriors(g, params_or_pairs_to_plot, color_arr, constraints_dic, legfsval = diagonal_errors_fsval, ncol=1, legloc = diagonal_errors_legloc)
         g = mark_axlines(g, params_or_pairs_to_plot, param_dict = param_dict)
         g.settings.legend_fontsize = legfsval
