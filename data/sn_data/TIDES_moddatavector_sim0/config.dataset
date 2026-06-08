@@ -1,0 +1,3 @@
+name = TIDES_moddatavector_sim0
+data_file = TIDES_moddatavector_sim0/TIDES_moddatavector_SN_sim0.csv
+mag_covmat_file = TIDES_moddatavector_sim0/covsys_000.txt

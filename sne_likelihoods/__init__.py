@@ -8,3 +8,4 @@ from .sne_likelihoods import lssty3_sim5
 from .sne_likelihoods import lssty3_moddatavector_sim1, lssty3_binned_moddatavector_sim1
 from .sne_likelihoods import lssty3_moddatavector_zmax1_sim1, lssty3_moddatavector_samplebasedonzfromdes_rsval1_sim1
 from .sne_likelihoods import desy5_sim0, desy5_moddatavector_sim0, desy5_descosmo_moddatavector_sim0, desy5_desdovekiecosmo_moddatavector_sim0
+from .sne_likelihoods import tides_sim0, tides_moddatavector_sim0
