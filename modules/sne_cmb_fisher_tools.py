@@ -304,7 +304,7 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
 
     assert z_binning_kind in ['cumulative', 'individual']
     
-    possible_sne_exp_arr = ['lsst_binned', 'lsst_unbinned', 'lsst_v2_unbinned', 'lsst_v2_binned', 'des', 'des_cobaya', 'test', 'roman', 'des_descosmo', 'des_desdovekiecosmo']
+    possible_sne_exp_arr = ['lsst_binned', 'lsst_unbinned', 'lsst_v2_unbinned', 'lsst_v2_binned', 'des', 'des_cobaya', 'test', 'roman', 'des_descosmo', 'des_desdovekiecosmo', 'TIDES']
     possible_sne_exp_arr = get_moddatavector_expnames(possible_sne_exp_arr)
 
     lsst_binned_exp_arr = ['lsst_binned', 'lsst_v2_binned']
@@ -315,6 +315,9 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
 
     des_exp_arr = ['des', 'des_cobaya', 'des_moddatavector', 'des_cobaya_moddatavector', 'des_descosmo_moddatavector', 'des_desdovekiecosmo_moddatavector']
     des_exp_arr = get_moddatavector_expnames(des_exp_arr)
+
+    tides_exp_arr = ['TIDES']
+    tides_exp_arr = get_moddatavector_expnames(tides_exp_arr)
 
     assert sne_exp in possible_sne_exp_arr
 
@@ -350,7 +353,25 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
                            # 7: 'Stat + sys-Cal_wave', 
                            # 8: 'Stat + sys-Cal'
                           }        
-    
+    elif sne_exp in tides_exp_arr:
+        #params = np.asarray( ['omch2', 'ws', 'wa', 'M'] )
+        sne_fd = 'data/TIDES/'
+        sne_details_fname = '%s/hubble_diagram_TIDES.txt' %(sne_fd)
+        sne_arr, z_arr, mu_arr, muerr_stat_arr, muerr_sys_arr = np.loadtxt(sne_details_fname, skiprows = 8, usecols = [1, 2, 4, 5, 6], unpack = True)
+        ##print(z_arr, mu_arr, muerr_stat_arr, muerr_sys_arr); sys.exit()
+        stretch_x1_arr, color_c_arr = np.zeros(len(sne_arr)), np.zeros(len(sne_arr))
+        
+        sne_cov_tag_dic = {0: 'Stat + sys-All', 
+                           # 1: 'Stat-only', 
+                           # 2: 'Stat + sys-ZSHIFT', 
+                           # 3: 'Stat + sys-ZERRSCALE', 
+                           # 4: 'Stat + sys-Photo_shift', 
+                           # 5: 'Stat + sys-MWEBV', 
+                           # 6: 'Stat + sys-Cal_ZP', 
+                           # 7: 'Stat + sys-Cal_wave', 
+                           # 8: 'Stat + sys-Cal'
+                          }        
+        
     elif sne_exp in lsst_unbinned_exp_arr or sne_exp in lsst_binned_exp_arr:
         '''
         sne_fd = 'data/lsst_SNe_unbinned/'
@@ -526,6 +547,8 @@ def get_sne_details(sne_exp, add_stat_error, perform_checks_with_des = False, pe
             elif sne_exp in lsst_unbinned_exp_arr or sne_exp in lsst_binned_exp_arr:
                 #sne_cov_fname = '%s/covsys_%03d.txt' %(sne_fd, curr_cov_tag)
                 sne_cov_fname = '%s/covsys_%03d.txt' %(sne_fd, curr_cov_tag)
+            elif sne_exp in tides_exp_arr:
+                sne_cov_fname = '%s/covsys_%03d_TIDES.txt' %(sne_fd, curr_cov_tag)
             elif sne_exp in des_exp_arr:
                 sne_cov_fname = '%s/covsys_%03d.txt' %(sne_fd, curr_cov_tag)
                 sne_cov_inv_fname = '%s/covtot_inv_%03d.txt' %(sne_fd, curr_cov_tag)

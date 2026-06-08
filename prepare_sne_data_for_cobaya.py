@@ -38,10 +38,16 @@ if (1): #DES cosmo
     sim_no_arr = [0]
     paramfile = 'data/params_cobaya_descosmo.ini'
     param_dict = misc.get_param_dict(paramfile)
-if (1): #DES cosmo
+if (0): #DES cosmo
     sne_exp = 'des_desdovekiecosmo_moddatavector'  #'des'
     sim_no_arr = [0]
     paramfile = 'data/params_cobaya_desdovekiecosmo.ini'
+    param_dict = misc.get_param_dict(paramfile)
+if (1): #TIDES
+    #sne_exp = 'TIDES'  #'des'
+    sne_exp = 'TIDES_moddatavector'  #'des'
+    sim_no_arr = [0]
+    paramfile = 'data/params_cobaya.ini'
     param_dict = misc.get_param_dict(paramfile)
 
 if sne_exp.find('moddatavector')>-1:
@@ -100,6 +106,11 @@ for sim_no in sim_no_arr:
         #opfname_suff = '%s_SN_sim%s.csv' %(exp_dr_str, sim_no)
     elif sne_exp == 'lsst_v2_binned':
         exp_dr_str = 'LSSTY3_v2_binned'
+        exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from, replace_data_vector_with_current_model = replace_data_vector_with_current_model)
+        op_fd = '%s/%s_sim%s/' %(cobaya_data_fd, exp_dr_str, sim_no)
+        #opfname_suff = '%s_SN_sim%s.csv' %(exp_dr_str, sim_no)
+    elif sne_exp in ['TIDES', 'TIDES_moddatavector']:
+        exp_dr_str = 'TIDES'
         exp_dr_str = modify_exp_dr_str(exp_dr_str, zmin, zmax, sample_based_on_z_from, replace_data_vector_with_current_model = replace_data_vector_with_current_model)
         op_fd = '%s/%s_sim%s/' %(cobaya_data_fd, exp_dr_str, sim_no)
         #opfname_suff = '%s_SN_sim%s.csv' %(exp_dr_str, sim_no)
