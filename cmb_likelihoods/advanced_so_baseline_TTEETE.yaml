@@ -2,7 +2,8 @@ path: null
 
 cmb_experiment_name: 'advanced_so_baseline'
 #parent_data_folder: 'data/cmb_data/'
-parent_data_folder: '' #20260701 - changing this to run Pedro's setups.
+parent_data_folder: 'data/cmb_data/for_pedro_mnu0p06/' #20260701 - changing this to run Pedro's setups.
+parent_data_folder: '' 
 analytic_or_simbased_cov: 'analytic' #'simbased'
 spectra_to_use: ['TT', 'EE', 'TE'] ##['TT'] ##
 freq_list: [30, 40, 90, 150, 220, 280]

@@ -79,7 +79,7 @@ class CMBmocks(InstallableLikelihood):
             #self.data_folder = '%s/binned_with_delta_l_%s/%s/' %(self.parent_data_folder, self.delta_l, self.cmb_experiment_name)
             self.data_folder = '%s/binned_%s_deltal%s/%s/' %(self.parent_data_folder, lmin_lmax_str, self.delta_l, self.cmb_experiment_name)
 
-        ###print(self.data_folder); quit()
+        print(self.data_folder); quit()
 
         #self.ilc_weights_fname = '%s/binned_with_delta_l_%s/%s/%s_ilc_weights.npy' %(self.parent_data_folder, self.delta_l, self.cmb_experiment_name, self.cmb_experiment_name)
         self.ilc_weights_fname = '%s/binned_%s_deltal%s/%s/%s_ilc_weights.npy' %(self.parent_data_folder, lmin_lmax_str, self.delta_l, self.cmb_experiment_name, self.cmb_experiment_name)
