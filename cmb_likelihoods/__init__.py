@@ -9,6 +9,7 @@ from .cmb_likelihoods import spt3gpluswide_plus_spt3gwide_TTEETE, spt3gpluswide_
 from .cmb_likelihoods import s4_wide_TTEETE, s4_wide_TTEETEPP, s4_wide_TTEETE_deltael50, s4_wide_TTEETE_deltael200, s4_wide_TTEETE_cobaya_tester
 from .cmb_likelihoods import advanced_so_baseline_TTEETE, advanced_so_baseline_TTEETEPP
 from .cmb_likelihoods import advanced_so_goal_TTEETE, advanced_so_goal_TTEETEPP
+from .cmb_likelihoods import advanced_so_baseline_pedro_mnu0p06_TTEETE, advanced_so_baseline_pedro_mnu0p1_TTEETE
 
 #foergrounds
 from .cmb_likelihoods import s4_wide_TT_fg, s4_wide_TTEETE_fg
