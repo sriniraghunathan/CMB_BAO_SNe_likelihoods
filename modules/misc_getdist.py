@@ -881,7 +881,7 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
     chain_lab = ''
     for ddd in dataset_split:
         ddd = ddd.replace('_moddatavector', '').replace('_descosmo', '').replace('_desdovekiecosmo', '')
-        ##print(ddd); sys.exit()
+        print(ddd); ##sys.exit()
         if ddd == 'lssty3_sne_mock':
             curr_lab = 'LSST-Y3-SNe'
         elif ddd in ['lssty3_sne_mock_binned', 'lssty3_binned_moddatavector_sim1', 'lssty3_binned_sim1']:
@@ -898,6 +898,8 @@ def get_chain_label(chainname, remove_cmb_datachars = False):
             curr_lab = 'LSST-Y3-SNe'
         elif ddd in ['lssty3snesim1_w0walcdm', 'lssty3snesim1_lcdm', 'lssty3snesim1_lcdm', 'lssty3_moddatavector_sim1']:
             curr_lab = 'LSST-Y3-SNe'# (Sim 1)'
+        elif ddd in ['tides_sim0', 'tides_moddatavector_sim0']:
+            curr_lab = 'TIDES-SNe'
         elif ddd == 'desidr2bao_mock':
             curr_lab = 'DESI-DR2-BAO'
         elif ddd in ['desidr3bao_mock', 'desidr3bao_lowz_mock', 'desidr3bao_highz_mock']:

@@ -637,6 +637,16 @@ class advanced_so_baseline_TTEETE(CMBmocks):
     Likelihood for Advanced-SO-Baseline ILC.
     """
 
+class advanced_so_baseline_fiducial_pedro_mnu0p06(CMBmocks):
+    """
+    Likelihood for Advanced-SO-Baseline ILC.
+    """
+
+class advanced_so_baseline_fiducial_pedro_mnu0p1(CMBmocks):
+    """
+    Likelihood for Advanced-SO-Baseline ILC.
+    """
+
 class advanced_so_baseline_TTEETEPP(CMBmocks):
     """
     Likelihood for Advanced-SO-Baseline ILC with lensing.
