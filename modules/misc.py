@@ -776,6 +776,167 @@ def make_triangle_plot(F_dic, tr, tc, param_names, param_values_dict, desired_pa
 
     return color_dic, ls_dic
 
+def make_two_params_ellipse_plot(F_dic, tr, tc, param_names, param_values_dict, desired_params_to_plot, one_or_two_sigma = 1, fix_axis_range_to_xxsigma = 5., fsval = 12, ncol = 2, noofticks = 4, color_dic = None, ls_dic = None, lw_dic = None, show_one_sigma_lab = True, sort_alphabetical = False, mark_fid_lines = True, filled = False):
+
+    assert len(desired_params_to_plot) == 2
+
+    """
+    F_dic: Fisher matrix dictionary with experiment names as keys.
+    tr: total rows.
+    tc: total rows.
+    param_values_dict: dictionary containing Fiducial values of cosmological parameters.
+    desired_params_to_plot: parameters to be plotted.
+    one_or_two_sigma: one or two or three or XX sigma region to be shown. Default is 1\sigma.
+    fix_axis_range_to_xxsigma: x and y limits of axis will be fixed to xx\sigma. Default is 5\sigma.
+    fsval: fontsize.
+    noofticks: noofticks on axis.
+    color_dic: Colours to be used for different experiments. If None, choose it automatically.
+    ls_dic: line style for experiments. If None, we will use "-".
+    lw_dic: line width for experiments. If None, we will use 1..
+    lwval: Line width.
+    show_one_sigma_lab: If True, parameter errors will be reported on 1d posteriors.
+    use_percent: If True, then parameter errors will be reported as per cent on 1d posteriors.
+    bias_dic: Bias on parameters. Not used for 3G forecasting paper. Defualt is None.
+    """
+
+    import matplotlib.patches as patches
+    import warnings, matplotlib.cbook
+    warnings.filterwarnings('ignore', category=matplotlib.cbook.mplDeprecation)
+
+    ################################################
+    ################################################
+    #pick colours
+    if color_dic is None:
+        color_arr = ['navy', 'darkgreen', 'goldenrod', 'orangered', 'darkred']
+        color_dic = {}
+        for expcntr, expname in enumerate( F_dic ):
+            color_dic[expname] = color_arr[expcntr]
+
+    #linestyles
+    if ls_dic is None:
+        ls_dic = {}
+        for expname in F_dic:
+            ls_dic[expname] = '-'
+
+    #linewidths
+    if lw_dic is None:
+        lw_dic = {}
+        for expname in F_dic:
+            lw_dic[expname] = 1.
+
+    widthvalues_for_axis_limits = {} #used later to fix axis ranges
+
+    p1, p2 = desired_params_to_plot    
+    widthvalues_for_axis_limits[p1] = 0.
+    pcntr1 = np.where( param_names == p1 )[0]
+    pcntr2 = np.where( param_names == p2 )[0]
+    cov_inds_to_extract = [(pcntr1, pcntr1), (pcntr1, pcntr2), (pcntr2, pcntr1), (pcntr2, pcntr2)]
+
+    #fiducial values
+    x = param_values_dict[p1]
+    y = param_values_dict[p2]
+
+    #x and y extents; \eplison_x and \epsilon_y for 1d Posteriors.
+    deltax, deltay = 5*x, 5*y #some large range
+    ##epsilon_x, epsilon_y = abs(x/10000.), abs(y/10000.) #for Gaussian 1d curve.
+    if x == 0:
+        deltax = 20.
+    if y == 0:
+        deltay = 20.
+    x1, x2 = x - deltax, x + deltax
+    y1, y2 = y - deltay, y + deltay
+
+    if fix_axis_range_to_xxsigma is not None:
+        x1, x2 = x - deltax*fix_axis_range_to_xxsigma*3, x + deltax*fix_axis_range_to_xxsigma*3
+        y1, y2 = y - deltay*fix_axis_range_to_xxsigma*3, y + deltay*fix_axis_range_to_xxsigma*3
+    else:
+        x1, x2 = x - deltax, x + deltax
+        y1, y2 = y - deltay, y + deltay
+
+    #latex parameter labels
+    p1str = get_latex_param_str(p1)
+    p2str = get_latex_param_str(p2)
+
+    #create subplot first
+    xlabel(p1str, fontsize = fsval);
+    ylabel(p2str, fontsize = fsval);
+
+    #print(p1, p2, sbpl)
+    widthvalues_for_axis_limits = {p1: 0., p2 : 0.}
+    ax = subplot(111)
+    for expcntr, exp in enumerate( F_dic ):
+
+        F_mat = F_dic[exp]
+        #exp_COV = sc.linalg.pinv(F_mat)
+        ##print(F_mat); sys.exit()
+        exp_COV = np.linalg.inv(F_mat)
+        ###print( exp_COV )
+
+        #cov_extract = np.asarray( [exp_COV[ii] for ii in cov_inds_to_extract] ).reshape((2,2))
+        cov_extract = []
+        for ii in cov_inds_to_extract:
+            cov_extract.append(exp_COV[ii])
+        cov_extract = np.asarray( cov_extract ).reshape((2,2))
+        p1_error, p2_error = np.diag(cov_extract)**0.5
+        widthvalues_for_axis_limits[p1] = max(widthvalues_for_axis_limits[p1], p1_error)
+        widthvalues_for_axis_limits[p2] = max(widthvalues_for_axis_limits[p2], p2_error)
+
+        colorval = color_dic[exp]
+        lsval = ls_dic[exp]
+        lwval = lw_dic[exp]
+        alphaarr = [0.8, 0.3]
+        for ss in range(one_or_two_sigma):
+
+            Ep = get_ellipse_specs(cov_extract, howmanysigma = ss + 1)
+            widthval, heightval = Ep[0], Ep[1]
+
+            #if widthval<=1e-10 or heightval<=1e-10: continue
+            #print(widthval, heightval, p1, p2)
+            ellipse = patches.Ellipse(xy=[x,y], width=2.*widthval, height=2.*heightval, angle=np.degrees(Ep[2]))
+
+            ax.add_artist(ellipse)
+            ellipse.set_clip_box(ax.bbox)
+            if filled:
+                ellipse.set_facecolor(colorval)
+            else:
+                ellipse.set_facecolor('None')
+            ellipse.set_edgecolor(colorval)
+            ellipse.set_linewidth(lwval)
+            ellipse.set_linestyle(lsval)
+            ellipse.set_alpha(alphaarr[ss])
+
+            if mark_fid_lines and expcntr == 0:
+                axvline(x, lw = 0.5, color = 'gray')
+                axhline(y, lw = 0.5, color = 'gray')
+
+            ##xlim(x1, x2); ylim(y1, y2)
+
+    if noofticks is not None:
+        ax.xaxis.set_major_locator(MaxNLocator(nbins=noofticks))
+        ax.yaxis.set_major_locator(MaxNLocator(nbins=noofticks))
+
+    for label in ax.get_xticklabels(): label.set_fontsize(fsval-3.5)
+    for label in ax.get_yticklabels(): label.set_fontsize(fsval-3.5)
+
+    if (0):
+        grid(True, which='major', axis = 'x', lw = 0.5, alpha = 0.1)
+        grid(True, which='major', axis = 'y', lw = 0.5, alpha = 0.1)
+
+    #set axis limits now based on widths obtained
+    ##print(widthvalues_for_axis_limits); ##sys.exit()
+    if fix_axis_range_to_xxsigma is not None:
+        deltax, deltay = widthvalues_for_axis_limits[p1], widthvalues_for_axis_limits[p2]
+        x = param_values_dict[p1]
+        y = param_values_dict[p2]
+        x1, x2 = x - deltax*fix_axis_range_to_xxsigma, x + deltax*fix_axis_range_to_xxsigma
+        y1, y2 = y - deltay*fix_axis_range_to_xxsigma, y + deltay*fix_axis_range_to_xxsigma
+        ##if p1 == p2: print(widthvalues_for_axis_limits[p1], x, x1, x2)
+        ax = subplot(111)#, aspect = 'equal')
+        xlim(x1, x2)
+        ylim(y1, y2)
+
+    return color_dic, ls_dic
+
 def get_kde(samples, xcol = None, ycol = None, p1 = None, p2 = None, xmin = None, xmax = None, ymin = None, ymax = None, xgridlen = 500, ygridlen = 500):
     """curr_samples = samples_dic[chainkeyname]
     p = curr_samples.getParamNames()
