@@ -1016,7 +1016,7 @@ def get_latex_param_str(param):
     else:
         return params_str_dic[param]
 
-def get_gauss_mix_from_fisher(param_dict, f_mat, params, labels, fix_params = ['ws', 'wa', 'mnu', 'neff', 'nrun'], prior_dic = None, get_samples = False): 
+def get_gauss_mix_from_fisher(param_dict, f_mat, params, labels, fix_params = ['ws', 'wa', 'mnu', 'neff', 'nrun'], prior_dic = None, get_samples = False, total_samples = 50000): 
     '''
     if cov_mat is None:
         if whichcosmo == 'lcdm':
@@ -1042,6 +1042,7 @@ def get_gauss_mix_from_fisher(param_dict, f_mat, params, labels, fix_params = ['
     #print( params, np.diag(cov_mat)**0.5 )
     params_mean = []
     for ppp in params:
+        ###print(ppp)
         if ppp in param_dict:
             params_mean.append( param_dict[ppp] )
         else:
@@ -1053,7 +1054,7 @@ def get_gauss_mix_from_fisher(param_dict, f_mat, params, labels, fix_params = ['
     gauss_mix = GaussianND(params_mean, cov_mat, names=params, labels = labels)
 
     if get_samples:
-        mix_samples = get_gaussian_mix_from_getdist(gauss_mix)
+        mix_samples = get_gaussian_mix_from_getdist(gauss_mix, total_samples = total_samples)
         return gauss_mix, mix_samples
     else:
         return gauss_mix
