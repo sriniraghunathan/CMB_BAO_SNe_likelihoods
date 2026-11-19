@@ -438,16 +438,17 @@ def get_latex_param_str(param):
     'alpha': r'$\eta_{\rm v}$', 'sigma_8': r'$\sigma_{\rm 8}$', \
     'one_minus_hse_bias': r'$1-b_{\rm SZ}$', 
     'omega_m': r'$\Omega_{\rm m}$', 'omegam': r'$\Omega_{\rm m}$', \
-    'h0':r'$h$', 'm_nu':r'$\sum m_{\nu}$', \
+    'h0':r'$h$', 'm_nu':r'$\sum m_{\nu}$ [eV]', \
     'ombh2': r'$\Omega_{b}h^{2}$', 'omch2': r'$\Omega_{c}h^{2}$', 'omega_lambda': r'$\Omega_{\Lambda}$',
     'omega_b_h2': r'$\Omega_{b}h^{2}$', 'omega_c_h2': r'$\Omega_{c}h^{2}$',
     'omega_k': r'$\Omega_{k}$',
     'w0': r'$w_{0}$', 'wa': r'$w_{a}$', \
     'tau': r'$\tau_{\rm re}$', 
     'As': r'$A_{\rm s}$', 
+    'logA': r'{\rm ln}($10^{10} A_{\rm s}$)',
     #'As': r'log$A_{\rm s}$', 
-    'ns': r'$n_{\rm s}$', 'neff': r'$N_{\rm eff}$', \
-    'mnu': r'$\sum m_{\nu}$', 'thetastar': r'$\theta_{\ast}$', \
+    'ns': r'$n_{\rm s}$', 'neff': r'$N_{\rm eff}$', 'Neff': r'$N_{\rm eff}$', \
+    'mnu': r'$\sum m_{\nu}$ [eV]', 'thetastar': r'$\theta_{\ast}$', 'theta_s_1e2': r'$100 \theta_{\ast}$', \
     'h': r'$h$', 'omk': r'$\Omega_{k}$', 'ws': r'$w_{0}$', \
     'w_0': r'$w_{0}$', 'w_a': r'$w_{a}$', \
     'yhe': r'$Y_{P}$','nnu': r'N$_{\rm eff}$','omegak': r'$\Omega_{k}$',\
@@ -455,7 +456,7 @@ def get_latex_param_str(param):
     'nnu': r'$N_{\rm eff}$', 'H0': r'$H_0$', \
     #adding more
     'a_s': r'$A_{\rm s}$', 'h': r'$h$', 'n_s': r'$n_{\rm s}$', \
-    'omega_m': r'$\Omega_{m}$', 
+    'omega_m': r'$\Omega_{m}$', 'omega_cdm': r'$\Omega_{m}$', 
     'omega_b': r'$\Omega_{b}$', 'omegab': r'$\Omega_{b}$',\
     #SNe
     'M': r'$M$', 'alpha': r'$\alpha$', 'beta': r'$\beta$',\
@@ -587,6 +588,15 @@ def make_triangle_plot(F_dic, tr, tc, param_names, param_values_dict, desired_pa
 
     ##print(sbpl_locs_dic); sys.exit()
 
+    cov_dic = {}
+    for expcntr, exp in enumerate( F_dic ):
+        F_mat = F_dic[exp]
+        exp_cov = np.linalg.inv(F_mat)
+        ##print(np.diag(exp_cov)[:10]); 
+        ##exp_cov = sc.linalg.pinv(F_mat)
+        ##print(np.diag(exp_cov)[:10]); sys.exit()
+        cov_dic[exp] = exp_cov
+
     widthvalues_for_axis_limits = {} #used later to fix axis ranges
     for pcntr1, p1 in enumerate( param_names ):
         widthvalues_for_axis_limits[p1] = 0.
@@ -643,19 +653,27 @@ def make_triangle_plot(F_dic, tr, tc, param_names, param_values_dict, desired_pa
                 setp(ax.get_yticklabels(), visible=False)
 
             #print(p1, p2, sbpl)
+            """
             for expcntr, exp in enumerate( F_dic ):
 
                 F_mat = F_dic[exp]
                 #exp_COV = sc.linalg.pinv(F_mat)
                 ##print(F_mat); sys.exit()
                 exp_COV = np.linalg.inv(F_mat)
+                print(np.diag(exp_COV))
                 ###print( exp_COV )
+            """
+            for expcntr, exp in enumerate( cov_dic ):
 
+                exp_COV = cov_dic[exp]
+                ##print( np.diag(exp_COV) ); sys.exit()
+                
                 #cov_extract = np.asarray( [exp_COV[ii] for ii in cov_inds_to_extract] ).reshape((2,2))
                 cov_extract = []
                 for ii in cov_inds_to_extract:
                     cov_extract.append(exp_COV[ii])
                 cov_extract = np.asarray( cov_extract ).reshape((2,2))
+                ###print(np.diag(exp_COV)[:10]); sys.exit()
 
                 #if np.sum(cov_extract)<=1e-20: print(p1,p2, cov_extract); continue
                 #print(p1, p2, cov_extract)
@@ -776,7 +794,7 @@ def make_triangle_plot(F_dic, tr, tc, param_names, param_values_dict, desired_pa
 
     return color_dic, ls_dic
 
-def make_two_params_ellipse_plot(F_dic, tr, tc, param_names, param_values_dict, desired_params_to_plot, one_or_two_sigma = 1, fix_axis_range_to_xxsigma = 5., fsval = 12, ncol = 2, noofticks = 4, color_dic = None, ls_dic = None, lw_dic = None, show_one_sigma_lab = True, sort_alphabetical = False, mark_fid_lines = True, filled = False):
+def make_two_params_ellipse_plot(F_dic, tr, tc, param_names, param_values_dict, desired_params_to_plot, one_or_two_sigma = 1, fix_axis_range_to_xxsigma = 5., fsval = 12, ncol = 1, noofticks = 4, color_dic = None, ls_dic = None, lw_dic = None, show_one_sigma_lab = True, sort_alphabetical = False, mark_fid_lines = True, filled = False, label_dic = None, ax = None):
 
     assert len(desired_params_to_plot) == 2
 
@@ -863,7 +881,7 @@ def make_two_params_ellipse_plot(F_dic, tr, tc, param_names, param_values_dict, 
 
     #print(p1, p2, sbpl)
     widthvalues_for_axis_limits = {p1: 0., p2 : 0.}
-    ax = subplot(111)
+    if ax is None: ax = subplot(111)
     for expcntr, exp in enumerate( F_dic ):
 
         F_mat = F_dic[exp]
@@ -909,7 +927,39 @@ def make_two_params_ellipse_plot(F_dic, tr, tc, param_names, param_values_dict, 
                 axvline(x, lw = 0.5, color = 'gray')
                 axhline(y, lw = 0.5, color = 'gray')
 
+            if show_one_sigma_lab:
+                #labval = r'%s: $\sigma(%s) = %.3g' %(p1_error)
+                labval = r'%.3g, %.3g' %(p1_error, p2_error)
+                if label_dic is not None:
+                    labval = r'%s: %s' %(label_dic[exp], labval)
+
+                plot([], [], color = colorval, lw = lwval, label = labval, ls = lsval)
+
             ##xlim(x1, x2); ylim(y1, y2)
+        if ss == 0 and show_one_sigma_lab:
+            leg_title = r'$\sigma$(%s), $\sigma$(%s):' %(p1str, p2str)
+            print(leg_title)
+            leg = legend(loc = 1, framealpha = 1, fontsize = fsval-2, ncol = ncol, edgecolor = 'None', 
+                handletextpad=0.5, handlelength = 1.3, numpoints = 1, columnspacing = 0.8, 
+                title = leg_title, title_fontsize = fsval +2,
+                )
+            leg._legend_box.align = 'left'
+        if (0):
+            tx, ty = 0.8, 0.8
+            tab_width, tab_height = 0.3, 0.3
+            table_col_width = 0.3
+            constraints_table = [p1_error, p2_error]
+            col_labels = [p1str, p2str]
+            table = ax.table(cellText=constraints_table, 
+                #colLabels=col_labels, 
+                cellLoc = 'center', 
+                bbox = (tx, ty, tab_width, tab_height), 
+                #cellColours = colors_table, 
+                colWidths = table_col_width, 
+                alpha = 1., 
+                zorder = 100.,
+                #edges = 'BT',
+                )
 
     if noofticks is not None:
         ax.xaxis.set_major_locator(MaxNLocator(nbins=noofticks))

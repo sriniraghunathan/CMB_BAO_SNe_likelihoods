@@ -151,7 +151,7 @@ def get_constraints_table(params_to_plot, sample_arr_to_plot, color_arr = None, 
             #tmp = s.getLatex(ppp)
             if isinstance(s, getdist.gaussian_mixtures.MixtureND):
                 plist = s.names
-            elif isinstance(s, getdist.mcsamples.MCSampless):
+            elif isinstance(s, getdist.mcsamples.MCSamples):
                 plist = s.getParamNames().list()
 
             if ppp not in plist:
