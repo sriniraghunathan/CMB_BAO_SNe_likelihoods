@@ -149,7 +149,12 @@ def get_constraints_table(params_to_plot, sample_arr_to_plot, color_arr = None, 
         for sind, (s, c) in enumerate( zip( sample_arr_to_plot, color_arr) ):
             ###print( ppp, s.getLatex(ppp) )
             #tmp = s.getLatex(ppp)
-            if ppp not in s.getParamNames().list():
+            if isinstance(s, getdist.gaussian_mixtures.MixtureND):
+                plist = p.names
+            elif isinstance(s, getdist.mcsamples.MCSampless):
+                plist = s.getParamNames().list()
+
+            if ppp not in plist:
                 constraints_table[sind, pind] = r'N/A'
                 constraints_dic[ppp][sind] = r'N/A'
             else:
@@ -1037,9 +1042,13 @@ def get_gauss_mix_from_fisher(param_dict, f_mat, params, labels, fix_params = ['
     if prior_dic is not None:
         f_mat = misc.add_prior(f_mat, params, prior_dic)
 
-    cov_mat = np.linalg.inv( f_mat ) 
-    
-    #print( params, np.diag(cov_mat)**0.5 )
+    cov_mat = np.linalg.inv( f_mat )
+
+    if (0):
+        ##print(cov_mat.shape, params); ###sys.exit()
+        param_constraints = np.diag(cov_mat)**0.5
+        tmpind = np.where( np.asarray(params) == 'N_ur' )[0]
+        print( cov_mat[tmpind, tmpind]**0.5 ); sys.exit()
     params_mean = []
     for ppp in params:
         ###print(ppp)
